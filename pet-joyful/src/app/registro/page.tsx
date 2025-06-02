@@ -26,7 +26,10 @@ export default function Registro() {
               <label htmlFor="confirmaSenhaTutor">Confirme a senha:</label>
               <input type="password" className="form-control" placeholder="Confirme a senha..." />
             </div>
-            <a href="/home/home.html">
+            <a href="/login">
+            </a>
+            <p className="text-center">Já possui uma conta? Faça login</p>
+            <a href="/login">
               <button className="form-btn">Cadastrar-se</button>
             </a>
           </div>
