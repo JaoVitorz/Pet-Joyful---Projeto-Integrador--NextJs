@@ -29,9 +29,9 @@ export default function Registro() {
             <a href="/login">
             </a>
             <p className="text-center">Já possui uma conta? Faça login</p>
-            <a href="/login">
-              <button className="form-btn">Cadastrar-se</button>
-            </a>
+            <a href="/login"> </a>
+              <a href="/login"><button className="form-btn">Cadastrar-se</button></a>
+
           </div>
         </div>
 
@@ -64,7 +64,7 @@ export default function Registro() {
               <label htmlFor="confirmaSenhaONG">Confirme a senha:</label>
               <input type="password" id="confirmaSenhaONG" className="form-control" placeholder="Confirme a senha..." />
             </div>
-            <a href="/home/home.html">
+            <a href="/login">
               <button className="form-btn">Cadastrar-se</button>
             </a>
           </div>
