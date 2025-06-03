@@ -29,7 +29,7 @@ export default function Registro() {
             <p className="text-center">
               Já possui uma conta? <a href="/login">Faça login</a>
             </p>
-            <a href="/login"><button className="form-btn">Cadastrar-se</button></a>
+            <a href="/Home"><button className="form-btn">Cadastrar-se</button></a>
 
           </div>
         </div>
@@ -66,7 +66,7 @@ export default function Registro() {
             </div>
             
              <p className="text-center">Já possui uma conta? <a href="/login">Faça login</a></p> 
-              <a href="/login"><button className="form-btn">Cadastrar-se</button></a>
+              <a href="/Home"><button className="form-btn">Cadastrar-se</button></a>
             
          
           </div>
