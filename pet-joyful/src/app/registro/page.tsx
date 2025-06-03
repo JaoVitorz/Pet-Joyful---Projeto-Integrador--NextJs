@@ -65,7 +65,7 @@ export default function Registro() {
               <input type="password" id="confirmaSenhaONG" className="form-control" placeholder="Confirme a senha..." />
             </div>
             
-             <p className="text-center">Já possui uma conta? <a href="/login"></a>Faça login</p> 
+             <p className="text-center">Já possui uma conta? <a href="/login">Faça login</a></p> 
               <a href="/login"><button className="form-btn">Cadastrar-se</button></a>
             
          
