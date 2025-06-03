@@ -1,9 +1,9 @@
 'use client';
 import { useState } from 'react';
-import ChatList from './ChatList';
-import ChatHeader from './ChatHeader';
-import MessageList from './MessageList';
-import MessageInput from './MessageInput';
+import ChatList from './chatList';
+import ChatHeader from './chatheader';
+import MessageList from './messagelist';
+import MessageInput from './messageinput';
 import { User } from '@/types';
 
 const mockUsers: User[] = [
