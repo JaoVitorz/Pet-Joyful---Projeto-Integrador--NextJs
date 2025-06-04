@@ -106,24 +106,11 @@ export default function Perfil() {
         <meta name="description" content="Perfil do usuário no PetJoyful" />
       </Head>
 
-      <header className="bg-success text-white py-3 px-4 d-flex justify-content-between align-items-center">
-        <Link href="/" className="fw-bold fs-4">
-          <Image
-            src="/assets/logo.png"
-            alt="Logo PetJoyful"
-            width={140}
-            height={110}
-          />
-        </Link>
+  
 
-        <input 
-          type="text" 
-          className="form-control w-50" 
-          placeholder="Busca" 
-        />
-
+      {/* Cabeçalho */}
         <Header/>
-      </header>
+      
 
       <Container className="my-4">
         <Row>
