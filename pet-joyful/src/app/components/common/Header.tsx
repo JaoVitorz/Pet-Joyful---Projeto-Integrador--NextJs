@@ -41,7 +41,12 @@ export default function Header({ activeLink }: HeaderProps) {
           label="Perfil"
           active={activeLink === 'perfil'}
         />
-        <BiMessageDetail size={24} />
+        <Navlink  
+        href="/Chat"
+        icon={<BiMessageDetail size={24} />} 
+          label="Chat"
+          active={activeLink === 'chat'}/>
+       
         <BiBell size={24} />
         <BiListUl size={24} />
       </div>
