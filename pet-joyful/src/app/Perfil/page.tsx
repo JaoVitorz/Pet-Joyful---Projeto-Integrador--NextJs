@@ -1,65 +1,61 @@
-'use client';
-import Footer from '../components/common/Footer';
-import Header from '../components/common/Header';
-import { useState } from 'react';
-import Head from 'next/head';
-import Image from 'next/image';
-import Link from 'next/link';
-import { Container, Row, Col, Button } from 'react-bootstrap';
-import { 
-  BiHome, 
-  BiUser, 
-  BiMessageDetail, 
-  BiBell, 
+"use client";
+import Footer from "../components/common/Footer";
+import Header from "../components/common/Header";
+import { useState } from "react";
+import Head from "next/head";
+import Image from "next/image";
+import Link from "next/link";
+import { Container, Row, Col, Button } from "react-bootstrap";
+import {
+  BiHome,
+  BiUser,
+  BiMessageDetail,
+  BiBell,
   BiListUl,
-  BiPlusCircle
-} from 'react-icons/bi';
+  BiPlusCircle,
+} from "react-icons/bi";
 
-import ProfileSidebar from '../components/profile/ProfileSidebar';  
-import CreatePost from '../components/posts/CreatePost';
-import PostComponent from '../components/posts/PostComponent';
-import ProfileHeader from '../components/profile/ProfileHeader';  
+import Comments from "../components/posts/Comments";
+
+import ProfileSidebar from "../components/profile/ProfileSidebar";
+import CreatePost from "../components/posts/CreatePost";
+import PostComponent from "../components/posts/PostComponent";
+import ProfileHeader from "../components/profile/ProfileHeader";
 
 export default function Perfil() {
-  const [activeTab, setActiveTab] = useState('posts');
+  const [activeTab, setActiveTab] = useState("posts");
   const [posts, setPosts] = useState([
     {
       id: 1,
-      text: 'Se você é como nós, os identifica através do olhar.',
-      image: '/assets/post-aatan.jpg',
-      user: {
-        name: 'AATAN - Sorocaba',
-        avatar: '/assets/aatan-logo.jpg'
-      },
-      time: '2 horas atrás',
+      text: "Se você é como nós, os identifica através do olhar.",
+      image: "/assets/post-aatan.jpg",
+      user: { name: "AATAN - Sorocaba", avatar: "/assets/aatan-logo.jpg" },
+      time: "2 horas atrás",
       likes: 42,
-      comments: 8,
-      isAdoption: true
-    }
+      comments: [{ id: 1, user: "Maria", text: "Lindo post!" }],
+      isAdoption: true,
+    },
   ]);
-  
+
   const [albums] = useState([
     {
       id: 1,
-      title: 'Animais para adoção',
-      cover: '/assets/post-aatan.jpg',
+      title: "Animais para adoção",
+      cover: "/assets/post-aatan.jpg",
       photos: [
-        '/assets/post-aatan.jpg',
-        '/assets/imgPerfilM.png',
-        '/assets/imgPerfilH.png'
+        "/assets/post-aatan.jpg",
+        "/assets/imgPerfilM.png",
+        "/assets/imgPerfilH.png",
       ],
-      date: '2023-10-15'
+      date: "2023-10-15",
     },
     {
       id: 2,
-      title: 'Eventos 2023',
-      cover: '/assets/imgPerfilM.png',
-      photos: [
-        '/assets/imgPerfilM.png',
-        '/assets/imgPerfilH.png'
-      ],
-      date: '2023-09-20'
-    }
+      title: "Eventos 2023",
+      cover: "/assets/imgPerfilM.png",
+      photos: ["/assets/imgPerfilM.png", "/assets/imgPerfilH.png"],
+      date: "2023-09-20",
+    },
   ]);
 
   interface NewPost {
@@ -75,24 +71,36 @@ export default function Perfil() {
     const post = {
       id: posts.length + 1,
       ...newPost,
-      image: newPost.image ?? '', // Ensure image is always a string
-      time: 'Agora mesmo',
+      image: newPost.image ?? "", // Ensure image is always a string
+      time: "Agora mesmo",
       likes: 0,
       comments: 0,
-      isAdoption: false
+      isAdoption: false,
     };
     setPosts([post, ...posts]);
   };
 
   const handleLike = (postId: string | number, liked: boolean) => {
-    setPosts(posts.map(post => 
-      post.id === postId ? { ...post, likes: liked ? post.likes + 1 : post.likes - 1 } : post
-    ));
+    setPosts(
+      posts.map((post) =>
+        post.id === postId
+          ? { ...post, likes: liked ? post.likes + 1 : post.likes - 1 }
+          : post
+      )
+    );
   };
 
-  const handleComment = (postId: string | number) => {
-    // Lógica para comentários
-    console.log(`Comentar no post ${postId}`);
+  const handleComment = (
+    postId: number,
+    comment: { id: number; user: string; text: string }
+  ) => {
+    setPosts(
+      posts.map((post) =>
+        post.id === postId
+          ? { ...post, comments: [...post.comments, comment] }
+          : post
+      )
+    );
   };
 
   const handleShare = (postId: string | number) => {
@@ -107,11 +115,8 @@ export default function Perfil() {
         <meta name="description" content="Perfil do usuário no PetJoyful" />
       </Head>
 
-  
-
       {/* Cabeçalho */}
-        <Header/>
-      
+      <Header />
 
       <Container className="my-4">
         <Row>
@@ -127,29 +132,31 @@ export default function Perfil() {
             {/* Navegação de abas */}
             <div className="mb-3 d-flex gap-2">
               <Button
-                variant={activeTab === 'posts' ? 'success' : 'outline-success'}
-                onClick={() => setActiveTab('posts')}
+                variant={activeTab === "posts" ? "success" : "outline-success"}
+                onClick={() => setActiveTab("posts")}
                 size="sm"
               >
                 Publicações
               </Button>
               <Button
-                variant={activeTab === 'albums' ? 'success' : 'outline-success'}
-                onClick={() => setActiveTab('albums')}
+                variant={activeTab === "albums" ? "success" : "outline-success"}
+                onClick={() => setActiveTab("albums")}
                 size="sm"
               >
                 Álbuns
               </Button>
               <Button
-                variant={activeTab === 'about' ? 'success' : 'outline-success'}
-                onClick={() => setActiveTab('about')}
+                variant={activeTab === "about" ? "success" : "outline-success"}
+                onClick={() => setActiveTab("about")}
                 size="sm"
               >
                 Sobre
               </Button>
               <Button
-                variant={activeTab === 'contact' ? 'success' : 'outline-success'}
-                onClick={() => setActiveTab('contact')}
+                variant={
+                  activeTab === "contact" ? "success" : "outline-success"
+                }
+                onClick={() => setActiveTab("contact")}
                 size="sm"
               >
                 Contato
@@ -157,28 +164,41 @@ export default function Perfil() {
             </div>
 
             {/* Conteúdo das abas */}
-            {activeTab === 'posts' && (
+            {activeTab === "posts" && (
               <>
-                <CreatePost 
+                <CreatePost
                   user={{
-                    name: 'AATAN - Sorocaba',
-                    avatar: '/assets/aatan-logo.jpg'
+                    name: "AATAN - Sorocaba",
+                    avatar: "/assets/aatan-logo.jpg",
                   }}
                   onSubmit={handleCreatePost}
                 />
-                
-                {posts.map(post => (
-                  <PostComponent
-                    key={post.id}
-                    post={post}
-                    onLike={handleLike}
-                    onComment={handleComment}
-                    onShare={handleShare}
-                  />
+
+                {posts.map((post) => (
+                  <>
+                    <PostComponent
+                      key={post.id}
+                      post={post}
+                      onLike={handleLike}
+                      onComment={handleComment}
+                      onShare={handleShare}
+                    />
+                    <Comments
+                      comments={post.comments}
+                      onAddComment={(text) => {
+                        const newComment = {
+                          id: Date.now(),
+                          user: "Você", // ou pegue do usuário logado
+                          text,
+                        };
+                        handleComment(post.id, newComment);
+                      }}
+                    />
+                  </>
                 ))}
               </>
             )}
-            {activeTab === 'albums' && (
+            {activeTab === "albums" && (
               <div className="bg-white p-3 rounded shadow">
                 <div className="d-flex justify-content-between align-items-center mb-4">
                   <h4 className="mb-0">Álbuns</h4>
@@ -187,9 +207,9 @@ export default function Perfil() {
                     Novo Álbum
                   </Button>
                 </div>
-                
+
                 <div className="row">
-                  {albums.map(album => (
+                  {albums.map((album) => (
                     <div key={album.id} className="col-md-6 mb-4">
                       {/* Album content here */}
                     </div>
@@ -197,29 +217,29 @@ export default function Perfil() {
                 </div>
               </div>
             )}
-            {activeTab === 'about' && (
+            {activeTab === "about" && (
               <div className="bg-white p-3 rounded shadow">
                 <h4>Sobre</h4>
                 <p>
-                  Associação de proteção animal oferecendo abrigo e cuidados para 
-                  animais em situação de vulnerabilidade.
+                  Associação de proteção animal oferecendo abrigo e cuidados
+                  para animais em situação de vulnerabilidade.
                 </p>
               </div>
             )}
-            {activeTab === 'contact' && (
+            {activeTab === "contact" && (
               <div className="bg-white p-3 rounded shadow">
                 <h4>Contato</h4>
                 <p>
-                  Email: contato@aatansorocaba.org.br<br />
+                  Email: contato@aatansorocaba.org.br
+                  <br />
                   Telefone: (15) 1234-5678
                 </p>
-                
               </div>
-              
             )}
           </Col>
         </Row>
         <Footer />
       </Container>
     </>
-  )};
+  );
+}
