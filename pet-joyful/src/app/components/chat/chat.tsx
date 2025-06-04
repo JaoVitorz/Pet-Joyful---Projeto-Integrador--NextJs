@@ -1,34 +1,39 @@
-'use client';
-import { useState } from 'react';
-import ChatList from './chatlist';
-import ChatHeader from './chatheader';
-import MessageList from './messagelist';
-import MessageInput from './messageinput';
-import { User } from '@/types';
-
+"use client";
+import { useState } from "react";
+import ChatList from "./chatlist";
+import ChatHeader from "./chatheader";
+import MessageList from "./messagelist";
+import MessageInput from "./messageinput";
+import { User } from "@/types";
 
 const mockUsers: User[] = [
   {
     id: 1,
-    name: 'Elisabeth',
-    avatar: 'https://i.pravatar.cc/150?img=1',
+    name: "Elisabeth",
+    avatar: "https://i.pravatar.cc/150?img=1",
     messages: [
-      { sender: 'them', text: 'Bom dia, tudo bem?' },
-      { sender: 'me', text: 'Bom dia, tudo ótimo e com você? Como podemos ajudar?' },
+      { sender: "them", text: "Bom dia, tudo bem?" },
+      {
+        sender: "me",
+        text: "Bom dia, tudo ótimo e com você? Como podemos ajudar?",
+      },
     ],
   },
   {
     id: 2,
-    name: 'Roberto',
-    avatar: 'https://i.pravatar.cc/150?img=2',
-    messages: [],
+    name: "Roberto",
+    avatar: "https://i.pravatar.cc/150?img=2",
+    messages: [
+      { sender: "them", text: "Olá, gostaria de saber mais sobre adoção." },
+      { sender: "me", text: "Claro! Como posso ajudar?" },
+    ],
   },
 ];
 
 export default function Chat() {
   const [users, setUsers] = useState<User[]>(mockUsers);
-  const [activeUserId, setActiveUserId] = useState<number>(1);
-  const [newMessage, setNewMessage] = useState('');
+  const [activeUserId, setActiveUserId] = useState<number>(mockUsers[0].id);
+  const [newMessage, setNewMessage] = useState("");
 
   const activeUser = users.find((u) => u.id === activeUserId)!;
 
@@ -39,13 +44,13 @@ export default function Chat() {
       user.id === activeUserId
         ? {
             ...user,
-            messages: [...user.messages, { sender: 'me', text: newMessage }],
+            messages: [...user.messages, { sender: "me", text: newMessage }],
           }
         : user
     );
 
     setUsers(updatedUsers);
-    setNewMessage('');
+    setNewMessage("");
   };
 
   return (

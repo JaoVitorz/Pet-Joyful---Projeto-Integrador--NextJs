@@ -1,4 +1,4 @@
-import { User } from '@/types';
+import { User } from "@/types";
 
 type Props = {
   users: User[];
@@ -8,23 +8,31 @@ type Props = {
 
 export default function ChatList({ users, activeUserId, onSelectUser }: Props) {
   return (
-    <div className="w-1/4 bg-green-100 p-4 flex flex-col gap-4">
-      <h2 className="text-xl font-bold mb-2">Suas conversas</h2>
-      {users.map((user) => (
-        <button
-          key={user.id}
-          onClick={() => onSelectUser(user.id)}
-          className={`flex items-center gap-2 p-2 rounded-full ${
-            user.id === activeUserId ? 'bg-green-500 text-white' : 'bg-white'
-          }`}
-        >
-          <img src={user.avatar} className="w-8 h-8 rounded-full" />
-          {user.name}
-        </button>
-      ))}
-      <button className="mt-auto bg-green-500 text-white py-2 rounded-full">
-        Iniciar conversa
+    <aside className="w-full md:w-1/4 bg-white border-r p-4 flex flex-col gap-4 min-h-screen">
+      <h2 className="text-xl font-bold mb-4 text-green-700">Conversas</h2>
+      <div className="flex flex-col gap-2">
+        {users.map((user) => (
+          <button
+            key={user.id}
+            onClick={() => onSelectUser(user.id)}
+            className={`flex items-center gap-3 p-2 rounded-lg transition-colors ${
+              user.id === activeUserId
+                ? "bg-green-500 text-white"
+                : "hover:bg-green-100"
+            }`}
+          >
+            <img
+              src={user.avatar}
+              alt={user.name}
+              className="w-10 h-10 rounded-full border"
+            />
+            <span className="font-medium">{user.name}</span>
+          </button>
+        ))}
+      </div>
+      <button className="mt-6 bg-green-500 hover:bg-green-600 text-white py-2 rounded-lg font-semibold transition-colors">
+        + Nova conversa
       </button>
-    </div>
+    </aside>
   );
 }
