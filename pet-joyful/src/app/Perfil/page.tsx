@@ -122,27 +122,7 @@ export default function Perfil() {
           placeholder="Busca" 
         />
 
-        <div className="d-flex align-items-center gap-3">
-          <Link
-            href="/Home"
-            className="text-white text-decoration-none d-flex flex-column align-items-center"
-          >
-            <BiHome size={24} />
-            <span className="fs-6">Início</span>
-          </Link>
-          
-          <Link
-            href="/Perfil"
-            className="text-white text-decoration-none d-flex flex-column align-items-center active"
-          >
-            <BiUser size={24} />
-            <span className="fs-6">Perfil</span>
-          </Link>
-          
-          <BiMessageDetail size={24} />
-          <BiBell size={24} />
-          <BiListUl size={24} />
-        </div>
+        <Header/>
       </header>
 
       <Container className="my-4">
