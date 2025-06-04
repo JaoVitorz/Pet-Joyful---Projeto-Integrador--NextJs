@@ -37,16 +37,18 @@ export default function App() {
     timestamp: string;
   };
 
-  const [posts, setPosts] = useState([
+  const [posts, setPosts] = useState<PostType[]>([
     {
       id: 1,
-      text: "Se você é como nós, os identifica através do olhar.",
+      text: "Venha conhecer alguns dos nossos peludinhos.",
       image: "/assets/post-aatan.jpg",
-      user: { name: "AATAN - Sorocaba", avatar: "/assets/aatan-logo.jpg" },
-      time: "2 horas atrás",
       likes: 42,
-      comments: [{ id: 1, user: "Maria", text: "Lindo post!" }],
-      isAdoption: true,
+      comments: [],
+      user: {
+        name: "AATAN - Sorocaba",
+        avatar: "/assets/aatan-logo.jpg",
+      },
+      timestamp: "10/05/2024, 15:30",
     },
   ]);
   const [showPostModal, setShowPostModal] = useState(false);
@@ -87,19 +89,6 @@ export default function App() {
     if (fileInputRef.current) {
       fileInputRef.current.click();
     }
-  };
-
-  const handleComment = (
-    postId: number,
-    comment: { id: number; user: string; text: string }
-  ) => {
-    setPosts(
-      posts.map((post) =>
-        post.id === postId
-          ? { ...post, comments: [...post.comments, comment] }
-          : post
-      )
-    );
   };
 
   return (
@@ -352,6 +341,7 @@ export default function App() {
       )}
 
       {/* Footer fixo no final da página */}
+      <Footer />
     </div>
   );
 }
