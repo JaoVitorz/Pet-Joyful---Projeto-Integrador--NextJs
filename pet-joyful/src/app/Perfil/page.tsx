@@ -212,10 +212,13 @@ export default function Perfil() {
                   Email: contato@aatansorocaba.org.br<br />
                   Telefone: (15) 1234-5678
                 </p>
+                
               </div>
+              
             )}
           </Col>
         </Row>
+        <Footer />
       </Container>
     </>
   )};

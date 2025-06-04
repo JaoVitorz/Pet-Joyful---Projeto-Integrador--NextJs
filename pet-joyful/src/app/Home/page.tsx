@@ -341,7 +341,7 @@ export default function App() {
       )}
 
       {/* Footer fixo no final da página */}
-      <Footer />
+      
     </div>
   );
 }
