@@ -1,4 +1,5 @@
 'use client';
+import Footer from '../components/common/Footer';
 import Header from '../components/common/Header';
 import { useState } from 'react';
 import Head from 'next/head';
