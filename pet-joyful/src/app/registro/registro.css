@@ -9,32 +9,20 @@ html {
 }
 
 .container {
-  padding: 20px;
   min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 40px 20px;
 }
 
 .form-wrapper {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: flex-start;
-  flex-wrap: wrap;
-  gap: 20px;
-  max-width: 1200px;
-  width: 100%;
-}
-
-.form-section {
-  background-color: white;
+  background-color: #fff;
   border-radius: 15px;
-  padding: 30px;
+  padding: 40px 30px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-  max-width: 350px;
-  flex: 1;
-  min-width: 300px;
+  width: 100%;
+  max-width: 500px;
 }
 
 h4 {
@@ -56,38 +44,45 @@ h4 {
 
 .form-btn {
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   background-color: #60d560;
   color: white;
   border: none;
   border-radius: 10px;
+  transition: background-color 0.3s ease;
 }
 
 .form-btn:hover {
   background-color: #4caf50;
 }
 
-.form-image {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  max-width: 200px;
+.user-type-switcher {
+  margin-top: 20px;
+  text-align: center;
 }
 
-.form-image img {
-  max-width: 100%;
-  height: auto;
+.user-type-switcher button {
+  min-width: 100px;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  transition: 0.2s;
 }
 
-/* Responsivo */
-@media (max-width: 992px) {
+.user-type-switcher button.active {
+  background-color: #60d560;
+  color: #fff;
+  border-color: #4caf50;
+}
+
+@media (max-width: 576px) {
   .form-wrapper {
-    flex-direction: column;
-    align-items: center;
+    padding: 30px 20px;
   }
 
-  .form-image {
-    max-width: 150px;
-    margin: 10px 0;
+  .user-type-switcher button {
+    margin-bottom: 10px;
+    width: 100%;
   }
 }
