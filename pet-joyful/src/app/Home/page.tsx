@@ -1,7 +1,7 @@
 "use client";
 
 // Importações
-
+import '../globals.css'; 
 import Footer from "../components/common/Footer";
 import Header from "../components/common/Header";
 import "bootstrap/dist/css/bootstrap.min.css";
