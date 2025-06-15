@@ -1,9 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import Head from 'next/head';
-import Image from 'next/image';
-import Link from 'next/link';
+import Header from '../components/common/Header';
 import { Container, Row, Col, Button } from 'react-bootstrap';
 import { 
   BiHome, 
@@ -101,49 +99,9 @@ export default function Perfil() {
 
   return (
     <>
-      <Head>
-        <title>PetJoyful - Perfil</title>
-        <meta name="description" content="Perfil do usuário no PetJoyful" />
-      </Head>
+      <Header/>
+      
 
-      <header className="bg-success text-white py-3 px-4 d-flex justify-content-between align-items-center">
-        <Link href="/" className="fw-bold fs-4">
-          <Image
-            src="/assets/logo.png"
-            alt="Logo PetJoyful"
-            width={140}
-            height={110}
-          />
-        </Link>
-
-        <input 
-          type="text" 
-          className="form-control w-50" 
-          placeholder="Busca" 
-        />
-
-        <div className="d-flex align-items-center gap-3">
-          <Link
-            href="/Home"
-            className="text-white text-decoration-none d-flex flex-column align-items-center"
-          >
-            <BiHome size={24} />
-            <span className="fs-6">Início</span>
-          </Link>
-          
-          <Link
-            href="/Perfil"
-            className="text-white text-decoration-none d-flex flex-column align-items-center active"
-          >
-            <BiUser size={24} />
-            <span className="fs-6">Perfil</span>
-          </Link>
-          
-          <BiMessageDetail size={24} />
-          <BiBell size={24} />
-          <BiListUl size={24} />
-        </div>
-      </header>
 
       <Container className="my-4">
         <Row>
