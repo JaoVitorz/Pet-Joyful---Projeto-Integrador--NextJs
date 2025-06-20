@@ -18,38 +18,14 @@ import {
   BiShare,
   BiX,
 } from "react-icons/bi";
+import Comments from "../components/posts/Comments";
 
-type Comment = {
-  id: string;
-  content: string;
-  createdAt: Date;
-  author: {
-    id: string;
-    name: string;
-  };
-};
 
 export default function App() {
-  // Comentários
-  const [comments, setComments] = useState<Comment[]>([]);
-  const currentUserId = 'user-123'; // ID do usuário logado
+  
+  
 
-  const handleAddComment = (content: string) => {
-    const newComment: Comment = {
-      id: Date.now().toString(),
-      content,
-      createdAt: new Date(),
-      author: {
-        id: currentUserId,
-        name: 'Usuário Atual'
-      }
-    };
-    setComments([...comments, newComment]);
-  };
 
-  const handleDeleteComment = (id: string) => {
-    setComments(comments.filter(comment => comment.id !== id));
-  };
   // Estados
   const [postText, setPostText] = useState("");
   type PostType = {
@@ -58,9 +34,9 @@ export default function App() {
     image: File | string | null;
     likes: number;
     comments: {
+      id: number;
+      user: string;
       text: string;
-      user: { name: string; avatar: string };
-      timestamp: string;
     }[];
     user: {
       name: string;
@@ -121,6 +97,17 @@ export default function App() {
     if (fileInputRef.current) {
       fileInputRef.current.click();
     }
+  };
+
+  // Função para curtir post (incrementa o contador)
+  const handleLike = (postId: number) => {
+    setPosts((prevPosts) =>
+      prevPosts.map((post) =>
+        post.id === postId
+          ? { ...post, likes: post.likes + 1 }
+          : post
+      )
+    );
   };
 
   return (
@@ -222,8 +209,12 @@ export default function App() {
                 )}
                 <div className="d-flex justify-content-between align-items-center">
                   <div className="d-flex gap-2">
-                    <Button variant="light" className="rounded-pill">
-                      <BiHeart /> {post.likes > 0 ? post.likes : ""} Curtir
+                    <Button
+                      variant="light"
+                      className="rounded-pill"
+                      onClick={() => handleLike(post.id)}
+                    >
+                      <BiHeart /> {post.likes} Curtir
                     </Button>
                     <Button variant="light" className="rounded-pill">
                       <BiMessageDetail /> Comentar
@@ -233,12 +224,34 @@ export default function App() {
                     </Button>
                   </div>
                   {post.id === 1 && (
-                    <Button variant="success" className="rounded-pill">
+                    <Button
+                      variant="success"
+                      className="rounded-pill"
+                      as="a"
+                      href="https://www.aatansorocaba.com.br/adocao-cachorro-sorocaba"
+                    >
                       Adotar
                     </Button>
                   )}
-                 
                 </div>
+
+                <Comments
+                  comments={post.comments}
+                  onAddComment={(content: string) => {
+                    const newComment = {
+                      id: Date.now(),
+                      user: "Usuário Atual",
+                      text: content,
+                    };
+                    setPosts(posts =>
+                      posts.map(p =>
+                        p.id === post.id
+                          ? { ...p, comments: [...p.comments, newComment] }
+                          : p
+                      )
+                    );
+                  }}
+                />
               </div>
             ))}
           </Col>

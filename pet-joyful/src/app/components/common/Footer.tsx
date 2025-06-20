@@ -29,47 +29,18 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Links Rápidos */}
-          <div className="col-md-2">
-            <h5 className="mb-3">Links</h5>
-            <ul className="list-unstyled">
-              <li className="mb-2">
-                <Link href="/sobre" className="text-white text-decoration-none hover:text-white">
-                  Sobre Nós
-                </Link>
-              </li>
-              <li className="mb-2">
-                <Link href="/adotar" className="text-white text-decoration-none hover:text-white">
-                  Adotar
-                </Link>
-              </li>
-              <li className="mb-2">
-                <Link href="/doar" className="text-white text-decoration-none hover:text-white">
-                  Doar
-                </Link>
-              </li>
-              <li className="mb-2">
-                <Link href="/blog" className="text-white text-decoration-none hover:text-white">
-                  Blog
-                </Link>
-              </li>
-            </ul>
-          </div>
+          
 
           {/* Ajuda */}
           <div className="col-md-2">
             <h5 className="mb-3">Ajuda</h5>
             <ul className="list-unstyled">
               <li className="mb-2">
-                <Link href="/faq" className=" text-decoration-none hover:text-white">
+                <Link href="/Faq" className=" text-decoration-none hover:text-white">
                   FAQ
                 </Link>
               </li>
-              <li className="mb-2">
-                <Link href="/contato" className=" text-decoration-none hover:text-white">
-                  Contato
-                </Link>
-              </li>
+              
               <li className="mb-2">
                 <Link href="/termos" className=" text-decoration-none hover:text-white">
                   Termos

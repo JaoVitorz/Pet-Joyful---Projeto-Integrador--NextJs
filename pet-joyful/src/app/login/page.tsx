@@ -132,7 +132,7 @@ export default function Login() {
           </Link>
           <Link href="/Home">
             <button className="btn-apple" disabled={loading}>
-              Continue com Apple
+              Continue com Outlook
             </button>
           </Link>
           <Link href="#" className="forgot-password">
