@@ -1,28 +1,28 @@
 'use client';
+
 import { useState } from 'react';
 import axios from 'axios';
 import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import './login.css'; // Importando seu arquivo CSS
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { LoginSchema } from '@/schema/loginschema';
+import './login.css';
 
 export default function Login() {
-  const [email, setEmail] = useState('');
-  const [senha, setSenha] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (values: { email: string; senha: string }) => {
     setLoading(true);
     setError('');
 
     try {
       const response = await axios.post('/api/login', {
-        email,
-        senha
+        email: values.email,
+        senha: values.senha
       });
 
       if (response.data.success) {
@@ -65,16 +65,17 @@ export default function Login() {
       <div className="container">
         <div className="left-section">
           <div className="titulo-bordao">
-            <h1>PetNet</h1>
+            <h1>PetJoyful</h1>
             <p>Conectando Corações e Patas</p>
           </div>
           <div className="pet-images">
             <Image
-              src="/assets/login-img.png"
+              src="/assets/pet-joyful.png"
               alt="Gato e Cachorro lado a lado"
-              width={400}
+              width={600}
               height={300}
               className="img-fluid"
+              priority
             />
           </div>
         </div>
@@ -82,35 +83,57 @@ export default function Login() {
         <div className="login-section">
           <h2>Entrar</h2>
           {error && <div className="alert alert-danger">{error}</div>}
-          <form onSubmit={handleSubmit}>
-            <input 
-              type="text" 
-              placeholder="Email ou nome de usuário" 
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-            <input 
-              type="password" 
-              placeholder="Digite sua senha..." 
-              value={senha}
-              onChange={(e) => setSenha(e.target.value)}
-              required
-            />
-            <button 
-              type="submit" 
-              className="btn-login"
-              disabled={loading}
-            >
-              {loading ? 'Carregando...' : 'Login'}
-            </button>
-          </form>
+          
+          <Formik
+            initialValues={{ email: '', senha: '' }}
+            validationSchema={LoginSchema}
+            onSubmit={handleSubmit}
+          >
+            {({ isSubmitting }) => (
+              <Form>
+                <div className="form-group">
+                  <Field
+                    type="text"
+                    name="email"
+                    placeholder="Email ou nome de usuário"
+                    className="form-control"
+                    disabled={loading}
+                  />
+                  <ErrorMessage name="email" component="div" className="error-message" />
+                </div>
+                
+                <div className="form-group">
+                  <Field
+                    type="password"
+                    name="senha"
+                    placeholder="Digite sua senha..."
+                    className="form-control"
+                    disabled={loading}
+                  />
+                  <ErrorMessage name="senha" component="div" className="error-message" />
+                </div>
+                
+                <button 
+                  type="submit" 
+                  className="btn-login"
+                  disabled={loading || isSubmitting}
+                >
+                  {loading ? 'Carregando...' : 'Login'}
+                </button>
+              </Form>
+            )}
+          </Formik>
+          
           <p className="divider">ou</p>
           <Link href="/Home">
-            <button className="btn-google">Continue com Google</button>
+            <button className="btn-google" disabled={loading}>
+              Continue com Google
+            </button>
           </Link>
           <Link href="/Home">
-            <button className="btn-apple">Continue com Apple</button>
+            <button className="btn-apple" disabled={loading}>
+              Continue com Apple
+            </button>
           </Link>
           <Link href="#" className="forgot-password">
             Esqueceu sua senha?
@@ -120,6 +143,7 @@ export default function Login() {
           </div>
         </div>
       </div>
+      
       <footer>
         <Link href="#">Sobre</Link>
         <Link href="#">Ajuda</Link>

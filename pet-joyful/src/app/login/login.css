@@ -14,7 +14,26 @@ body {
   min-height: 100vh;
   color: #333;
 }
+.error-message {
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
 
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-control {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+}
+
+.form-control.is-invalid {
+  border-color: #dc3545;
+}
 .container {
   display: flex;
   flex-direction: column;
@@ -26,7 +45,7 @@ body {
 }
 
 .left-section {
-  background-color: #4caf50;
+  background-color: #34c35c;
   color: #fff;
   border-radius: 10px;
   padding: 40px;
@@ -56,7 +75,7 @@ body {
 }
 
 .login-section {
-  background-color: #4caf50;
+  background-color: #34c35c;
   border-radius: 10px;
   padding: 30px;
   width: 100%;

@@ -1,6 +1,17 @@
 {
   "dependencies": {
+    "@hookform/resolvers": "^5.1.1",
+    "bcryptjs": "^3.0.2",
+    "body-parser": "^2.2.0",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
     "formik": "^2.4.6",
+    "jsonwebtoken": "^9.0.2",
+    "react-toastify": "^11.0.5",
     "yup": "^1.6.1"
+  },
+  "devDependencies": {
+    "@types/react-toastify": "^4.0.2",
+    "concurrently": "^9.1.2"
   }
 }

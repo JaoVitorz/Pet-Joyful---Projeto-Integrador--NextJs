@@ -6,16 +6,20 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "auth-server": "node authserver.js",
+  "dev:all": "concurrently \"npm run auth-server\" \"npm run dev\""
   },
   "dependencies": {
     "axios": "^1.9.0",
     "bootstrap": "^5.3.5",
+    "formik": "^2.4.6",
     "next": "15.3.1",
     "react": "^19.0.0",
     "react-bootstrap": "^2.10.9",
     "react-dom": "^19.0.0",
-    "react-icons": "^5.5.0"
+    "react-icons": "^5.5.0",
+    "yup": "^1.6.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

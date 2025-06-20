@@ -1,6 +1,8 @@
 "use client";
 
 // Importações
+
+
 import '../globals.css'; 
 import Footer from "../components/common/Footer";
 import Header from "../components/common/Header";
@@ -17,7 +19,37 @@ import {
   BiX,
 } from "react-icons/bi";
 
+type Comment = {
+  id: string;
+  content: string;
+  createdAt: Date;
+  author: {
+    id: string;
+    name: string;
+  };
+};
+
 export default function App() {
+  // Comentários
+  const [comments, setComments] = useState<Comment[]>([]);
+  const currentUserId = 'user-123'; // ID do usuário logado
+
+  const handleAddComment = (content: string) => {
+    const newComment: Comment = {
+      id: Date.now().toString(),
+      content,
+      createdAt: new Date(),
+      author: {
+        id: currentUserId,
+        name: 'Usuário Atual'
+      }
+    };
+    setComments([...comments, newComment]);
+  };
+
+  const handleDeleteComment = (id: string) => {
+    setComments(comments.filter(comment => comment.id !== id));
+  };
   // Estados
   const [postText, setPostText] = useState("");
   type PostType = {
@@ -205,6 +237,7 @@ export default function App() {
                       Adotar
                     </Button>
                   )}
+                 
                 </div>
               </div>
             ))}
@@ -345,3 +378,4 @@ export default function App() {
     </div>
   );
 }
+
