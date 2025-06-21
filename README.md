@@ -27,22 +27,24 @@ A plataforma facilita o acesso a informações, promove campanhas e eventos como
 - npm (vem junto com o Node.js)
 - Git (opcional, mas recomendado)
 
-
 ### 2. Clone o repositório
 
 ```bash
 git clone https://github.com/davidagj/Pet-Joyful---Projeto-Integrador--NextJs
 cd pet-joyful
 ```
+
 ### 3. **Instale as dependências principais**:
-```bash
+
+````bash
 npm install next react react-dom axios formik yup bootstrap react-icons express typescript
 
 ### 5. Execute o projeto em modo de desenvolvimento
 
 ```bash
-npm run dev
-```
+npm run dev a
+npm run dev:all #para executar o projeto em modo de desenvolvimento e com servidor express com as APIs e retorno estatico
+````
 
 O projeto estará disponível em [http://localhost:3000](http://localhost:3000)
 
@@ -53,6 +55,6 @@ Abra [http://localhost:3000](http://localhost:3000) para visualizar o site.
 ---
 
 **Dicas:**
+
 - Se aparecer algum erro de dependência, rode novamente `npm install`.
 - Para parar o servidor, pressione `Ctrl + C` no terminal.
-- Se usar banco de dados ou API externa, confira se estão rodando também.
