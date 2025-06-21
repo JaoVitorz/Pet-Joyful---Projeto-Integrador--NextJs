@@ -16,6 +16,8 @@ A plataforma facilita o acesso a informações, promove campanhas e eventos como
 - [Express](https://expressjs.com/)
 - [Node.js](https://nodejs.org/)
 - [npm](https://www.npmjs.com/)
+- [Formik](https://formik.org/)
+- [Yup](https://www.npmjs.com/package/yup)
 
 ---
 
@@ -31,24 +33,30 @@ A plataforma facilita o acesso a informações, promove campanhas e eventos como
 
 ```bash
 git clone https://github.com/davidagj/Pet-Joyful---Projeto-Integrador--NextJs
+
+cd Pet-Joyful---Projeto-Integrador--NextJs
 cd pet-joyful
 ```
 
 ### 3. **Instale as dependências principais**:
 
-````bash
+```bash
+npm install
 npm install next react react-dom axios formik yup bootstrap react-icons express typescript
+npm install concurrently --save-dev
 
-### 5. Execute o projeto em modo de desenvolvimento
+```
+
+### 4. **Execute o projeto em modo de desenvolvimento** :
 
 ```bash
-npm run dev a
+npm run dev
 npm run dev:all #para executar o projeto em modo de desenvolvimento e com servidor express com as APIs e retorno estatico
-````
+```
 
 O projeto estará disponível em [http://localhost:3000](http://localhost:3000)
 
-### 6. Acesse no navegador
+### 5. **Acesse no navegador**
 
 Abra [http://localhost:3000](http://localhost:3000) para visualizar o site.
 
@@ -58,3 +66,7 @@ Abra [http://localhost:3000](http://localhost:3000) para visualizar o site.
 
 - Se aparecer algum erro de dependência, rode novamente `npm install`.
 - Para parar o servidor, pressione `Ctrl + C` no terminal.
+
+```
+
+```
