@@ -1,9 +1,6 @@
 "use client";
 
-// Importações
-
-
-import '../globals.css'; 
+import "../globals.css";
 import Footer from "../components/common/Footer";
 import Header from "../components/common/Header";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -17,17 +14,15 @@ import {
   BiHeart,
   BiShare,
   BiX,
+  BiDotsVerticalRounded,
 } from "react-icons/bi";
 import Comments from "../components/posts/Comments";
 
-
 export default function App() {
-  
-  
-
-
-  // Estados
   const [postText, setPostText] = useState("");
+  const [reportingPostId, setReportingPostId] = useState<number | null>(null);
+  const [reportText, setReportText] = useState("");
+
   type PostType = {
     id: number;
     text: string;
@@ -59,11 +54,11 @@ export default function App() {
       timestamp: "10/05/2024, 15:30",
     },
   ]);
+
   const [showPostModal, setShowPostModal] = useState(false);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Funções
   const handlePostSubmit = () => {
     if (!postText.trim() && !selectedImage) return;
 
@@ -99,38 +94,28 @@ export default function App() {
     }
   };
 
-  // Função para curtir post (incrementa o contador)
   const handleLike = (postId: number) => {
     setPosts((prevPosts) =>
       prevPosts.map((post) =>
-        post.id === postId
-          ? { ...post, likes: post.likes + 1 }
-          : post
+        post.id === postId ? { ...post, likes: post.likes + 1 } : post
       )
     );
   };
 
   return (
     <div className="bg-light min-vh-100">
-      {/* Header */}
       <Header />
-
-      {/* Conteúdo Principal */}
       <Container className="mt-4">
         <Row>
-          {/* Coluna Esquerda - Eventos */}
           <Col md={3} className="bg-white p-3 rounded shadow">
             <h3>Eventos</h3>
             <p className="small">27/10 - Mutirão no Shopping Iguatemi</p>
             <p className="small">30/10 - Evento Beneficente</p>
-            <Button variant="light" className="w-100 mt-3">
-              Criar evento +
-            </Button>
+            
           </Col>
 
-          {/* Coluna Central - Feed */}
           <Col md={6}>
-            {/* Área de Criação de Publicação */}
+            {/* Criar Postagem */}
             <div className="bg-white p-3 rounded shadow mb-4">
               <div
                 className="border rounded-pill p-2 ps-3 d-flex align-items-center"
@@ -149,25 +134,14 @@ export default function App() {
                   <BiImage size={24} className="text-success me-2" />
                 </div>
               </div>
-              <hr className="my-2" />
-              <div className="d-flex justify-content-around">
-                <button
-                  className="btn btn-light d-flex align-items-center gap-1"
-                  onClick={() => setShowPostModal(true)}
-                >
-                  <BiImage size={20} className="text-success" />
-                  <span>Foto</span>
-                </button>
-                <button className="btn btn-light d-flex align-items-center gap-1">
-                  <BiPlusCircle size={20} className="text-primary" />
-                  <span>Mais</span>
-                </button>
-              </div>
             </div>
 
-            {/* Lista de Publicações */}
+            {/* Publicações */}
             {posts.map((post) => (
-              <div key={post.id} className="bg-white p-3 rounded shadow mb-4">
+              <div
+                key={post.id}
+                className="bg-white p-3 rounded shadow mb-4 position-relative"
+              >
                 <div className="d-flex align-items-center gap-3">
                   <Image
                     src={post.user.avatar}
@@ -177,13 +151,68 @@ export default function App() {
                     alt="Avatar"
                   />
                   <span className="fw-bold">{post.user.name}</span>
-                  <span
-                    className="text-muted ms-auto"
-                    style={{ fontSize: "0.9em" }}
-                  >
+                  <span className="text-muted ms-auto" style={{ fontSize: "0.9em" }}>
                     {post.timestamp}
                   </span>
+
+                  {/* 3 Pontos */}
+                  <div className="ms-2 position-relative">
+                    <Button
+                      variant="link"
+                      size="sm"
+                      onClick={() =>
+                        setReportingPostId(
+                          reportingPostId === post.id ? null : post.id
+                        )
+                      }
+                    >
+                      <BiDotsVerticalRounded size={20} />
+                    </Button>
+
+                    {reportingPostId === post.id && (
+                      <div
+                        className="position-absolute end-0 mt-2 bg-white border rounded shadow-sm p-2"
+                        style={{ zIndex: 1000 }}
+                      >
+                        <button
+                          className="btn btn-sm text-danger w-100"
+                          onClick={() => setReportText("")}
+                        >
+                          Denunciar post
+                        </button>
+
+                        {(
+                          reportingPostId === post.id &&
+                          (reportText !== "" || reportText === "")
+                        ) && (
+                          <div className="mt-2">
+                            <Form.Control
+                              as="textarea"
+                              rows={2}
+                              placeholder="Descreva o motivo"
+                              value={reportText}
+                              onChange={(e) => setReportText(e.target.value)}
+                            />
+                            <Button
+                              variant="danger"
+                              size="sm"
+                              className="mt-2 w-100"
+                              onClick={() => {
+                                alert(`Post ${post.id} denunciado: ${reportText}`);
+                                setReportingPostId(null);
+                                setReportText("");
+                              }}
+                              disabled={!reportText.trim()}
+                            >
+                              Enviar
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </div>
+
                 <div className="mt-3">{post.text}</div>
                 {post.image && (
                   <Image
@@ -198,41 +227,20 @@ export default function App() {
                     alt="Post content"
                   />
                 )}
-                {!post.image && post.id === 1 && (
-                  <Image
-                    src="/assets/post-aatan.jpg"
-                    width={500}
-                    height={300}
-                    className="rounded my-3"
-                    alt="Gato"
-                  />
-                )}
-                <div className="d-flex justify-content-between align-items-center">
-                  <div className="d-flex gap-2">
-                    <Button
-                      variant="light"
-                      className="rounded-pill"
-                      onClick={() => handleLike(post.id)}
-                    >
-                      <BiHeart /> {post.likes} Curtir
-                    </Button>
-                    <Button variant="light" className="rounded-pill">
-                      <BiMessageDetail /> Comentar
-                    </Button>
-                    <Button variant="light" className="rounded-pill">
-                      <BiShare /> Compartilhar
-                    </Button>
-                  </div>
-                  {post.id === 1 && (
-                    <Button
-                      variant="success"
-                      className="rounded-pill"
-                      as="a"
-                      href="https://www.aatansorocaba.com.br/adocao-cachorro-sorocaba"
-                    >
-                      Adotar
-                    </Button>
-                  )}
+                <div className="d-flex gap-2">
+                  <Button
+                    variant="light"
+                    className="rounded-pill"
+                    onClick={() => handleLike(post.id)}
+                  >
+                    <BiHeart /> {post.likes} Curtir
+                  </Button>
+                  <Button variant="light" className="rounded-pill">
+                    <BiMessageDetail /> Comentar
+                  </Button>
+                  <Button variant="light" className="rounded-pill">
+                    <BiShare /> Compartilhar
+                  </Button>
                 </div>
 
                 <Comments
@@ -243,8 +251,8 @@ export default function App() {
                       user: "Usuário Atual",
                       text: content,
                     };
-                    setPosts(posts =>
-                      posts.map(p =>
+                    setPosts((posts) =>
+                      posts.map((p) =>
                         p.id === post.id
                           ? { ...p, comments: [...p.comments, newComment] }
                           : p
@@ -256,7 +264,6 @@ export default function App() {
             ))}
           </Col>
 
-          {/* Coluna Direita - Seguindo */}
           <Col md={3} className="bg-white p-3 rounded shadow">
             <h4>Seguindo</h4>
             <div className="d-flex flex-column gap-3">
@@ -279,7 +286,6 @@ export default function App() {
                 <span>Roberto</span>
               </div>
             </div>
-
             <Button variant="light" className="w-100 mt-3">
               Encontrar pessoas
             </Button>
@@ -367,7 +373,6 @@ export default function App() {
                   style={{ display: "none" }}
                   onChange={handleImageUpload}
                 />
-
                 <button className="btn btn-light">
                   <BiPlusCircle size={24} className="text-primary" /> Mais
                 </button>
@@ -386,9 +391,7 @@ export default function App() {
         </div>
       )}
 
-      {/* Footer fixo no final da página */}
       <Footer />
     </div>
   );
 }
-
