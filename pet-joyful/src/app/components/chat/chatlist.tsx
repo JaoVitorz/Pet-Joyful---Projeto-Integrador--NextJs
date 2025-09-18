@@ -1,4 +1,5 @@
-import { User } from "@/types";
+import Image from "next/image";
+import { User } from "../../types";
 
 type Props = {
   users: User[];
@@ -21,10 +22,12 @@ export default function ChatList({ users, activeUserId, onSelectUser }: Props) {
                 : "hover:bg-green-100"
             }`}
           >
-            <img
+            <Image
               src={user.avatar}
               alt={user.name}
-              className="w-10 h-10 rounded-full border"
+              width={40}
+              height={40}
+              className="rounded-full border"
             />
             <span className="font-medium">{user.name}</span>
           </button>
