@@ -1,15 +1,10 @@
 "use client";
 
 import Footer from "../components/common/Footer";
-import { ReactNode, useState } from "react";
 import Header from "../components/common/Header";
+import { ReactNode, useState } from "react";
 import { Container, Row, Col, Button } from "react-bootstrap";
-import {
-  BiMessageDetail,
-  BiPlusCircle,
-  BiHeart,
-  BiShare,
-} from "react-icons/bi";
+import { BiMessageDetail, BiPlusCircle, BiHeart, BiShare } from "react-icons/bi";
 import Image from "next/image";
 
 import ProfileSidebar from "../components/profile/ProfileSidebar";
@@ -17,18 +12,19 @@ import CreatePost from "../components/posts/CreatePost";
 import ProfileHeader from "../components/profile/ProfileHeader";
 import Comments from "../components/posts/Comments";
 
-type Comment = {
-  id: string;
-  content: string;
-  createdAt: string;
-  author: {
-    id: string;
+// Tipo unificado para comentários
+export interface AppComment {
+  id: number;
+  text: string;
+  createdAt?: string;
+  user: {
+    id?: string;
     name: string;
     avatar?: string;
   };
-  // ...maybe more fields
-};
+}
 
+// Tipos de post e novo post
 interface Post {
   timestamp: ReactNode;
   id: number;
@@ -42,7 +38,7 @@ interface Post {
   likes: number;
   comments: number;
   isAdoption: boolean;
-  commentsList?: Comment[];
+  commentsList?: AppComment[];
 }
 
 interface NewPost {
@@ -74,13 +70,13 @@ export default function Perfil() {
     },
   ]);
 
-  const [albums] = useState<[]>([]); // ou defina o tipo correto do álbum se tiver
+  const [albums] = useState<[]>([]); // Se tiver tipo de álbum, substitua <>
 
   const handleCreatePost = (newPost: NewPost) => {
     const post: Post = {
       id: posts.length + 1,
       ...newPost,
-      image: newPost.image ?? "", // Ensure image is always a string
+      image: newPost.image ?? "",
       time: "Agora mesmo",
       likes: 0,
       comments: 0,
@@ -102,12 +98,10 @@ export default function Perfil() {
   };
 
   const handleComment = (postId: string | number) => {
-    // Lógica para comentários
     console.log(`Comentar no post ${postId}`);
   };
 
   const handleShare = (postId: string | number) => {
-    // Lógica para compartilhar
     console.log(`Compartilhar post ${postId}`);
   };
 
@@ -116,12 +110,10 @@ export default function Perfil() {
       <Header />
       <Container className="my-4">
         <Row>
-          {/* Sidebar à esquerda */}
           <Col md={4}>
             <ProfileSidebar />
           </Col>
 
-          {/* Conteúdo principal */}
           <Col md={8}>
             <ProfileHeader />
 
@@ -149,9 +141,7 @@ export default function Perfil() {
                 Sobre
               </Button>
               <Button
-                variant={
-                  activeTab === "contact" ? "success" : "outline-success"
-                }
+                variant={activeTab === "contact" ? "success" : "outline-success"}
                 onClick={() => setActiveTab("contact")}
                 size="sm"
               >
@@ -171,47 +161,28 @@ export default function Perfil() {
                 />
 
                 {posts.map((post) => (
-                  <div
-                    key={post.id}
-                    className="bg-white p-3 rounded shadow mb-4"
-                  >
+                  <div key={post.id} className="bg-white p-3 rounded shadow mb-4">
                     <div className="d-flex align-items-center gap-3">
                       <Image
                         src={post.user.avatar}
                         width={40}
                         height={40}
                         className="rounded-circle"
-                        alt="Avatar"
+                        alt={post.user.name}
                       />
                       <span className="fw-bold">{post.user.name}</span>
-                      <span
-                        className="text-muted ms-auto"
-                        style={{ fontSize: "0.9em" }}
-                      >
+                      <span className="text-muted ms-auto" style={{ fontSize: "0.9em" }}>
                         {post.timestamp}
                       </span>
                     </div>
                     <div className="mt-3">{post.text}</div>
                     {post.image && (
                       <Image
-                        src={
-                          typeof post.image === "string"
-                            ? post.image
-                            : URL.createObjectURL(post.image)
-                        }
+                        src={post.image}
                         width={500}
                         height={300}
                         className="rounded my-3"
                         alt="Post content"
-                      />
-                    )}
-                    {!post.image && post.id === 1 && (
-                      <Image
-                        src="/assets/post-aatan.jpg"
-                        width={500}
-                        height={300}
-                        className="rounded my-3"
-                        alt="Gato"
                       />
                     )}
                     <div className="d-flex justify-content-between align-items-center">
@@ -239,25 +210,26 @@ export default function Perfil() {
                         </Button>
                       </div>
                     </div>
+
                     {/* Comments */}
                     <Comments
-                      comments={post.commentsList || []}
+                      comments={
+                        (post.commentsList || []).map((c) => ({
+                          ...c,
+                          user: c.user.name, // convert user object to string (name)
+                        }))
+                      }
                       onAddComment={(content: string) => {
-                        const newComment = {
-                          id: Date.now().toString(), // Convert number to string
-                          user: "Usuário Atual",
+                        const newComment: AppComment = {
+                          id: Date.now(),
+                          user: { name: "Usuário Atual" },
                           text: content,
+                          createdAt: new Date().toISOString(),
                         };
                         setPosts((posts) =>
                           posts.map((p) =>
                             p.id === post.id
-                              ? {
-                                  ...p,
-                                  commentsList: [
-                                    ...(p.commentsList || []),
-                                    newComment,
-                                  ],
-                                }
+                              ? { ...p, commentsList: [...(p.commentsList || []), newComment] }
                               : p
                           )
                         );
@@ -267,6 +239,7 @@ export default function Perfil() {
                 ))}
               </>
             )}
+
             {activeTab === "albums" && (
               <div className="bg-white p-3 rounded shadow">
                 <div className="d-flex justify-content-between align-items-center mb-4">
@@ -278,14 +251,15 @@ export default function Perfil() {
                 </div>
 
                 <div className="row">
-                  {albums.map((album) => (
-                    <div key={album.id} className="col-md-6 mb-4">
-                      {/* Album content here */}
+                  {albums.map((album: any, idx: number) => (
+                    <div key={idx} className="col-md-6 mb-4">
+                      {/* Conteúdo do álbum */}
                     </div>
                   ))}
                 </div>
               </div>
             )}
+
             {activeTab === "about" && (
               <div className="bg-white p-3 rounded shadow">
                 <h4>Sobre</h4>
@@ -295,6 +269,7 @@ export default function Perfil() {
                 </p>
               </div>
             )}
+
             {activeTab === "contact" && (
               <div className="bg-white p-3 rounded shadow">
                 <h4>Contato</h4>
