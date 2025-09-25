@@ -12,16 +12,12 @@ import Comments from "../components/posts/Comments";
 import { useState, ReactNode } from "react";
 
 // --- Tipos ---
-interface Comment {
-  id: string;
-  content: string;
-  createdAt: string;
-  author: {
-    id: string;
-    name: string;
-    avatar?: string;
-  };
-}
+// Compatível com Comments.tsx
+type Comment = {
+  id: number;
+  user: string;
+  text: string;
+};
 
 interface Post {
   id: number;
@@ -76,7 +72,7 @@ export default function Perfil() {
     },
   ]);
 
-  const [albums, setAlbums] = useState<Album[]>([]);
+  const [albums] = useState<Album[]>([]);
 
   // --- Handlers ---
   const handleCreatePost = (newPost: NewPost) => {
@@ -193,15 +189,11 @@ export default function Perfil() {
 
                     <Comments
                       comments={post.commentsList || []}
-                      onAddComment={(content: string) => {
+                      onAddComment={(text: string) => {
                         const newComment: Comment = {
-                          id: Date.now().toString(),
-                          content,
-                          createdAt: new Date().toISOString(),
-                          author: {
-                            id: "current",
-                            name: "Usuário Atual",
-                          },
+                          id: Date.now(),
+                          user: "Usuário Atual",
+                          text,
                         };
                         setPosts((posts) =>
                           posts.map((p) =>
