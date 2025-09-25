@@ -36,16 +36,17 @@ export default function Registro() {
         ...(tipoUsuario === "veterinario" && { crmv: values.crmv }),
       };
 
-      const response = await axios.post("/api/registro", payload);
+      await axios.post("/api/registro", payload);
 
       alert("Cadastro realizado com sucesso!");
       setTimeout(() => {
         window.location.href = "/Home";
       }, 2000);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Erro no cadastro:", error);
       setServerError(
-        error.response?.data?.message || "Erro ao cadastrar. Tente novamente."
+        // @ts-expect-error: pode ser axios error
+        error?.response?.data?.message || "Erro ao cadastrar. Tente novamente."
       );
     }
   };
