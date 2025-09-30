@@ -49,17 +49,6 @@ export default function UserPostsManager({
     setEditText("");
   };
 
-  const handleLike = (id: number) => {
-    console.log("Curtir post:", id);
-  };
-
-  const handleComment = (id: number) => {
-    console.log("Comentar post:", id);
-  };
-
-  const handleShare = (id: number) => {
-    console.log("Compartilhar post:", id);
-  };
 
   return (
     <div>
