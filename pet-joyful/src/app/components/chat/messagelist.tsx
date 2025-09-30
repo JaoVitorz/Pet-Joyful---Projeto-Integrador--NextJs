@@ -1,4 +1,4 @@
-import { Message } from '../../types/index';
+import { Message } from '../../types';
 
 type Props = {
   messages: Message[];
