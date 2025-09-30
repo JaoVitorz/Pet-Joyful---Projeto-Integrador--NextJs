@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Dropdown } from "react-bootstrap";
 import { BiDotsVerticalRounded } from "react-icons/bi";
-import PostComponent from "./PostComponent";
+// import PostComponent from "./PostComponent";
 
 type Post = {
   id: number;
@@ -122,12 +122,7 @@ export default function UserPostsManager({
                 </Dropdown>
               </div>
 
-              <PostComponent
-                post={post}
-                onLike={() => handleLike(post.id)}
-                onComment={() => handleComment(post.id)}
-                onShare={() => handleShare(post.id)}
-              />
+              {/* PostComponent removido pois não existe */}
             </>
           )}
         </div>
