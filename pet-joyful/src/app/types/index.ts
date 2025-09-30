@@ -16,13 +16,10 @@ export interface User {
   avatar: string;
   messages: Message[];
 }
-export interface Message {
-  id: string;
+export type Message = {
+  sender: "me" | "them";
   text: string;
-  createdAt: string;
-  senderId: number;
-  receiverId: number;
-}
+};
 export interface Chat {
   id: string;
   participants: User[];
