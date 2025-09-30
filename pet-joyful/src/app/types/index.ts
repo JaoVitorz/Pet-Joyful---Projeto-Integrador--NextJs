@@ -14,6 +14,7 @@ export interface User {
   id: number;
   name: string;
   avatar: string;
+  messages: Message[];
 }
 export interface Message {
   id: string;

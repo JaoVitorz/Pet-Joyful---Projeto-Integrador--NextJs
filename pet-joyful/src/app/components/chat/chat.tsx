@@ -4,7 +4,12 @@ import ChatList from "./chatlist";
 import ChatHeader from "./chatheader";
 import MessageList from "./messagelist";
 import MessageInput from "./messageinput";
-import { User } from "@/types";
+import { User } from "../../types/index";
+
+export type Message = {
+  sender: "me" | "them";
+  text: string;
+};
 
 const mockUsers: User[] = [
   {
