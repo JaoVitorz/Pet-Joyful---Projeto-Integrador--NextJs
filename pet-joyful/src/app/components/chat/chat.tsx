@@ -17,9 +17,9 @@ const mockUsers: User[] = [
     name: "Elisabeth",
     avatar: "https://i.pravatar.cc/150?img=1",
     messages: [
-      { sender: "them" as "them", text: "Bom dia, tudo bem?" },
+  { sender: "them" as const, text: "Bom dia, tudo bem?" },
       {
-        sender: "me" as "me",
+  sender: "me" as const,
         text: "Bom dia, tudo ótimo e com você? Como podemos ajudar?",
       },
     ],
@@ -29,8 +29,8 @@ const mockUsers: User[] = [
     name: "Roberto",
     avatar: "https://i.pravatar.cc/150?img=2",
     messages: [
-      { sender: "them" as "them", text: "Olá, gostaria de saber mais sobre adoção." },
-      { sender: "me" as "me", text: "Claro! Como posso ajudar?" },
+  { sender: "them" as const, text: "Olá, gostaria de saber mais sobre adoção." },
+  { sender: "me" as const, text: "Claro! Como posso ajudar?" },
     ],
   },
 ];
@@ -49,7 +49,7 @@ export default function Chat() {
       user.id === activeUserId
         ? {
             ...user,
-            messages: [...user.messages, { sender: "me" as "me", text: newMessage }],
+            messages: [...user.messages, { sender: "me" as const, text: newMessage }],
           }
         : user
     );
