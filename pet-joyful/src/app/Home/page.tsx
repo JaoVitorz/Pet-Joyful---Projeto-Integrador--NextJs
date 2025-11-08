@@ -17,8 +17,10 @@ import {
   BiDotsVerticalRounded,
 } from "react-icons/bi";
 import Comments from "../components/posts/Comments";
+import { useRouter } from "next/navigation";
 
 export default function App() {
+  const router = useRouter();
   const [postText, setPostText] = useState("");
   const [reportingPostId, setReportingPostId] = useState<number | null>(null);
   const [reportText, setReportText] = useState("");
@@ -111,7 +113,9 @@ export default function App() {
             <h3>Eventos</h3>
             <p className="small">27/10 - Mutirão no Shopping Iguatemi</p>
             <p className="small">30/10 - Evento Beneficente</p>
-            
+            <button onClick={() => router.push('/eventos/criar')} className="btn btn-primary">
+              Criar Evento
+            </button>
           </Col>
 
           <Col md={6}>

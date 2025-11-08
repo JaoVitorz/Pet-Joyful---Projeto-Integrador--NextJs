@@ -1,11 +1,14 @@
 import axios from "axios";
 
+const baseURL = 'http://localhost:3002';
+
 const api = axios.create({
-  baseURL: "http://localhost:3001/api",
+  baseURL,
   timeout: 10000, // Tempo limite para requisições
   headers: {
     "Content-Type": "application/json",
   },
+  withCredentials: true, // Habilita envio de cookies cross-origin se necessário
 });
 
 // Interceptores (opcional)
