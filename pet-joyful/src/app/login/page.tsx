@@ -26,13 +26,27 @@ export default function Login() {
       });
 
       if (response.data.success) {
+        // Salva o token no localStorage
+        if (response.data.token) {
+          localStorage.setItem('token', response.data.token);
+          console.log('✅ Token salvo no localStorage');
+        }
+        
+        // Salva dados do usuário (opcional)
+        if (response.data.user) {
+          localStorage.setItem('user', JSON.stringify(response.data.user));
+        }
+        
         router.push('/Home');
       } else {
         setError(response.data.message || 'Credenciais inválidas');
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Erro no login:', err);
-      setError('Erro ao fazer login. Tente novamente.');
+      const errorMessage = err.response?.data?.message 
+        || err.message 
+        || 'Erro ao fazer login. Tente novamente.';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

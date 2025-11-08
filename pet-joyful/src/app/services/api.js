@@ -1,18 +1,18 @@
-import axios from 'axios';
+import axios from "axios";
 
-// API de Eventos
+// API de Eventos - Backend PET-JOYFUL-EVENTS-SERVICE
 const eventsAPI = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002/api',
+  baseURL: process.env.NEXT_PUBLIC_EVENTS_API_URL || "http://localhost:3002",
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 
 // Interceptor para adicionar token JWT
 eventsAPI.interceptors.request.use(
   (config) => {
-    if (typeof window !== 'undefined') {
-      const token = localStorage.getItem('token');
+    if (typeof window !== "undefined") {
+      const token = localStorage.getItem("token");
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
@@ -30,9 +30,9 @@ eventsAPI.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       // Token inválido ou expirado
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem('token');
-        window.location.href = '/login';
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("token");
+        window.location.href = "/login";
       }
     }
     return Promise.reject(error);

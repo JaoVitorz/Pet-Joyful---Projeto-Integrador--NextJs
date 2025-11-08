@@ -36,7 +36,18 @@ export default function Registro() {
         ...(tipoUsuario === "veterinario" && { crmv: values.crmv }),
       };
 
-      await axios.post("/api/registro", payload);
+      const response = await axios.post("/api/registro", payload);
+
+      // Salva o token no localStorage se retornado
+      if (response.data.success && response.data.token) {
+        localStorage.setItem('token', response.data.token);
+        console.log('✅ Token salvo no localStorage após registro');
+        
+        // Salva dados do usuário (opcional)
+        if (response.data.user) {
+          localStorage.setItem('user', JSON.stringify(response.data.user));
+        }
+      }
 
       alert("Cadastro realizado com sucesso!");
       setTimeout(() => {

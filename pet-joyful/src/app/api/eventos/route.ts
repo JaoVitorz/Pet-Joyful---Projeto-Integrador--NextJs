@@ -1,13 +1,25 @@
 import { NextResponse } from 'next/server';
 
-const EVENTOS_API_URL = process.env.EVENTOS_API_URL || 'http://localhost:3002'; // URL do microserviço
+// URL do backend PET-JOYFUL-EVENTS-SERVICE
+const EVENTOS_API_URL = process.env.EVENTOS_API_URL || process.env.NEXT_PUBLIC_EVENTS_API_URL || 'http://localhost:3002';
 
 export async function GET() {
   try {
-    const response = await fetch(`${EVENTOS_API_URL}/api/eventos`, {
+    const response = await fetch(`${EVENTOS_API_URL}/api/events`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Erro ao buscar eventos. Status: ${response.status}`);
+    }
+    
     const data = await response.json();
     return NextResponse.json(data);
   } catch (error) {
+    console.error('[API Route] Erro ao buscar eventos:', error);
     return NextResponse.json({ error: 'Erro ao buscar eventos' }, { status: 500 });
   }
 }
@@ -17,7 +29,7 @@ export async function POST(request) {
     const body = await request.json();
     console.log('[API Route] Dados recebidos:', body);
     
-    const url = `${EVENTOS_API_URL}/eventos`;
+    const url = `${EVENTOS_API_URL}/api/events`;
     console.log('[API Route] Fazendo requisição para:', url);
     
     const response = await fetch(url, {

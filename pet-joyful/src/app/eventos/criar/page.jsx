@@ -66,9 +66,31 @@ export default function CriarEventoPage() {
       router.push('/eventos');
     } catch (err) {
       console.error('Erro detalhado:', err);
-      const errorMessage = err.response?.data?.message 
-        || err.message 
-        || 'Erro ao criar evento. Verifique o console para mais detalhes.';
+      
+      // Mensagem de erro mais detalhada
+      let errorMessage = 'Erro ao criar evento. ';
+      
+      if (err.response) {
+        // Erro com resposta do servidor
+        if (err.response.status === 404) {
+          errorMessage += 'Rota não encontrada. Verifique se o backend está rodando e se o endpoint está correto.';
+        } else if (err.response.status === 401) {
+          errorMessage += 'Não autorizado. Faça login novamente.';
+        } else if (err.response.status === 400) {
+          errorMessage += err.response.data?.message || 'Dados inválidos. Verifique os campos do formulário.';
+        } else if (err.response.data?.message) {
+          errorMessage += err.response.data.message;
+        } else {
+          errorMessage += `Erro do servidor (${err.response.status}). Verifique o console para mais detalhes.`;
+        }
+      } else if (err.code === 'ECONNREFUSED' || err.code === 'ERR_NETWORK') {
+        errorMessage += 'Não foi possível conectar ao backend. Verifique se o servidor está rodando.';
+      } else if (err.message) {
+        errorMessage += err.message;
+      } else {
+        errorMessage += 'Erro desconhecido. Verifique o console para mais detalhes.';
+      }
+      
       setError(errorMessage);
     } finally {
       setLoading(false);
