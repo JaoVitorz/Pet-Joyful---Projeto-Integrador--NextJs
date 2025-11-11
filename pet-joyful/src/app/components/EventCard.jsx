@@ -108,8 +108,8 @@ const EventCard = ({ event }) => {
           )}
 
           {/* Botão */}
-          <Link href={`/eventos/${event._id}`}>
-            <a className="btn btn-primary w-100">Ver Detalhes</a>
+          <Link href={`/eventos/${event._id}`} className="btn btn-primary w-100">
+            Ver Detalhes
           </Link>
         </div>
       </div>
