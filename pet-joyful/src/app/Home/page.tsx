@@ -6,6 +6,7 @@ import Header from "../components/common/Header";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useState, useRef } from "react";
 import Image from "next/image";
+import { createPost } from '@/app/services/postService';
 import { Container, Row, Col, Button, Form } from "react-bootstrap";
 import {
   BiMessageDetail,
@@ -63,24 +64,46 @@ export default function App() {
 
   const handlePostSubmit = () => {
     if (!postText.trim() && !selectedImage) return;
+    // build FormData to send to posts microservice
+    const formData = new FormData();
+    formData.append('titulo', postText || '');
+    formData.append('descricao', postText || '');
+    formData.append('categoria', 'outros');
+    formData.append('tags', '');
+    if (selectedImage && selectedImage instanceof File) {
+      formData.append('imagem', selectedImage);
+    }
 
-    const newPost = {
-      id: Date.now(),
-      text: postText,
-      image: selectedImage,
-      likes: 0,
-      comments: [],
-      user: {
-        name: "Você",
-        avatar: "/assets/imgPerfilM.png",
-      },
-      timestamp: new Date().toLocaleString(),
-    };
+    // call posts microservice via postService
+    (async () => {
+      try {
+        const resp = await createPost(formData);
 
-    setPosts([newPost, ...posts]);
-    setPostText("");
-    setSelectedImage(null);
-    setShowPostModal(false);
+        // try to extract created post from response
+        const created = resp?.data || resp?.post || resp;
+
+        const newPost = {
+          id: created?._id || created?.id || Date.now(),
+          text: created?.titulo || created?.descricao || postText,
+          image: created?.imagem?.url || (selectedImage ? URL.createObjectURL(selectedImage) : null),
+          likes: Array.isArray(created?.likes) ? created.likes.length : (created?.likes || 0),
+          comments: (created?.comentarios || []).map((c: any) => ({ id: c._id || Date.now(), user: c.nome || 'Usuário', text: c.texto || c.text })),
+          user: {
+            name: created?.autor?.nome || 'Você',
+            avatar: '/assets/imgPerfilM.png'
+          },
+          timestamp: created?.createdAt ? new Date(created.createdAt).toLocaleString() : new Date().toLocaleString(),
+        };
+
+        setPosts([newPost, ...posts]);
+        setPostText('');
+        setSelectedImage(null);
+        setShowPostModal(false);
+      } catch (err: any) {
+        console.error('Erro ao criar postagem via Posts service:', err);
+        alert('Erro ao publicar. Verifique o console.');
+      }
+    })();
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
