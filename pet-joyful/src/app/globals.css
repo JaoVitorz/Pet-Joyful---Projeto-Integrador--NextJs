@@ -24,3 +24,269 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Acessibilidade - Estilos de Foco */
+*:focus-visible {
+  outline: 2px solid #198754;
+  outline-offset: 2px;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid #198754;
+  outline-offset: 2px;
+}
+
+/* Skip Link para acessibilidade */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: #198754;
+  color: white;
+  padding: 8px 16px;
+  text-decoration: none;
+  z-index: 10000;
+  border-radius: 0 0 4px 0;
+}
+
+.skip-link:focus {
+  top: 0;
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
+
+/* Classe para ocultar visualmente mas manter acessível para leitores de tela */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Melhorias de contraste e legibilidade */
+a {
+  color: #198754;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: #157347;
+  text-decoration: underline;
+}
+
+a:focus-visible {
+  color: #157347;
+  text-decoration: underline;
+}
+
+/* Melhorias para leitores de tela */
+[aria-hidden="true"] {
+  display: inline-block;
+}
+
+/* Indicadores de estado para elementos interativos */
+button:disabled,
+input:disabled,
+textarea:disabled,
+select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Melhorias de contraste para textos */
+.text-muted {
+  color: #6c757d !important;
+}
+
+/* Responsividade Global */
+* {
+  -webkit-tap-highlight-color: transparent; /* Remove highlight azul no mobile */
+}
+
+html {
+  -webkit-text-size-adjust: 100%; /* Previne zoom automático no iOS */
+  -moz-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+}
+
+img,
+video,
+iframe {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Responsividade para containers */
+.container,
+.container-fluid {
+  width: 100%;
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+/* Responsividade para Header */
+header {
+  flex-wrap: wrap;
+}
+
+header .form-control {
+  min-width: 150px;
+}
+
+/* Responsividade para navegação */
+nav {
+  flex-wrap: wrap;
+  gap: 0.5rem !important;
+}
+
+/* Ajustes para telas pequenas */
+@media (max-width: 768px) {
+  header {
+    padding: 0.5rem 1rem !important;
+  }
+
+  header .d-flex {
+    gap: 0.5rem !important;
+  }
+
+  header img {
+    max-width: 150px;
+    height: auto;
+  }
+
+  header .form-control {
+    font-size: 14px;
+    padding: 0.5rem;
+  }
+
+  header nav .d-flex {
+    gap: 0.25rem !important;
+  }
+
+  header nav button {
+    padding: 0.5rem !important;
+  }
+
+  header nav a {
+    padding: 0.5rem !important;
+    font-size: 0.875rem;
+  }
+
+  header nav .fs-6 {
+    font-size: 0.75rem !important;
+  }
+
+  /* Menu dropdown responsivo */
+  .position-absolute {
+    position: fixed !important;
+    left: 50% !important;
+    transform: translateX(-50%);
+    max-width: 90vw;
+    width: auto !important;
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+}
+
+@media (max-width: 576px) {
+  header {
+    flex-direction: column;
+    align-items: flex-start !important;
+  }
+
+  header .form-control {
+    width: 100% !important;
+    margin: 0.5rem 0;
+  }
+
+  header nav {
+    width: 100%;
+    justify-content: space-around;
+    margin-top: 0.5rem;
+  }
+
+  header nav a span.fs-6 {
+    display: none; /* Oculta texto dos ícones em telas muito pequenas */
+  }
+
+  header img {
+    max-width: 120px;
+  }
+}
+
+/* Responsividade para tabelas */
+@media (max-width: 768px) {
+  table {
+    font-size: 0.875rem;
+  }
+
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Melhorias para formulários em mobile */
+@media (max-width: 576px) {
+  .form-control,
+  .form-select,
+  textarea {
+    font-size: 16px !important; /* Previne zoom automático no iOS */
+  }
+}
+
+/* Utilitários responsivos */
+@media (max-width: 768px) {
+  .d-none-mobile {
+    display: none !important;
+  }
+
+  .d-block-mobile {
+    display: block !important;
+  }
+
+  .text-center-mobile {
+    text-align: center !important;
+  }
+
+  .w-100-mobile {
+    width: 100% !important;
+  }
+
+  .p-2-mobile {
+    padding: 0.5rem !important;
+  }
+
+  .mb-2-mobile {
+    margin-bottom: 0.5rem !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .d-none-desktop {
+    display: none !important;
+  }
+}
+
+/* Animações reduzidas para usuários que preferem */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

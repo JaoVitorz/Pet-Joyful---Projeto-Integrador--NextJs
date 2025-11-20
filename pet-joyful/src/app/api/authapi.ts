@@ -37,4 +37,7 @@ export const authApi = {
 
   getProfile: () => 
     api.get('/me'), // Endpoint: /api/auth/me com Bearer Token
+
+  updateProfile: (data: { nome?: string; email?: string; bio?: string; avatar?: string }) =>
+    api.put('/me', data), // Endpoint: /api/auth/me com Bearer Token
 };

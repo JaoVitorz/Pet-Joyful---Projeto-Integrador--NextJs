@@ -2,7 +2,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
 }
 
 body {
@@ -198,32 +198,234 @@ footer a {
   margin-bottom: 15px;
 }
 
+/* Responsividade - Tablet e Desktop */
 @media (min-width: 992px) {
   .container {
-    flex-direction: row;
+    flex-direction: row !important;
     align-items: center;
+    gap: 40px;
+    max-width: 1200px;
   }
 
   .left-section {
     margin-bottom: 0;
-    margin-right: 20px;
-  }
-}
-
-@media (max-width: 768px) {
-  .left-section {
-    padding: 30px 20px;
-  }
-
-  .left-section h1 {
-    font-size: 2rem;
+    margin-right: 0;
+    flex: 1;
   }
 
   .login-section {
-    padding: 25px 20px;
+    flex: 0 0 396px;
+  }
+}
+
+/* Responsividade - Tablet */
+@media (min-width: 768px) and (max-width: 991px) {
+  .container {
+    flex-direction: column;
+    gap: 30px;
+    padding: 30px 20px;
+  }
+
+  .left-section {
+    max-width: 100%;
+    margin-bottom: 0;
+  }
+
+  .left-section h1 {
+    font-size: 2.2rem;
+  }
+
+  .left-section p {
+    font-size: 1.1rem;
+  }
+
+  .login-section {
+    max-width: 450px;
+    padding: 28px 24px;
+  }
+}
+
+/* Responsividade - Mobile */
+@media (max-width: 767px) {
+  body {
+    padding: 0;
+  }
+
+  .container {
+    width: 100%;
+    padding: 16px;
+    min-height: 100vh;
+    justify-content: flex-start;
+    padding-top: 20px;
+  }
+
+  .left-section {
+    padding: 24px 16px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+  }
+
+  .left-section h1 {
+    font-size: 1.75rem;
+    margin-bottom: 8px;
+  }
+
+  .left-section p {
+    font-size: 1rem;
+  }
+
+  .pet-images {
+    margin-top: 20px;
+  }
+
+  .pet-images img {
+    border-radius: 8px;
+  }
+
+  .login-section {
+    padding: 24px 20px;
+    border-radius: 8px;
+    max-width: 100%;
+  }
+
+  .login-section h1 {
+    font-size: 1.5rem;
+    margin-bottom: 8px;
   }
 
   .login-section h2 {
+    font-size: 1.25rem;
+    margin-bottom: 20px;
+  }
+
+  .form-control {
+    padding: 10px 12px;
+    font-size: 16px; /* Evita zoom no iOS */
+  }
+
+  .btn-login,
+  .btn-google,
+  .btn-apple {
+    padding: 10px;
+    font-size: 16px;
+  }
+
+  .divider {
+    margin: 16px 0;
+    font-size: 13px;
+  }
+
+  .forgot-password {
+    font-size: 0.875rem;
+    margin-top: 12px;
+  }
+
+  .signup {
+    margin-top: 16px;
+    font-size: 0.9rem;
+  }
+
+  footer {
+    padding: 16px;
+    margin-top: 20px;
+    gap: 12px;
+  }
+
+  footer a {
+    font-size: 0.8rem;
+  }
+}
+
+/* Responsividade - Mobile Pequeno */
+@media (max-width: 480px) {
+  .container {
+    padding: 12px;
+    padding-top: 16px;
+  }
+
+  .left-section {
+    padding: 20px 12px;
+  }
+
+  .left-section h1 {
     font-size: 1.5rem;
+  }
+
+  .left-section p {
+    font-size: 0.9rem;
+  }
+
+  .login-section {
+    padding: 20px 16px;
+  }
+
+  .login-section h1 {
+    font-size: 1.35rem;
+  }
+
+  .login-section h2 {
+    font-size: 1.1rem;
+    margin-bottom: 16px;
+  }
+
+  .form-group {
+    margin-bottom: 0.875rem;
+  }
+
+  .form-control {
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 6px;
+  }
+
+  .btn-login,
+  .btn-google,
+  .btn-apple {
+    padding: 10px;
+    font-size: 15px;
+    margin: 8px 0;
+  }
+
+  .alert-danger {
+    padding: 8px 12px;
+    font-size: 0.875rem;
+    margin-bottom: 12px;
+  }
+
+  .error-message {
+    font-size: 0.8rem;
+  }
+}
+
+/* Responsividade - Landscape Mobile */
+@media (max-width: 767px) and (orientation: landscape) {
+  .container {
+    min-height: auto;
+    padding: 20px 16px;
+  }
+
+  .left-section {
+    margin-bottom: 16px;
+  }
+
+  .left-section h1 {
+    font-size: 1.5rem;
+  }
+
+  .pet-images {
+    margin-top: 12px;
+  }
+}
+
+/* Melhorias de toque para mobile */
+@media (hover: none) and (pointer: coarse) {
+  .btn-login,
+  .btn-google,
+  .btn-apple {
+    min-height: 44px; /* Tamanho mínimo recomendado para toque */
+  }
+
+  .form-control {
+    min-height: 44px;
   }
 }

@@ -1,110 +1,954 @@
+/* Background 3D animado profissional e visível para rede social de pets */
+/* Usando !important para garantir que sobrescreva o globals.css */
 body {
-  background-color: #34c35c;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  color: #333;
+  background: linear-gradient(
+    135deg,
+    #eaf5e5 0%,
+    #d4edda 25%,
+    #c3e6cb 50%,
+    #d4edda 75%,
+    #eaf5e5 100%
+  ) !important;
+  background-size: 400% 400% !important;
+  background-attachment: fixed !important;
+  animation: gradientShift 15s ease infinite !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 100vh !important;
+  color: #333 !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", sans-serif !important;
+  padding: 20px !important;
+  position: relative !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  perspective: 1200px !important;
+}
+
+/* Animação visível do gradiente verde */
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Camada 1: Formas grandes e visíveis que remetem a pets */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  background-image: 
+    /* Formas grandes de patinhas/pets - muito mais visíveis */ radial-gradient(
+      circle 200px at 10% 20%,
+      rgba(52, 195, 92, 0.25) 0%,
+      rgba(52, 195, 92, 0.1) 40%,
+      transparent 60%
+    ),
+    radial-gradient(
+      circle 250px at 90% 70%,
+      rgba(76, 175, 80, 0.22) 0%,
+      rgba(76, 175, 80, 0.08) 45%,
+      transparent 65%
+    ),
+    radial-gradient(
+      circle 180px at 50% 10%,
+      rgba(52, 195, 92, 0.2) 0%,
+      rgba(52, 195, 92, 0.06) 50%,
+      transparent 70%
+    ),
+    radial-gradient(
+      circle 220px at 20% 80%,
+      rgba(40, 167, 69, 0.23) 0%,
+      rgba(40, 167, 69, 0.09) 42%,
+      transparent 62%
+    ),
+    radial-gradient(
+      circle 190px at 80% 30%,
+      rgba(76, 175, 80, 0.21) 0%,
+      rgba(76, 175, 80, 0.07) 48%,
+      transparent 68%
+    ),
+    /* Efeitos de luz grandes e visíveis */
+      radial-gradient(
+        ellipse 400px 300px at 30% 40%,
+        rgba(52, 195, 92, 0.18) 0%,
+        transparent 50%
+      ),
+    radial-gradient(
+      ellipse 350px 250px at 70% 80%,
+      rgba(76, 175, 80, 0.15) 0%,
+      transparent 45%
+    );
+  animation: backgroundPulse 6s ease-in-out infinite;
+  transform-style: preserve-3d;
+  will-change: transform, opacity;
+}
+
+/* Animação visível de pulsação */
+@keyframes backgroundPulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg) translateZ(0);
+  }
+  25% {
+    opacity: 0.85;
+    transform: scale(1.08) rotate(1deg) translateZ(20px);
+  }
+  50% {
+    opacity: 0.75;
+    transform: scale(1.12) rotate(0deg) translateZ(30px);
+  }
+  75% {
+    opacity: 0.85;
+    transform: scale(1.08) rotate(-1deg) translateZ(20px);
+  }
+}
+
+/* Camada 2: Elementos flutuantes grandes e visíveis */
+body::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  background-image: 
+    /* Formas grandes que remetem a brinquedos de pet */ radial-gradient(
+      circle 150px at 15% 75%,
+      rgba(52, 195, 92, 0.2) 0%,
+      transparent 35%
+    ),
+    radial-gradient(
+      circle 180px at 85% 35%,
+      rgba(76, 175, 80, 0.18) 0%,
+      transparent 40%
+    ),
+    radial-gradient(
+      circle 160px at 45% 60%,
+      rgba(40, 167, 69, 0.19) 0%,
+      transparent 38%
+    ),
+    radial-gradient(
+      circle 170px at 65% 12%,
+      rgba(52, 195, 92, 0.17) 0%,
+      transparent 42%
+    ),
+    radial-gradient(
+      circle 140px at 5% 50%,
+      rgba(76, 175, 80, 0.18) 0%,
+      transparent 36%
+    ),
+    radial-gradient(
+      circle 165px at 95% 65%,
+      rgba(52, 195, 92, 0.19) 0%,
+      transparent 40%
+    ),
+    /* Mais elementos para criar profundidade */
+      radial-gradient(
+        circle 120px at 25% 45%,
+        rgba(40, 167, 69, 0.16) 0%,
+        transparent 32%
+      ),
+    radial-gradient(
+      circle 130px at 75% 55%,
+      rgba(76, 175, 80, 0.17) 0%,
+      transparent 34%
+    );
+  animation: floatElements 10s ease-in-out infinite;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+/* Animação visível de elementos flutuantes */
+@keyframes floatElements {
+  0%,
+  100% {
+    transform: translateY(0) translateX(0) rotate(0deg) scale(1) translateZ(0);
+  }
+  25% {
+    transform: translateY(-40px) translateX(20px) rotate(8deg) scale(1.1)
+      translateZ(15px);
+  }
+  50% {
+    transform: translateY(-25px) translateX(-30px) rotate(-6deg) scale(0.95)
+      translateZ(-10px);
+  }
+  75% {
+    transform: translateY(-50px) translateX(10px) rotate(4deg) scale(1.05)
+      translateZ(10px);
+  }
+}
+
+/* Camada 3: Padrão rotativo visível de patinhas */
+.container::before {
+  content: "";
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  pointer-events: none;
+  z-index: 0;
+  background: 
+    /* Padrão de patinhas mais visível e definido */ repeating-radial-gradient(
+    circle at 0 0,
+    rgba(52, 195, 92, 0.08) 0px,
+    rgba(52, 195, 92, 0.04) 30px,
+    transparent 60px,
+    rgba(76, 175, 80, 0.06) 90px,
+    rgba(76, 175, 80, 0.03) 120px,
+    transparent 150px,
+    rgba(40, 167, 69, 0.07) 180px,
+    rgba(40, 167, 69, 0.035) 210px,
+    transparent 240px
+  );
+  animation: rotateBackground 25s linear infinite;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+/* Animação visível de rotação */
+@keyframes rotateBackground {
+  0% {
+    transform: rotate(0deg) translateZ(0) scale(1);
+  }
+  100% {
+    transform: rotate(360deg) translateZ(0) scale(1);
+  }
+}
+
+/* Camada 4: Elemento central pulsante grande e visível */
+.container::after {
+  content: "";
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 800px;
+  height: 800px;
+  margin: -400px 0 0 -400px;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(
+      circle,
+      rgba(52, 195, 92, 0.25) 0%,
+      rgba(52, 195, 92, 0.12) 25%,
+      rgba(52, 195, 92, 0.06) 45%,
+      transparent 70%
+    ),
+    radial-gradient(
+      circle at 30% 30%,
+      rgba(76, 175, 80, 0.2) 0%,
+      rgba(76, 175, 80, 0.08) 40%,
+      transparent 60%
+    ),
+    radial-gradient(
+      circle at 70% 70%,
+      rgba(40, 167, 69, 0.18) 0%,
+      rgba(40, 167, 69, 0.07) 38%,
+      transparent 58%
+    );
+  border-radius: 50%;
+  animation: pulse3D 5s ease-in-out infinite;
+  transform-style: preserve-3d;
+  filter: blur(40px);
+  will-change: transform, opacity;
+}
+
+/* Animação visível de pulsação 3D central */
+@keyframes pulse3D {
+  0%,
+  100% {
+    transform: scale(1) translateZ(0) rotate(0deg);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.4) translateZ(60px) rotate(180deg);
+    opacity: 0.9;
+  }
 }
 
 .container {
-  max-width: 30%;
+  max-width: 450px;
+  width: 100%;
   padding: 20px;
+  position: relative;
+  z-index: 10;
+  transform-style: preserve-3d;
 }
 
+/* Card do formulário com design moderno tipo Instagram/Facebook */
 .form-wrapper {
-  background-color: #f8f9fa;
-  border-radius: 10px;
-  padding: 30px;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.97);
+  backdrop-filter: blur(25px) saturate(180%);
+  -webkit-backdrop-filter: blur(25px) saturate(180%);
+  border-radius: 24px;
+  padding: 48px 40px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(255, 255, 255, 0.5) inset, 0 8px 32px rgba(52, 195, 92, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  animation: fadeInUp 0.6s ease-out;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  position: relative;
+  z-index: 11;
+  transform-style: preserve-3d;
+}
+
+.form-wrapper:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .form-column {
-  max-width: 500px;
+  max-width: 100%;
   margin: 0 auto;
 }
 
+/* Título do formulário */
+.form-wrapper h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #34c35c;
+  margin-bottom: 32px;
+  text-align: center;
+  letter-spacing: -0.5px;
+  text-shadow: 0 2px 4px rgba(52, 195, 92, 0.1);
+}
+
 .form-group {
-  margin-bottom: 1.5rem;
+  margin-bottom: 24px;
 }
 
 .form-group label {
-  font-weight: 500;
-  margin-bottom: 0.5rem;
+  font-weight: 600;
+  margin-bottom: 8px;
   display: block;
+  color: #2d3748;
+  font-size: 14px;
+  letter-spacing: 0.2px;
 }
 
+/* Inputs modernos estilo redes sociais */
 .form-control {
-  border-radius: 5px;
-  padding: 10px 15px;
-  border: 1px solid #ced4da;
+  width: 100%;
+  border-radius: 12px;
+  padding: 14px 18px;
+  border: 2px solid #e2e8f0;
+  font-size: 15px;
+  transition: all 0.3s ease;
+  background-color: #ffffff;
+  color: #1a202c;
+  box-sizing: border-box;
+}
+
+.form-control::placeholder {
+  color: #a0aec0;
+  font-weight: 400;
 }
 
 .form-control:focus {
-  border-color: #80bdff;
-  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  outline: none;
+  border-color: #34c35c;
+  box-shadow: 0 0 0 4px rgba(52, 195, 92, 0.1),
+    0 4px 12px rgba(52, 195, 92, 0.15);
+  transform: translateY(-1px);
 }
 
+.form-control.is-invalid {
+  border-color: #fc8181;
+  animation: shake 0.4s ease;
+}
+
+.form-control.is-invalid:focus {
+  border-color: #fc8181;
+  box-shadow: 0 0 0 4px rgba(252, 129, 129, 0.1),
+    0 4px 12px rgba(252, 129, 129, 0.15);
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-8px);
+  }
+  75% {
+    transform: translateX(8px);
+  }
+}
+
+/* Botão de submit moderno com verde da marca */
 .form-btn {
-  background-color: #4CAF50;
+  background: linear-gradient(135deg, #34c35c 0%, #28a745 100%);
   color: white;
   border: none;
-  padding: 12px 20px;
-  border-radius: 5px;
+  padding: 14px 24px;
+  border-radius: 12px;
   cursor: pointer;
   width: 100%;
   font-size: 16px;
-  transition: background-color 0.3s;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(52, 195, 92, 0.4),
+    0 2px 4px rgba(52, 195, 92, 0.2);
+  position: relative;
+  overflow: hidden;
+  letter-spacing: 0.3px;
+  margin-top: 8px;
+}
+
+.form-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.form-btn:hover::before {
+  left: 100%;
 }
 
 .form-btn:hover {
-  background-color: #45a049;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(52, 195, 92, 0.5),
+    0 4px 8px rgba(52, 195, 92, 0.3);
+  background: linear-gradient(135deg, #2db351 0%, #218838 100%);
+}
+
+.form-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(52, 195, 92, 0.4), 0 1px 2px rgba(52, 195, 92, 0.2);
 }
 
 .form-btn:disabled {
-  background-color: #cccccc;
+  background: #cbd5e0;
   cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
+.form-btn:disabled::before {
+  display: none;
+}
+
+/* Seletor de tipo de usuário */
 .user-type-switcher {
-  margin-top: 2rem;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid #e2e8f0;
 }
 
+.user-type-switcher p {
+  font-size: 14px;
+  color: #4a5568;
+  margin-bottom: 16px;
+  font-weight: 500;
+}
+
+.user-type-switcher .btn {
+  border-radius: 10px;
+  padding: 10px 20px;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  border: 2px solid;
+  position: relative;
+  overflow: hidden;
+}
+
+.user-type-switcher .btn::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.user-type-switcher .btn:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.user-type-switcher .btn-outline-primary {
+  color: #34c35c;
+  border-color: #34c35c;
+  background-color: transparent;
+}
+
+.user-type-switcher .btn-outline-primary:hover {
+  background-color: #34c35c;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(52, 195, 92, 0.3);
+}
+
+.user-type-switcher .btn-outline-primary.active {
+  background: linear-gradient(135deg, #34c35c 0%, #28a745 100%);
+  color: white;
+  border-color: transparent;
+  box-shadow: 0 4px 12px rgba(52, 195, 92, 0.4);
+}
+
+.user-type-switcher .btn-outline-success {
+  color: #34c35c;
+  border-color: #34c35c;
+  background-color: transparent;
+}
+
+.user-type-switcher .btn-outline-success:hover {
+  background-color: #34c35c;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(52, 195, 92, 0.3);
+}
+
+.user-type-switcher .btn-outline-success.active {
+  background: linear-gradient(135deg, #34c35c 0%, #28a745 100%);
+  color: white;
+  border-color: transparent;
+  box-shadow: 0 4px 12px rgba(52, 195, 92, 0.4);
+}
+
+.user-type-switcher .btn-outline-info {
+  color: #4caf50;
+  border-color: #4caf50;
+  background-color: transparent;
+}
+
+.user-type-switcher .btn-outline-info:hover {
+  background-color: #4caf50;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}
+
+.user-type-switcher .btn-outline-info.active {
+  background: linear-gradient(135deg, #4caf50 0%, #34c35c 100%);
+  color: white;
+  border-color: transparent;
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+}
+
+/* Mensagens de erro */
 .text-danger {
-  color: #dc3545;
-  font-size: 0.875rem;
-  margin-top: 0.25rem;
+  color: #e53e3e;
+  font-size: 13px;
+  margin-top: 6px;
+  display: block;
+  font-weight: 500;
+  animation: fadeIn 0.3s ease;
 }
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Alertas */
 .alert {
-  padding: 0.75rem 1.25rem;
-  margin-bottom: 1rem;
-  border-radius: 0.25rem;
+  padding: 14px 18px;
+  margin-bottom: 20px;
+  border-radius: 12px;
+  border: 2px solid;
+  font-size: 14px;
+  font-weight: 500;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .alert-danger {
-  color: #721c24;
-  background-color: #f8d7da;
-  border-color: #f5c6cb;
+  color: #c53030;
+  background-color: #fed7d7;
+  border-color: #fc8181;
+}
+
+/* Link para login */
+.form-wrapper a {
+  color: #34c35c;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.form-wrapper a::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(135deg, #34c35c 0%, #28a745 100%);
+  transition: width 0.3s ease;
+}
+
+.form-wrapper a:hover {
+  color: #28a745;
+}
+
+.form-wrapper a:hover::after {
+  width: 100%;
 }
 
 .text-center {
   text-align: center;
 }
 
-/* Estilos para os botões de tipo de usuário */
-.btn-outline-primary.active {
-  background-color: #007bff;
-  color: white;
+.form-wrapper .text-center {
+  color: #4a5568;
+  font-size: 14px;
+  margin-top: 8px;
 }
 
-.btn-outline-success.active {
-  background-color: #28a745;
-  color: white;
+/* Responsividade - Tablet */
+@media (max-width: 991px) and (min-width: 769px) {
+  .container {
+    max-width: 550px;
+    padding: 24px;
+  }
+
+  .form-wrapper {
+    padding: 40px 32px;
+  }
+
+  .form-wrapper h1 {
+    font-size: 26px;
+  }
 }
 
-.btn-outline-info.active {
-  background-color: #17a2b8;
-  color: white;
+/* Responsividade - Mobile */
+@media (max-width: 768px) {
+  body {
+    padding: 0;
+  }
+
+  .container {
+    max-width: 100%;
+    padding: 16px;
+    min-height: 100vh;
+    justify-content: flex-start;
+    padding-top: 20px;
+  }
+
+  .form-wrapper {
+    padding: 32px 24px;
+    border-radius: 20px;
+    width: 100%;
+  }
+
+  .form-wrapper h1 {
+    font-size: 24px;
+    margin-bottom: 24px;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  .form-group label {
+    font-size: 13px;
+  }
+
+  .form-control {
+    padding: 12px 16px;
+    font-size: 16px; /* Evita zoom no iOS */
+  }
+
+  .user-type-switcher {
+    margin-top: 24px;
+    padding-top: 20px;
+  }
+
+  .user-type-switcher p {
+    font-size: 13px;
+    margin-bottom: 12px;
+  }
+
+  .user-type-switcher .d-flex {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .user-type-switcher .btn {
+    width: 100%;
+    padding: 10px 16px;
+    font-size: 13px;
+  }
+
+  .form-btn {
+    padding: 12px 20px;
+    font-size: 15px;
+  }
+
+  .text-danger {
+    font-size: 12px;
+  }
+
+  .alert {
+    padding: 12px 16px;
+    font-size: 13px;
+  }
+}
+
+/* Responsividade - Mobile Pequeno */
+@media (max-width: 480px) {
+  .container {
+    padding: 12px;
+    padding-top: 16px;
+  }
+
+  .form-wrapper {
+    padding: 24px 20px;
+    border-radius: 16px;
+  }
+
+  .form-wrapper h1 {
+    font-size: 22px;
+    margin-bottom: 20px;
+  }
+
+  .form-group {
+    margin-bottom: 18px;
+  }
+
+  .form-group label {
+    font-size: 12px;
+    margin-bottom: 6px;
+  }
+
+  .form-control {
+    padding: 12px 14px;
+    font-size: 16px;
+    border-radius: 10px;
+  }
+
+  .form-btn {
+    padding: 12px 18px;
+    font-size: 15px;
+    border-radius: 10px;
+  }
+
+  .user-type-switcher {
+    margin-top: 20px;
+    padding-top: 18px;
+  }
+
+  .user-type-switcher p {
+    font-size: 12px;
+  }
+
+  .user-type-switcher .btn {
+    padding: 10px 14px;
+    font-size: 12px;
+    border-radius: 8px;
+  }
+
+  .text-danger {
+    font-size: 11px;
+    margin-top: 4px;
+  }
+
+  .alert {
+    padding: 10px 14px;
+    font-size: 12px;
+    border-radius: 10px;
+  }
+
+  .form-wrapper .text-center {
+    font-size: 13px;
+  }
+
+  .form-wrapper a {
+    font-size: 13px;
+  }
+}
+
+/* Responsividade - Mobile Extra Pequeno */
+@media (max-width: 360px) {
+  .form-wrapper {
+    padding: 20px 16px;
+  }
+
+  .form-wrapper h1 {
+    font-size: 20px;
+  }
+
+  .form-control {
+    padding: 10px 12px;
+  }
+
+  .form-btn {
+    padding: 10px 16px;
+  }
+}
+
+/* Responsividade - Landscape Mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+  .container {
+    min-height: auto;
+    padding: 20px 16px;
+  }
+
+  .form-wrapper {
+    padding: 24px 20px;
+  }
+
+  .form-wrapper h1 {
+    font-size: 22px;
+    margin-bottom: 20px;
+  }
+
+  .form-group {
+    margin-bottom: 16px;
+  }
+}
+
+/* Melhorias de toque para mobile */
+@media (hover: none) and (pointer: coarse) {
+  .form-btn,
+  .user-type-switcher .btn {
+    min-height: 44px; /* Tamanho mínimo recomendado para toque */
+  }
+
+  .form-control {
+    min-height: 44px;
+  }
+}
+
+/* Efeitos de partículas animadas adicionais */
+@keyframes petParticles {
+  0% {
+    transform: translateY(0) translateX(0) scale(1) rotate(0deg);
+    opacity: 0.6;
+  }
+  33% {
+    transform: translateY(-30px) translateX(15px) scale(1.2) rotate(120deg);
+    opacity: 0.8;
+  }
+  66% {
+    transform: translateY(-15px) translateX(-20px) scale(0.9) rotate(240deg);
+    opacity: 0.7;
+  }
+  100% {
+    transform: translateY(0) translateX(0) scale(1) rotate(360deg);
+    opacity: 0.6;
+  }
+}
+
+/* Melhorar contraste e visibilidade do formulário sobre o fundo 3D */
+.form-wrapper::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(
+    135deg,
+    rgba(52, 195, 92, 0.1),
+    rgba(76, 175, 80, 0.05),
+    rgba(52, 195, 92, 0.1)
+  );
+  border-radius: 26px;
+  z-index: -1;
+  opacity: 0.6;
+  animation: borderGlow 3s ease-in-out infinite;
+}
+
+@keyframes borderGlow {
+  0%,
+  100% {
+    opacity: 0.4;
+    filter: blur(10px);
+  }
+  50% {
+    opacity: 0.7;
+    filter: blur(5px);
+  }
+}
+
+/* Animação reduzida para acessibilidade */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  body {
+    animation: none;
+    background-attachment: scroll;
+  }
+
+  body::before,
+  body::after,
+  .container::before,
+  .container::after {
+    animation: none !important;
+    transform: none !important;
+  }
+
+  .form-wrapper::before {
+    animation: none !important;
+  }
 }

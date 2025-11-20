@@ -1,51 +1,52 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import axios from 'axios';
-import Head from 'next/head';
-import Image from 'next/image';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { Formik, Form, Field, ErrorMessage } from 'formik';
-import { LoginSchema } from '@/schema/loginschema';
-import './login.css';
+import { useState } from "react";
+import axios from "axios";
+import Head from "next/head";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import { LoginSchema } from "@/schema/loginschema";
+import "./login.css";
 
 export default function Login() {
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const router = useRouter();
 
   const handleSubmit = async (values: { email: string; senha: string }) => {
     setLoading(true);
-    setError('');
+    setError("");
 
     try {
-      const response = await axios.post('/api/login', {
+      const response = await axios.post("/api/login", {
         email: values.email,
-        senha: values.senha
+        senha: values.senha,
       });
 
       if (response.data.success) {
         // Salva o token no localStorage
         if (response.data.token) {
-          localStorage.setItem('token', response.data.token);
-          console.log('✅ Token salvo no localStorage');
+          localStorage.setItem("token", response.data.token);
+          console.log("✅ Token salvo no localStorage");
         }
-        
+
         // Salva dados do usuário (opcional)
         if (response.data.user) {
-          localStorage.setItem('user', JSON.stringify(response.data.user));
+          localStorage.setItem("user", JSON.stringify(response.data.user));
         }
-        
-        router.push('/Home');
+
+        router.push("/Home");
       } else {
-        setError(response.data.message || 'Credenciais inválidas');
+        setError(response.data.message || "Credenciais inválidas");
       }
     } catch (err: any) {
-      console.error('Erro no login:', err);
-      const errorMessage = err.response?.data?.message 
-        || err.message 
-        || 'Erro ao fazer login. Tente novamente.';
+      console.error("Erro no login:", err);
+      const errorMessage =
+        err.response?.data?.message ||
+        err.message ||
+        "Erro ao fazer login. Tente novamente.";
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -63,7 +64,11 @@ export default function Login() {
           content="Conecte-se com tutores, ONGs e veterinários. Encontre dicas, participe de campanhas e adote animais com segurança!"
         />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
         <link
           href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
           rel="stylesheet"
@@ -94,74 +99,132 @@ export default function Login() {
           </div>
         </div>
 
-        <div className="login-section">
-          <h2>Entrar</h2>
-          {error && <div className="alert alert-danger">{error}</div>}
-          
+        <main className="login-section">
+          <h1>Entrar</h1>
+
           <Formik
-            initialValues={{ email: '', senha: '' }}
+            initialValues={{ email: "", senha: "" }}
             validationSchema={LoginSchema}
             onSubmit={handleSubmit}
           >
             {({ isSubmitting }) => (
-              <Form>
+              <Form aria-label="Formulário de login">
                 <div className="form-group">
+                  <label htmlFor="login-email" className="visually-hidden">
+                    Email ou nome de usuário
+                  </label>
                   <Field
+                    id="login-email"
                     type="text"
                     name="email"
                     placeholder="Email ou nome de usuário"
                     className="form-control"
                     disabled={loading}
+                    aria-required="true"
+                    aria-describedby="email-error"
                   />
-                  <ErrorMessage name="email" component="div" className="error-message" />
+                  <ErrorMessage
+                    name="email"
+                    component="div"
+                    className="error-message"
+                    id="email-error"
+                    role="alert"
+                  />
                 </div>
-                
+
                 <div className="form-group">
+                  <label htmlFor="login-senha" className="visually-hidden">
+                    Senha
+                  </label>
                   <Field
+                    id="login-senha"
                     type="password"
                     name="senha"
                     placeholder="Digite sua senha..."
                     className="form-control"
                     disabled={loading}
+                    aria-required="true"
+                    aria-describedby="senha-error"
                   />
-                  <ErrorMessage name="senha" component="div" className="error-message" />
+                  <ErrorMessage
+                    name="senha"
+                    component="div"
+                    className="error-message"
+                    id="senha-error"
+                    role="alert"
+                  />
                 </div>
-                
-                <button 
-                  type="submit" 
+
+                {error && (
+                  <div
+                    className="alert alert-danger"
+                    role="alert"
+                    aria-live="polite"
+                  >
+                    {error}
+                  </div>
+                )}
+
+                <button
+                  type="submit"
                   className="btn-login"
                   disabled={loading || isSubmitting}
+                  aria-label="Fazer login na plataforma"
                 >
-                  {loading ? 'Carregando...' : 'Login'}
+                  {loading ? "Carregando..." : "Login"}
                 </button>
               </Form>
             )}
           </Formik>
-          
-          <p className="divider">ou</p>
+
+          <p className="divider" role="separator" aria-label="ou">
+            ou
+          </p>
           <Link href="/Home">
-            <button className="btn-google" disabled={loading}>
+            <button
+              className="btn-google"
+              disabled={loading}
+              aria-label="Continuar com Google"
+            >
               Continue com Google
             </button>
           </Link>
           <Link href="/Home">
-            <button className="btn-apple" disabled={loading}>
+            <button
+              className="btn-apple"
+              disabled={loading}
+              aria-label="Continuar com Outlook"
+            >
               Continue com Outlook
             </button>
           </Link>
-          <Link href="#" className="forgot-password">
+          <Link
+            href="#"
+            className="forgot-password"
+            aria-label="Recuperar senha esquecida"
+          >
             Esqueceu sua senha?
           </Link>
           <div className="signup">
-            <p>Não tem uma conta? <Link href="/registro">Cadastre-se</Link></p>
+            <p>
+              Não tem uma conta?{" "}
+              <Link href="/registro" aria-label="Ir para página de cadastro">
+                Cadastre-se
+              </Link>
+            </p>
           </div>
-        </div>
+        </main>
       </div>
-      
+
       <footer>
         <Link href="#">Sobre</Link>
         <Link href="#">Ajuda</Link>
-        <Link href="https://www.gov.br/esporte/pt-br/acesso-a-informacao/lgpd" target="_blank">Privacidade</Link>
+        <Link
+          href="https://www.gov.br/esporte/pt-br/acesso-a-informacao/lgpd"
+          target="_blank"
+        >
+          Privacidade
+        </Link>
         <Link href="#">Termos</Link>
       </footer>
     </>

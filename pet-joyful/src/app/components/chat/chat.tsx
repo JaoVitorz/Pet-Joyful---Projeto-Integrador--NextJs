@@ -39,6 +39,7 @@ export default function Chat() {
   const [users, setUsers] = useState<User[]>(mockUsers);
   const [activeUserId, setActiveUserId] = useState<number>(mockUsers[0].id);
   const [newMessage, setNewMessage] = useState("");
+  const [showChatList, setShowChatList] = useState(true);
 
   const activeUser = users.find((u) => u.id === activeUserId)!;
 
@@ -58,15 +59,40 @@ export default function Chat() {
     setNewMessage("");
   };
 
+  const handleSelectUser = (id: number) => {
+    setActiveUserId(id);
+    // Em mobile, oculta a lista após selecionar
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      setShowChatList(false);
+    }
+  };
+
+  const handleBackToList = () => {
+    setShowChatList(true);
+  };
+
   return (
-    <div className="flex h-screen">
-      <ChatList
-        users={users}
-        activeUserId={activeUserId}
-        onSelectUser={setActiveUserId}
-      />
-      <div className="flex-1 flex flex-col bg-green-50">
-        <ChatHeader user={activeUser} />
+    <div className="flex h-screen overflow-hidden relative">
+      {/* Lista de conversas - visível em desktop, controlada em mobile */}
+      <div
+        className={`${
+          showChatList ? "flex" : "hidden"
+        } md:flex w-full md:w-1/4 lg:w-1/5 xl:w-1/4 flex-col absolute md:relative inset-0 md:inset-auto z-10 md:z-auto`}
+      >
+        <ChatList
+          users={users}
+          activeUserId={activeUserId}
+          onSelectUser={handleSelectUser}
+        />
+      </div>
+
+      {/* Área de mensagens */}
+      <div
+        className={`${
+          showChatList ? "hidden" : "flex"
+        } md:flex flex-1 flex-col bg-green-50 min-w-0 w-full`}
+      >
+        <ChatHeader user={activeUser} onBack={handleBackToList} />
         <MessageList messages={activeUser.messages} />
         <MessageInput
           value={newMessage}
