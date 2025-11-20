@@ -3,7 +3,15 @@
 import Footer from "../components/common/Footer";
 import Header from "../components/common/Header";
 import { Container, Row, Col, Button, Form } from "react-bootstrap";
-import { BiMessageDetail, BiPlusCircle, BiHeart, BiShare, BiEdit, BiSave, BiX } from "react-icons/bi";
+import {
+  BiMessageDetail,
+  BiPlusCircle,
+  BiHeart,
+  BiShare,
+  BiEdit,
+  BiSave,
+  BiX,
+} from "react-icons/bi";
 import Image from "next/image";
 import ProfileSidebar from "../components/profile/ProfileSidebar";
 import CreatePost from "../components/posts/CreatePost";
@@ -11,6 +19,7 @@ import ProfileHeader from "../components/profile/ProfileHeader";
 import Comments from "../components/posts/Comments";
 import { useState, ReactNode, useEffect } from "react";
 import { authApi } from "../api/authapi";
+import { profileService } from "@/services/profileApi";
 
 // --- Tipos ---
 // Compatível com Comments.tsx
@@ -63,10 +72,15 @@ interface ProfileData {
 
 // --- Componente ---
 export default function Perfil() {
-  const [activeTab, setActiveTab] = useState<"posts" | "albums" | "about" | "contact">("posts");
+  const [activeTab, setActiveTab] = useState<
+    "posts" | "albums" | "about" | "contact"
+  >("posts");
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [saveMessage, setSaveMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+  const [saveMessage, setSaveMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
 
   const [profileData, setProfileData] = useState<ProfileData>({
     nome: "AATAN - Sorocaba",
@@ -74,7 +88,7 @@ export default function Perfil() {
     bio: "Associação de proteção animal oferecendo abrigo e cuidados para animais em situação de vulnerabilidade.",
     avatar: "/assets/aatan-logo.jpg",
     telefone: "(15) 1234-5678",
-    endereco: ""
+    endereco: "",
   });
 
   const [editFormData, setEditFormData] = useState<ProfileData>(profileData);
@@ -87,6 +101,30 @@ export default function Perfil() {
 
   const loadProfile = async () => {
     try {
+      // Tentar carregar do microserviço de perfil primeiro
+      try {
+        const profileResponse = await profileService.getMyProfile();
+        if (profileResponse.success && profileResponse.data) {
+          const profile = profileResponse.data;
+          const updatedProfile: ProfileData = {
+            nome: profile.nome || profileData.nome,
+            email: profile.email || profileData.email,
+            bio: profile.bio || profileData.bio,
+            avatar: profile.foto_perfil || profileData.avatar,
+            telefone: profile.telefone || profileData.telefone,
+            endereco: profile.endereco || profileData.endereco,
+          };
+          setProfileData(updatedProfile);
+          setEditFormData(updatedProfile);
+          return;
+        }
+      } catch {
+        console.log(
+          "Microserviço de perfil não disponível, tentando backend principal"
+        );
+      }
+
+      // Fallback para o backend principal
       const response = await authApi.getProfile();
       if (response.data && response.data.user) {
         const userData = response.data.user;
@@ -96,13 +134,13 @@ export default function Perfil() {
           bio: userData.bio || profileData.bio,
           avatar: userData.avatar || profileData.avatar,
           telefone: userData.telefone || profileData.telefone,
-          endereco: userData.endereco || profileData.endereco
+          endereco: userData.endereco || profileData.endereco,
         };
         setProfileData(updatedProfile);
         setEditFormData(updatedProfile);
       }
-    } catch (error) {
-      console.log('Usando dados locais do perfil');
+    } catch {
+      console.log("Usando dados locais do perfil");
     }
   };
 
@@ -123,34 +161,95 @@ export default function Perfil() {
     setSaveMessage(null);
 
     try {
-      const updateData: any = {
+      // Verificar se o token existe
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setSaveMessage({
+          type: "error",
+          text: "Você precisa estar logado para salvar o perfil. Redirecionando para login...",
+        });
+        setTimeout(() => {
+          window.location.href = "/login";
+        }, 2000);
+        return;
+      }
+
+      // Preparar dados para o microserviço de perfil
+      const updateData = {
         nome: editFormData.nome,
-        email: editFormData.email,
-        bio: editFormData.bio
+        bio: editFormData.bio,
+        telefone: editFormData.telefone || undefined,
+        endereco: editFormData.endereco || undefined,
       };
 
-      if (editFormData.telefone) {
-        updateData.telefone = editFormData.telefone;
-      }
-      if (editFormData.endereco) {
-        updateData.endereco = editFormData.endereco;
-      }
+      console.log("[Perfil] Atualizando perfil via microserviço:", updateData);
+      console.log("[Perfil] Token presente:", token ? "Sim" : "Não");
 
-      const response = await authApi.updateProfile(updateData);
+      // Usar o microserviço de perfil (porta 3004)
+      const response = await profileService.updateMyProfile(updateData);
 
-      if (response.data && response.data.success) {
-        setProfileData(editFormData);
+      if (response.success && response.data) {
+        // Atualizar dados locais com a resposta do servidor
+        const updatedProfile: ProfileData = {
+          ...editFormData,
+          nome: response.data.nome || editFormData.nome,
+          bio: response.data.bio || editFormData.bio,
+          telefone: response.data.telefone || editFormData.telefone,
+          endereco: response.data.endereco || editFormData.endereco,
+        };
+
+        setProfileData(updatedProfile);
         setIsEditing(false);
-        setSaveMessage({ type: 'success', text: 'Perfil atualizado com sucesso!' });
+        setSaveMessage({
+          type: "success",
+          text: "Perfil atualizado com sucesso!",
+        });
         setTimeout(() => setSaveMessage(null), 3000);
       } else {
-        throw new Error('Erro ao atualizar perfil');
+        throw new Error(response.message || "Erro ao atualizar perfil");
       }
-    } catch (error: any) {
-      console.error('Erro ao salvar perfil:', error);
-      setSaveMessage({ 
-        type: 'error', 
-        text: error.response?.data?.message || 'Erro ao salvar perfil. Tente novamente.' 
+    } catch (error: unknown) {
+      const err = error as {
+        response?: {
+          status?: number;
+          data?: { message?: string; error?: string };
+        };
+        message?: string;
+      };
+
+      console.error("Erro ao salvar perfil:", error);
+
+      let errorMessage = "Erro ao salvar perfil. Tente novamente.";
+
+      // Tratar erro 401 (token inválido/expirado)
+      if (err.response?.status === 401) {
+        errorMessage = "Token inválido ou expirado. Faça login novamente.";
+        // O interceptor já vai redirecionar, mas vamos limpar o estado
+        setTimeout(() => {
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          window.location.href = "/login";
+        }, 2000);
+      } else if (err.response?.data?.message) {
+        // Limpar "undefined:" se presente
+        errorMessage = String(err.response.data.message).replace(
+          /^undefined:\s*/,
+          ""
+        );
+      } else if (err.response?.data?.error) {
+        // Limpar "undefined:" se presente
+        errorMessage = String(err.response.data.error).replace(
+          /^undefined:\s*/,
+          ""
+        );
+      } else if (err.message) {
+        // Limpar "undefined:" se presente
+        errorMessage = String(err.message).replace(/^undefined:\s*/, "");
+      }
+
+      setSaveMessage({
+        type: "error",
+        text: errorMessage,
       });
     } finally {
       setIsSaving(false);
@@ -158,9 +257,9 @@ export default function Perfil() {
   };
 
   const handleInputChange = (field: keyof ProfileData, value: string) => {
-    setEditFormData(prev => ({
+    setEditFormData((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
@@ -203,7 +302,9 @@ export default function Perfil() {
   const handleLike = (postId: number, liked: boolean) => {
     setPosts(
       posts.map((post) =>
-        post.id === postId ? { ...post, likes: liked ? post.likes + 1 : post.likes - 1 } : post
+        post.id === postId
+          ? { ...post, likes: liked ? post.likes + 1 : post.likes - 1 }
+          : post
       )
     );
   };
@@ -228,7 +329,7 @@ export default function Perfil() {
 
           {/* Conteúdo */}
           <Col md={8}>
-            <ProfileHeader 
+            <ProfileHeader
               nome={profileData.nome}
               bio={profileData.bio}
               avatar={profileData.avatar}
@@ -266,11 +367,23 @@ export default function Perfil() {
                 />
 
                 {posts.map((post) => (
-                  <div key={post.id} className="bg-white p-3 rounded shadow mb-4">
+                  <div
+                    key={post.id}
+                    className="bg-white p-3 rounded shadow mb-4"
+                  >
                     <div className="d-flex align-items-center gap-3">
-                      <Image src={post.user.avatar} width={40} height={40} className="rounded-circle" alt="Avatar" />
+                      <Image
+                        src={post.user.avatar}
+                        width={40}
+                        height={40}
+                        className="rounded-circle"
+                        alt="Avatar"
+                      />
                       <span className="fw-bold">{post.user.name}</span>
-                      <span className="text-muted ms-auto" style={{ fontSize: "0.9em" }}>
+                      <span
+                        className="text-muted ms-auto"
+                        style={{ fontSize: "0.9em" }}
+                      >
                         {post.timestamp}
                       </span>
                     </div>
@@ -289,13 +402,25 @@ export default function Perfil() {
 
                     <div className="d-flex justify-content-between align-items-center">
                       <div className="d-flex gap-2">
-                        <Button variant="light" className="rounded-pill" onClick={() => handleLike(post.id, true)}>
+                        <Button
+                          variant="light"
+                          className="rounded-pill"
+                          onClick={() => handleLike(post.id, true)}
+                        >
                           <BiHeart /> {post.likes} Curtir
                         </Button>
-                        <Button variant="light" className="rounded-pill" onClick={() => handleComment(post.id)}>
+                        <Button
+                          variant="light"
+                          className="rounded-pill"
+                          onClick={() => handleComment(post.id)}
+                        >
                           <BiMessageDetail /> Comentar
                         </Button>
-                        <Button variant="light" className="rounded-pill" onClick={() => handleShare(post.id)}>
+                        <Button
+                          variant="light"
+                          className="rounded-pill"
+                          onClick={() => handleShare(post.id)}
+                        >
                           <BiShare /> Compartilhar
                         </Button>
                       </div>
@@ -312,7 +437,13 @@ export default function Perfil() {
                         setPosts((posts) =>
                           posts.map((p) =>
                             p.id === post.id
-                              ? { ...p, commentsList: [...(p.commentsList || []), newComment] }
+                              ? {
+                                  ...p,
+                                  commentsList: [
+                                    ...(p.commentsList || []),
+                                    newComment,
+                                  ],
+                                }
                               : p
                           )
                         );
@@ -337,7 +468,13 @@ export default function Perfil() {
                       <div className="bg-light rounded p-3">
                         <h5>{album.title}</h5>
                         {album.coverImage && (
-                          <Image src={album.coverImage} width={250} height={150} alt={album.title} className="rounded" />
+                          <Image
+                            src={album.coverImage}
+                            width={250}
+                            height={150}
+                            alt={album.title}
+                            className="rounded"
+                          />
                         )}
                       </div>
                     </div>
@@ -351,8 +488,8 @@ export default function Perfil() {
                 <div className="d-flex justify-content-between align-items-center mb-3">
                   <h4>Sobre</h4>
                   {!isEditing ? (
-                    <Button 
-                      variant="outline-primary" 
+                    <Button
+                      variant="outline-primary"
                       size="sm"
                       onClick={handleEdit}
                       aria-label="Editar informações do perfil"
@@ -361,17 +498,18 @@ export default function Perfil() {
                     </Button>
                   ) : (
                     <div className="d-flex gap-2">
-                      <Button 
-                        variant="success" 
+                      <Button
+                        variant="success"
                         size="sm"
                         onClick={handleSave}
                         disabled={isSaving}
                         aria-label="Salvar alterações"
                       >
-                        <BiSave className="me-1" /> {isSaving ? 'Salvando...' : 'Salvar'}
+                        <BiSave className="me-1" />{" "}
+                        {isSaving ? "Salvando..." : "Salvar"}
                       </Button>
-                      <Button 
-                        variant="outline-secondary" 
+                      <Button
+                        variant="outline-secondary"
                         size="sm"
                         onClick={handleCancel}
                         disabled={isSaving}
@@ -384,7 +522,12 @@ export default function Perfil() {
                 </div>
 
                 {saveMessage && (
-                  <div className={`alert alert-${saveMessage.type === 'success' ? 'success' : 'danger'} mb-3`} role="alert">
+                  <div
+                    className={`alert alert-${
+                      saveMessage.type === "success" ? "success" : "danger"
+                    } mb-3`}
+                    role="alert"
+                  >
                     {saveMessage.text}
                   </div>
                 )}
@@ -401,7 +544,9 @@ export default function Perfil() {
                     </div>
                     <div className="mb-3">
                       <strong>Biografia:</strong>
-                      <p>{profileData.bio || 'Nenhuma biografia adicionada.'}</p>
+                      <p>
+                        {profileData.bio || "Nenhuma biografia adicionada."}
+                      </p>
                     </div>
                     {profileData.telefone && (
                       <div className="mb-3">
@@ -426,7 +571,9 @@ export default function Perfil() {
                         id="edit-nome"
                         type="text"
                         value={editFormData.nome}
-                        onChange={(e) => handleInputChange('nome', e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange("nome", e.target.value)
+                        }
                         required
                         aria-required="true"
                       />
@@ -440,7 +587,9 @@ export default function Perfil() {
                         id="edit-email"
                         type="email"
                         value={editFormData.email}
-                        onChange={(e) => handleInputChange('email', e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange("email", e.target.value)
+                        }
                         required
                         aria-required="true"
                       />
@@ -455,7 +604,9 @@ export default function Perfil() {
                         as="textarea"
                         rows={4}
                         value={editFormData.bio}
-                        onChange={(e) => handleInputChange('bio', e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange("bio", e.target.value)
+                        }
                         placeholder="Conte um pouco sobre você ou sua organização..."
                         aria-label="Campo de biografia"
                       />
@@ -468,8 +619,10 @@ export default function Perfil() {
                       <Form.Control
                         id="edit-telefone"
                         type="tel"
-                        value={editFormData.telefone || ''}
-                        onChange={(e) => handleInputChange('telefone', e.target.value)}
+                        value={editFormData.telefone || ""}
+                        onChange={(e) =>
+                          handleInputChange("telefone", e.target.value)
+                        }
                         placeholder="(00) 0000-0000"
                         aria-label="Campo de telefone"
                       />
@@ -482,8 +635,10 @@ export default function Perfil() {
                       <Form.Control
                         id="edit-endereco"
                         type="text"
-                        value={editFormData.endereco || ''}
-                        onChange={(e) => handleInputChange('endereco', e.target.value)}
+                        value={editFormData.endereco || ""}
+                        onChange={(e) =>
+                          handleInputChange("endereco", e.target.value)
+                        }
                         placeholder="Endereço completo"
                         aria-label="Campo de endereço"
                       />

@@ -138,15 +138,21 @@ export default function EditProfileForm({ onSuccess, onCancel }: EditProfileForm
         estado: values.estado?.toUpperCase(),
       };
 
+      console.log('[EditProfileForm] Enviando dados do perfil:', formattedData);
       const response = await profileService.updateMyProfile(formattedData);
       
       if (response.success && response.data) {
         alert('Perfil atualizado com sucesso!');
         setProfile(response.data);
         onSuccess?.(response.data);
+      } else {
+        throw new Error(response.message || 'Erro ao atualizar perfil');
       }
-    } catch (error: any) {
-      setError(error.message);
+    } catch (error: unknown) {
+      const err = error as { message?: string; response?: { data?: { message?: string } } };
+      const errorMessage = err.response?.data?.message || err.message || 'Erro ao salvar perfil. Tente novamente.';
+      console.error('[EditProfileForm] Erro ao salvar perfil:', error);
+      setError(errorMessage);
     }
   };
 

@@ -1,11 +1,11 @@
 import axios from 'axios';
 
 // URL base do microserviço de perfil
-const PROFILE_API_BASE_URL = process.env.NEXT_PUBLIC_PROFILE_API_URL || 'http://localhost:3001';
+const API_BASE_URL = process.env.NEXT_PUBLIC_PROFILE_API_URL || 'http://localhost:3004';
 
-// Criar instância do axios para o microserviço de perfil
+// Criar instância do axios com configurações padrão
 const profileApi = axios.create({
-  baseURL: PROFILE_API_BASE_URL,
+  baseURL: `${API_BASE_URL}/api/profile`,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -14,9 +14,11 @@ const profileApi = axios.create({
 // Interceptor para adicionar token JWT automaticamente
 profileApi.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('token');
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
     }
     return config;
   },
@@ -25,20 +27,52 @@ profileApi.interceptors.request.use(
   }
 );
 
-// Interceptor para tratar respostas e erros
+// Interceptor para tratar erros de resposta
 profileApi.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    return response;
+  },
   (error) => {
-    console.error('Erro na API de perfil:', error);
-    
-    // Se token expirou, redirecionar para login
-    if (error.response?.status === 401) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      window.location.href = '/login';
+    // Trata erros de autenticação
+    if (error.response) {
+      const { status, data } = error.response;
+
+      // Erro de autenticação (401 ou 403)
+      if (status === 401 || status === 403) {
+        const errorMessage = data?.message || 'Token inválido ou expirado';
+
+        // Remove token inválido do localStorage
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          
+          // Redireciona para login
+          window.location.href = '/login';
+        }
+
+        // Retorna erro formatado
+        return Promise.reject({
+          message: errorMessage,
+          status: status,
+          data: data,
+        });
+      }
+
+      // Outros erros HTTP
+      const errorMessage = data?.message || data?.error || 'Erro ao processar requisição';
+      return Promise.reject({
+        message: errorMessage,
+        status: status,
+        data: data,
+      });
     }
-    
-    return Promise.reject(error);
+
+    // Erro de rede ou outros erros
+    return Promise.reject({
+      message: error.message || 'Erro de conexão. Verifique se o microserviço de perfil está rodando na porta 3004.',
+      status: 0,
+      data: null,
+    });
   }
 );
 
@@ -98,40 +132,50 @@ export const profileService = {
   // Buscar perfil do usuário autenticado
   async getMyProfile(): Promise<ApiResponse<Profile>> {
     try {
-      const response = await profileApi.get('/api/profile/me');
+      const response = await profileApi.get('/me');
       return response.data;
-    } catch (error: any) {
-      throw new Error(error.response?.data?.message || 'Erro ao buscar perfil');
+    } catch (error: unknown) {
+      console.error('Erro ao buscar perfil:', error);
+      // O erro já está formatado pelo interceptor
+      const err = error as { message?: string; status?: number; data?: any };
+      throw new Error(err.message || 'Erro ao buscar perfil');
     }
   },
 
   // Buscar perfil por ID
   async getProfileById(userId: string): Promise<ApiResponse<Profile>> {
     try {
-      const response = await profileApi.get(`/api/profile/${userId}`);
+      const response = await profileApi.get(`/${userId}`);
       return response.data;
-    } catch (error: any) {
-      throw new Error(error.response?.data?.message || 'Erro ao buscar perfil');
+    } catch (error: unknown) {
+      console.error('Erro ao buscar perfil:', error);
+      const err = error as { message?: string; status?: number; data?: any };
+      throw new Error(err.message || 'Erro ao buscar perfil');
     }
   },
 
   // Atualizar perfil do usuário autenticado
   async updateMyProfile(data: ProfileUpdateData): Promise<ApiResponse<Profile>> {
     try {
-      const response = await profileApi.put('/api/profile/me', data);
+      const response = await profileApi.put('/me', data);
       return response.data;
-    } catch (error: any) {
-      throw new Error(error.response?.data?.message || 'Erro ao atualizar perfil');
+    } catch (error: unknown) {
+      console.error('Erro ao atualizar perfil:', error);
+      // O erro já está formatado pelo interceptor
+      const err = error as { message?: string; status?: number; data?: any };
+      throw new Error(err.message || 'Erro ao atualizar perfil');
     }
   },
 
   // Atualizar perfil por ID (apenas o próprio usuário)
   async updateProfileById(userId: string, data: ProfileUpdateData): Promise<ApiResponse<Profile>> {
     try {
-      const response = await profileApi.put(`/api/profile/${userId}`, data);
+      const response = await profileApi.put(`/${userId}`, data);
       return response.data;
-    } catch (error: any) {
-      throw new Error(error.response?.data?.message || 'Erro ao atualizar perfil');
+    } catch (error: unknown) {
+      console.error('Erro ao atualizar perfil:', error);
+      const err = error as { message?: string; status?: number; data?: any };
+      throw new Error(err.message || 'Erro ao atualizar perfil');
     }
   },
 
@@ -141,15 +185,17 @@ export const profileService = {
       const formData = new FormData();
       formData.append('foto', file);
 
-      const response = await profileApi.post('/api/profile/me/photo', formData, {
+      const response = await profileApi.post('/me/photo', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
       
       return response.data;
-    } catch (error: any) {
-      throw new Error(error.response?.data?.message || 'Erro ao fazer upload da foto');
+    } catch (error: unknown) {
+      console.error('Erro ao fazer upload da foto:', error);
+      const err = error as { message?: string; status?: number; data?: any };
+      throw new Error(err.message || 'Erro ao fazer upload da foto');
     }
   },
 };

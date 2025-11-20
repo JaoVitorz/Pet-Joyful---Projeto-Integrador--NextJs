@@ -41,12 +41,48 @@ export default function Login() {
       } else {
         setError(response.data.message || "Credenciais inválidas");
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Erro no login:", err);
-      const errorMessage =
-        err.response?.data?.message ||
-        err.message ||
-        "Erro ao fazer login. Tente novamente.";
+
+      // Type assertion para erro do axios
+      const axiosError = err as {
+        response?: { status?: number; data?: { message?: string } };
+        message?: string;
+      };
+
+      console.error("Detalhes do erro:", {
+        status: axiosError.response?.status,
+        data: axiosError.response?.data,
+        message: axiosError.message,
+      });
+
+      // Mensagens de erro mais específicas
+      let errorMessage = "Erro ao fazer login. Tente novamente.";
+
+      if (axiosError.response?.status === 500) {
+        errorMessage =
+          axiosError.response?.data?.message ||
+          "Erro no servidor. O backend pode estar temporariamente indisponível. Tente novamente em alguns instantes.";
+      } else if (axiosError.response?.status === 401) {
+        errorMessage =
+          axiosError.response?.data?.message || "Email ou senha incorretos.";
+      } else if (axiosError.response?.status === 400) {
+        errorMessage =
+          axiosError.response?.data?.message ||
+          "Dados inválidos. Verifique os campos.";
+      } else if (
+        axiosError.response?.status === 503 ||
+        axiosError.response?.status === 504
+      ) {
+        errorMessage =
+          axiosError.response?.data?.message ||
+          "Serviço temporariamente indisponível. Verifique sua conexão e tente novamente.";
+      } else if (axiosError.response?.data?.message) {
+        errorMessage = axiosError.response.data.message;
+      } else if (axiosError.message) {
+        errorMessage = axiosError.message;
+      }
+
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -125,10 +161,15 @@ export default function Login() {
                   />
                   <ErrorMessage
                     name="email"
-                    component="div"
-                    className="error-message"
-                    id="email-error"
-                    role="alert"
+                    render={(msg) => (
+                      <div
+                        className="error-message"
+                        id="email-error"
+                        role="alert"
+                      >
+                        {msg}
+                      </div>
+                    )}
                   />
                 </div>
 
@@ -148,10 +189,15 @@ export default function Login() {
                   />
                   <ErrorMessage
                     name="senha"
-                    component="div"
-                    className="error-message"
-                    id="senha-error"
-                    role="alert"
+                    render={(msg) => (
+                      <div
+                        className="error-message"
+                        id="senha-error"
+                        role="alert"
+                      >
+                        {msg}
+                      </div>
+                    )}
                   />
                 </div>
 
