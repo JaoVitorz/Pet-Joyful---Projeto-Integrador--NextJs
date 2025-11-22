@@ -76,12 +76,13 @@ export default function ProfileDisplay({
           "[ProfileDisplay] Nova URL da foto:",
           response.data.foto_perfil
         );
+        const newPhotoUrl = response.data.foto_perfil;
         // Atualiza perfil localmente
         setProfile((prev) =>
-          prev ? { ...prev, foto_perfil: response.data.foto_perfil } : prev
+          prev ? { ...prev, foto_perfil: newPhotoUrl } : prev
         );
         setPhotoFile(null);
-        setPhotoPreview(response.data.foto_perfil);
+        setPhotoPreview(newPhotoUrl);
         alert("Foto atualizada com sucesso!");
       }
     } catch (error: unknown) {
