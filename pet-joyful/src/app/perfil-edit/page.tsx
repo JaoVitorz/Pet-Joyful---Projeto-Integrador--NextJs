@@ -1,50 +1,46 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Header from "../components/common/Header";
 import Footer from "../components/common/Footer";
 import EditProfileForm from "../components/profile/EditProfileForm";
-import { profileService, Profile } from '@/services/profileApi';
+import { profileService, Profile } from "@/services/profileApi";
 
 export default function EditProfilePage() {
-  const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string>('');
   const router = useRouter();
 
   useEffect(() => {
     // Verificar se usuário está logado
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (!token) {
-      router.push('/login');
+      router.push("/login");
       return;
     }
 
     loadProfile();
-  }, [router]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const loadProfile = async () => {
     try {
       setLoading(true);
-      setError('');
-      
+
       // Tentar carregar perfil existente
       const response = await profileService.getMyProfile();
       if (response.success && response.data) {
-        setProfile(response.data);
+        // Profile loaded successfully
       }
-    } catch (error: any) {
+    } catch {
       // Se perfil não existe, será criado na primeira atualização
-      console.log('Perfil não encontrado, será criado na primeira atualização');
-      setError('');
+      console.log("Perfil não encontrado, será criado na primeira atualização");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleProfileUpdate = (updatedProfile: Profile) => {
-    setProfile(updatedProfile);
+  const handleProfileUpdate = () => {
     // Opcional: redirecionar para página de perfil
     // router.push('/perfil');
   };
@@ -70,15 +66,15 @@ export default function EditProfilePage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header activeLink="perfil" />
-      
+
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
           {/* Breadcrumb */}
           <nav className="mb-6">
             <ol className="flex items-center space-x-2 text-sm text-gray-500">
               <li>
-                <button 
-                  onClick={() => router.push('/perfil')}
+                <button
+                  onClick={() => router.push("/perfil")}
                   className="hover:text-green-600"
                 >
                   Perfil
@@ -93,7 +89,7 @@ export default function EditProfilePage() {
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
               <p className="font-semibold">Erro ao carregar perfil</p>
               <p>{error}</p>
-              <button 
+              <button
                 onClick={loadProfile}
                 className="mt-2 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
               >
@@ -103,7 +99,7 @@ export default function EditProfilePage() {
           )}
 
           {/* Formulário de edição */}
-          <EditProfileForm 
+          <EditProfileForm
             onSuccess={handleProfileUpdate}
             onCancel={handleCancel}
           />

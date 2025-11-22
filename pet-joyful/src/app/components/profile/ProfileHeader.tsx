@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import { BiCheckCircle, BiEdit } from "react-icons/bi";
 import { profileService } from "@/services/profileApi";
 
@@ -53,10 +52,13 @@ export default function ProfileHeader({
         onAvatarUpdate?.(response.data.foto_perfil);
         alert("Foto atualizada com sucesso!");
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("[ProfileHeader] Erro ao enviar foto:", error);
-      const msg =
-        error?.response?.data?.message || error.message || String(error);
+      const err = error as {
+        response?: { data?: { message?: string } };
+        message?: string;
+      };
+      const msg = err?.response?.data?.message || err.message || String(error);
       setPhotoError(msg);
       alert("Erro ao enviar foto: " + msg);
     } finally {

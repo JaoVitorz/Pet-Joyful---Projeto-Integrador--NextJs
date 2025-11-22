@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { BiEdit, BiMapPin, BiPhone, BiCalendar, BiUser } from "react-icons/bi";
 import { profileService, Profile } from "@/services/profileApi";
@@ -25,6 +24,7 @@ export default function ProfileDisplay({
 
   useEffect(() => {
     loadProfile();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
   const loadProfile = async () => {
@@ -43,8 +43,9 @@ export default function ProfileDisplay({
         setProfile(response.data);
         setPhotoPreview(response.data.foto_perfil || "");
       }
-    } catch (error: any) {
-      setError(error.message);
+    } catch (error: unknown) {
+      const err = error as { message?: string };
+      setError(err.message || "Erro ao carregar perfil");
     } finally {
       setLoading(false);
     }
@@ -83,10 +84,13 @@ export default function ProfileDisplay({
         setPhotoPreview(response.data.foto_perfil);
         alert("Foto atualizada com sucesso!");
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("[ProfileDisplay] Erro ao enviar foto:", error);
-      const msg =
-        error?.response?.data?.message || error.message || String(error);
+      const err = error as {
+        response?: { data?: { message?: string } };
+        message?: string;
+      };
+      const msg = err?.response?.data?.message || err.message || String(error);
       setPhotoError(msg);
       alert("Erro ao enviar foto: " + msg);
     } finally {
