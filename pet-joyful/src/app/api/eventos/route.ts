@@ -77,8 +77,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         error: err.message || "Erro ao criar evento",
-        details:
-          process.env.NODE_ENV === "development" ? err.stack : undefined,
+        details: process.env.NODE_ENV === "development" ? err.stack : undefined,
       },
       { status: 500 }
     );

@@ -24,6 +24,7 @@ export default function PostCard({ post, onDelete, onRefresh }: PostCardProps) {
     post.comentarios?.length || 0
   );
   const [showComments, setShowComments] = useState(false);
+  const [comments] = useState(post.comentarios || []);
   const [newComment, setNewComment] = useState("");
   const [error, setError] = useState("");
 
