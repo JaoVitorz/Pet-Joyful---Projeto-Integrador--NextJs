@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Header from "../components/common/Header";
 import Footer from "../components/common/Footer";
 import EditProfileForm from "../components/profile/EditProfileForm";
-import { profileService, Profile } from "@/services/profileApi";
+import { profileService } from '@/services/profileApi';
 
 export default function EditProfilePage() {
   const [loading, setLoading] = useState(true);

@@ -4,10 +4,11 @@ const POSTS_API_URL = process.env.NEXT_PUBLIC_POSTS_API_URL || 'http://localhost
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const response = await fetch(`${POSTS_API_URL}/api/posts/${params.id}`);
+    const { id } = await context.params;
+    const response = await fetch(`${POSTS_API_URL}/api/posts/${id}`);
     const data = await response.json();
 
     if (!response.ok) {
@@ -26,9 +27,10 @@ export async function GET(
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await context.params;
     const token = request.headers.get('authorization');
     
     if (!token) {
@@ -40,7 +42,7 @@ export async function PUT(
 
     const formData = await request.formData();
     
-    const response = await fetch(`${POSTS_API_URL}/api/posts/${params.id}`, {
+    const response = await fetch(`${POSTS_API_URL}/api/posts/${id}`, {
       method: 'PUT',
       headers: {
         'Authorization': token
@@ -66,9 +68,10 @@ export async function PUT(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await context.params;
     const token = request.headers.get('authorization');
     
     if (!token) {
@@ -78,7 +81,7 @@ export async function DELETE(
       );
     }
 
-    const response = await fetch(`${POSTS_API_URL}/api/posts/${params.id}`, {
+    const response = await fetch(`${POSTS_API_URL}/api/posts/${id}`, {
       method: 'DELETE',
       headers: {
         'Authorization': token

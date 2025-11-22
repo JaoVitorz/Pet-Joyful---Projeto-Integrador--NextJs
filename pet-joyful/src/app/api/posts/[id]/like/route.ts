@@ -4,9 +4,10 @@ const POSTS_API_URL = process.env.NEXT_PUBLIC_POSTS_API_URL || 'http://localhost
 
 export async function POST(
   request: Request,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await context.params;
     const token = request.headers.get('authorization');
     
     if (!token) {
@@ -16,7 +17,7 @@ export async function POST(
       );
     }
 
-    const response = await fetch(`${POSTS_API_URL}/api/posts/${params.id}/like`, {
+    const response = await fetch(`${POSTS_API_URL}/api/posts/${id}/like`, {
       method: 'POST',
       headers: {
         'Authorization': token
