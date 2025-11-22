@@ -40,12 +40,12 @@ export default function Registro() {
 
       // Salva o token no localStorage se retornado
       if (response.data.success && response.data.token) {
-        localStorage.setItem('token', response.data.token);
-        console.log('✅ Token salvo no localStorage após registro');
-        
+        localStorage.setItem("token", response.data.token);
+        console.log("✅ Token salvo no localStorage após registro");
+
         // Salva dados do usuário (opcional)
         if (response.data.user) {
-          localStorage.setItem('user', JSON.stringify(response.data.user));
+          localStorage.setItem("user", JSON.stringify(response.data.user));
         }
       }
 
@@ -93,20 +93,23 @@ export default function Registro() {
                     }`}
                     placeholder="Nome completo"
                     aria-required="true"
-                    aria-describedby={errors.nome && touched.nome ? "nome-error" : undefined}
+                    aria-describedby={
+                      errors.nome && touched.nome ? "nome-error" : undefined
+                    }
                   />
                   <ErrorMessage
                     name="nome"
                     component="div"
                     className="text-danger"
                     id="nome-error"
-                    role="alert"
                   />
                 </div>
 
                 {/* Campo Documento */}
                 <div className="form-group">
-                  <label htmlFor="registro-documento">{tipoUsuario === "ong" ? "CNPJ" : "CPF"}</label>
+                  <label htmlFor="registro-documento">
+                    {tipoUsuario === "ong" ? "CNPJ" : "CPF"}
+                  </label>
                   <Field
                     id="registro-documento"
                     type="text"
@@ -116,14 +119,17 @@ export default function Registro() {
                     }`}
                     placeholder={tipoUsuario === "ong" ? "CNPJ" : "CPF"}
                     aria-required="true"
-                    aria-describedby={errors.documento && touched.documento ? "documento-error" : undefined}
+                    aria-describedby={
+                      errors.documento && touched.documento
+                        ? "documento-error"
+                        : undefined
+                    }
                   />
                   <ErrorMessage
                     name="documento"
                     component="div"
                     className="text-danger"
                     id="documento-error"
-                    role="alert"
                   />
                 </div>
 
@@ -165,14 +171,15 @@ export default function Registro() {
                         : "Email"
                     }
                     aria-required="true"
-                    aria-describedby={errors.email && touched.email ? "email-error" : undefined}
+                    aria-describedby={
+                      errors.email && touched.email ? "email-error" : undefined
+                    }
                   />
                   <ErrorMessage
                     name="email"
                     component="div"
                     className="text-danger"
                     id="email-error"
-                    role="alert"
                   />
                 </div>
 
@@ -215,13 +222,20 @@ export default function Registro() {
 
                 {/* Mensagens de feedback */}
                 {serverError && (
-                  <div className="alert alert-danger" role="alert" aria-live="polite">
+                  <div
+                    className="alert alert-danger"
+                    role="alert"
+                    aria-live="polite"
+                  >
                     {serverError}
                   </div>
                 )}
 
                 <p className="text-center mt-2">
-                  Já possui uma conta? <a href="/login" aria-label="Ir para página de login">Faça login</a>
+                  Já possui uma conta?{" "}
+                  <a href="/login" aria-label="Ir para página de login">
+                    Faça login
+                  </a>
                 </p>
 
                 <button
@@ -238,7 +252,11 @@ export default function Registro() {
         </div>
 
         {/* Seletor de Tipo de Usuário */}
-        <div className="user-type-switcher mt-4" role="group" aria-label="Selecionar tipo de cadastro">
+        <div
+          className="user-type-switcher mt-4"
+          role="group"
+          aria-label="Selecionar tipo de cadastro"
+        >
           <p className="text-center">Selecionar tipo de cadastro:</p>
           <div className="d-flex justify-content-center gap-2">
             <button
