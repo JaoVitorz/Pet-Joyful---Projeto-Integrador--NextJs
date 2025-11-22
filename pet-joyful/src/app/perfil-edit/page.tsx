@@ -9,6 +9,7 @@ import { profileService } from "@/services/profileApi";
 
 export default function EditProfilePage() {
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string>("");
   const router = useRouter();
 
   useEffect(() => {
@@ -26,15 +27,18 @@ export default function EditProfilePage() {
   const loadProfile = async () => {
     try {
       setLoading(true);
+      setError("");
 
       // Tentar carregar perfil existente
       const response = await profileService.getMyProfile();
       if (response.success && response.data) {
         // Profile loaded successfully
       }
-    } catch {
+    } catch (err: unknown) {
       // Se perfil não existe, será criado na primeira atualização
+      const error = err as { message?: string };
       console.log("Perfil não encontrado, será criado na primeira atualização");
+      setError(error.message || "");
     } finally {
       setLoading(false);
     }
