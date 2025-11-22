@@ -1,6 +1,7 @@
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
 
-const POSTS_API_URL = process.env.NEXT_PUBLIC_POSTS_API_URL || 'http://localhost:3003';
+const POSTS_API_URL =
+  process.env.NEXT_PUBLIC_POSTS_API_URL || "http://localhost:3003";
 
 export async function POST(
   request: Request,
@@ -8,20 +9,20 @@ export async function POST(
 ) {
   try {
     const { id } = await context.params;
-    const token = request.headers.get('authorization');
-    
+    const token = request.headers.get("authorization");
+
     if (!token) {
       return NextResponse.json(
-        { success: false, message: 'Token não fornecido' },
+        { success: false, message: "Token não fornecido" },
         { status: 401 }
       );
     }
 
     const response = await fetch(`${POSTS_API_URL}/api/posts/${id}/like`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Authorization': token
-      }
+        Authorization: token,
+      },
     });
 
     const data = await response.json();
@@ -32,9 +33,9 @@ export async function POST(
 
     return NextResponse.json(data);
   } catch (error) {
-    console.error('[API Posts] Erro ao curtir:', error);
+    console.error("[API Posts] Erro ao curtir:", error);
     return NextResponse.json(
-      { success: false, message: 'Erro ao curtir postagem' },
+      { success: false, message: "Erro ao curtir postagem" },
       { status: 500 }
     );
   }

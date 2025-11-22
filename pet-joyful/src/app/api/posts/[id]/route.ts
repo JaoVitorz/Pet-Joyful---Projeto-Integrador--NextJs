@@ -1,6 +1,7 @@
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
 
-const POSTS_API_URL = process.env.NEXT_PUBLIC_POSTS_API_URL || 'http://localhost:3003';
+const POSTS_API_URL =
+  process.env.NEXT_PUBLIC_POSTS_API_URL || "http://localhost:3003";
 
 export async function GET(
   request: Request,
@@ -17,9 +18,9 @@ export async function GET(
 
     return NextResponse.json(data);
   } catch (error) {
-    console.error('[API Posts] Erro ao buscar:', error);
+    console.error("[API Posts] Erro ao buscar:", error);
     return NextResponse.json(
-      { success: false, message: 'Erro ao buscar postagem' },
+      { success: false, message: "Erro ao buscar postagem" },
       { status: 500 }
     );
   }
@@ -31,23 +32,23 @@ export async function PUT(
 ) {
   try {
     const { id } = await context.params;
-    const token = request.headers.get('authorization');
-    
+    const token = request.headers.get("authorization");
+
     if (!token) {
       return NextResponse.json(
-        { success: false, message: 'Token não fornecido' },
+        { success: false, message: "Token não fornecido" },
         { status: 401 }
       );
     }
 
     const formData = await request.formData();
-    
+
     const response = await fetch(`${POSTS_API_URL}/api/posts/${id}`, {
-      method: 'PUT',
+      method: "PUT",
       headers: {
-        'Authorization': token
+        Authorization: token,
       },
-      body: formData
+      body: formData,
     });
 
     const data = await response.json();
@@ -58,9 +59,9 @@ export async function PUT(
 
     return NextResponse.json(data);
   } catch (error) {
-    console.error('[API Posts] Erro ao atualizar:', error);
+    console.error("[API Posts] Erro ao atualizar:", error);
     return NextResponse.json(
-      { success: false, message: 'Erro ao atualizar postagem' },
+      { success: false, message: "Erro ao atualizar postagem" },
       { status: 500 }
     );
   }
@@ -72,20 +73,20 @@ export async function DELETE(
 ) {
   try {
     const { id } = await context.params;
-    const token = request.headers.get('authorization');
-    
+    const token = request.headers.get("authorization");
+
     if (!token) {
       return NextResponse.json(
-        { success: false, message: 'Token não fornecido' },
+        { success: false, message: "Token não fornecido" },
         { status: 401 }
       );
     }
 
     const response = await fetch(`${POSTS_API_URL}/api/posts/${id}`, {
-      method: 'DELETE',
+      method: "DELETE",
       headers: {
-        'Authorization': token
-      }
+        Authorization: token,
+      },
     });
 
     const data = await response.json();
@@ -96,9 +97,9 @@ export async function DELETE(
 
     return NextResponse.json(data);
   } catch (error) {
-    console.error('[API Posts] Erro ao deletar:', error);
+    console.error("[API Posts] Erro ao deletar:", error);
     return NextResponse.json(
-      { success: false, message: 'Erro ao deletar postagem' },
+      { success: false, message: "Erro ao deletar postagem" },
       { status: 500 }
     );
   }
