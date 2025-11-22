@@ -73,7 +73,7 @@ interface ProfileData {
 // --- Componente ---
 export default function Perfil() {
   const [activeTab, setActiveTab] = useState<
-    "posts" | "albums" | "about" | "contact"
+    "posts" | "albums" | "about" | "contact" | "favoritos" | "configuracoes"
   >("posts");
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -86,7 +86,7 @@ export default function Perfil() {
     nome: "AATAN - Sorocaba",
     email: "contato@aatansorocaba.org.br",
     bio: "Associação de proteção animal oferecendo abrigo e cuidados para animais em situação de vulnerabilidade.",
-    avatar: "/assets/aatan-logo.jpg",
+    avatar: "",
     telefone: "(15) 1234-5678",
     endereco: "",
   });
@@ -104,8 +104,13 @@ export default function Perfil() {
       // Tentar carregar do microserviço de perfil primeiro
       try {
         const profileResponse = await profileService.getMyProfile();
+        console.log("[Perfil] Resposta do backend:", profileResponse);
         if (profileResponse.success && profileResponse.data) {
           const profile = profileResponse.data;
+          console.log(
+            "[Perfil] Foto do perfil retornada:",
+            profile.foto_perfil
+          );
           const updatedProfile: ProfileData = {
             nome: profile.nome || profileData.nome,
             email: profile.email || profileData.email,
@@ -114,13 +119,18 @@ export default function Perfil() {
             telefone: profile.telefone || profileData.telefone,
             endereco: profile.endereco || profileData.endereco,
           };
+          console.log(
+            "[Perfil] Avatar atualizado para:",
+            updatedProfile.avatar
+          );
           setProfileData(updatedProfile);
           setEditFormData(updatedProfile);
           return;
         }
-      } catch {
+      } catch (error) {
         console.log(
-          "Microserviço de perfil não disponível, tentando backend principal"
+          "Microserviço de perfil não disponível, tentando backend principal",
+          error
         );
       }
 
@@ -185,7 +195,7 @@ export default function Perfil() {
       console.log("[Perfil] Atualizando perfil via microserviço:", updateData);
       console.log("[Perfil] Token presente:", token ? "Sim" : "Não");
 
-      // Usar o microserviço de perfil (porta 3004)
+      // Usar o microserviço de perfil (porta 3001)
       const response = await profileService.updateMyProfile(updateData);
 
       if (response.success && response.data) {
@@ -333,6 +343,10 @@ export default function Perfil() {
               nome={profileData.nome}
               bio={profileData.bio}
               avatar={profileData.avatar}
+              onAvatarUpdate={(newAvatar) => {
+                setProfileData((prev) => ({ ...prev, avatar: newAvatar }));
+                setEditFormData((prev) => ({ ...prev, avatar: newAvatar }));
+              }}
             />
 
             {/* Navegação */}
