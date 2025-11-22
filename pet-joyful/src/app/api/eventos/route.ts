@@ -59,7 +59,7 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json(data);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("[API Route] Erro ao processar requisição:", error);
 
     // Se for um erro de rede ou conexão com o microserviço
@@ -73,11 +73,12 @@ export async function POST(request: Request) {
       );
     }
 
+    const err = error as { message?: string; stack?: string };
     return NextResponse.json(
       {
-        error: error.message || "Erro ao criar evento",
+        error: err.message || "Erro ao criar evento",
         details:
-          process.env.NODE_ENV === "development" ? error.stack : undefined,
+          process.env.NODE_ENV === "development" ? err.stack : undefined,
       },
       { status: 500 }
     );
