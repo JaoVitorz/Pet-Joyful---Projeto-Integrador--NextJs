@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-const POSTS_API_URL = process.env.NEXT_PUBLIC_POSTS_API_URL || 'http://localhost:3003';
+const POSTS_API_URL = process.env.NEXT_PUBLIC_POSTS_API_URL || 'https://pet-joyful-posts-service.onrender.com';
 
 export async function GET(request: Request) {
   try {
