@@ -220,7 +220,7 @@ export default function Header({ activeLink }: HeaderProps) {
                 onClick={() => setShowSettings(false)}
                 role="menuitem"
               >
-                <span>Configurações</span>
+             
               </Link>
               <Link
                 href="/login"

@@ -41,7 +41,7 @@ export default function ProfileSidebar({
       <div className="following-section mb-4">
         <div className="d-flex justify-content-between align-items-center mb-3">
           <h5>Seguindo</h5>
-          <BiSearch className="text-muted cursor-pointer" />
+         
         </div>
         
         <div className="following-list">
@@ -62,23 +62,9 @@ export default function ProfileSidebar({
 
       {/* Seção de Ações */}
       <div className="actions-section">
-        <Button 
-          variant="light" 
-          className="w-100 mb-3 d-flex align-items-center justify-content-center"
-          onClick={onFindPeople}
-        >
-          <BiUserPlus className="me-2" />
-          Encontrar pessoas
-        </Button>
         
-        <Button 
-          variant="outline-secondary" 
-          className="w-100 d-flex align-items-center justify-content-center"
-          onClick={onSettingsClick}
-        >
-          <BiCog className="me-2" />
-          Configurações
-        </Button>
+        
+        
       </div>
 
       {/* Estilos (opcional - pode colocar no CSS global) */}

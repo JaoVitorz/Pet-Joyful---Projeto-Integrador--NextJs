@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 const EVENTOS_API_URL =
   process.env.EVENTOS_API_URL ||
   process.env.NEXT_PUBLIC_EVENTS_API_URL ||
-  "http://localhost:3002";
+  "https://pet-joyful-events-service.onrender.com";
 
 export async function GET() {
   try {

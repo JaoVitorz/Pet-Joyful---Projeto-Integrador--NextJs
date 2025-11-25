@@ -2,7 +2,7 @@ import axios from "axios";
 
 // API de Eventos - Backend PET-JOYFUL-EVENTS-SERVICE
 const eventsAPI = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_EVENTS_API_URL || "http://localhost:3002",
+  baseURL: process.env.NEXT_PUBLIC_EVENTS_API_URL || "https://pet-joyful-events-service.onrender.com",
   headers: {
     "Content-Type": "application/json",
   },

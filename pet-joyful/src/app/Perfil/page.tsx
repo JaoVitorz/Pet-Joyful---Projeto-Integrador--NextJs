@@ -83,7 +83,7 @@ export default function Perfil() {
   } | null>(null);
 
   const [profileData, setProfileData] = useState<ProfileData>({
-    nome: "AATAN - Sorocaba",
+    nome: "",
     email: "contato@aatansorocaba.org.br",
     bio: "Associação de proteção animal oferecendo abrigo e cuidados para animais em situação de vulnerabilidade.",
     avatar: "",
