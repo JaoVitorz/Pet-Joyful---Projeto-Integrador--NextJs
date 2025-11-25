@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 
-// URL do microserviço de perfil
+// URL do microserviço de perfil (variável privada do servidor)
 const PROFILE_API_URL =
+  process.env.PROFILE_API_URL ||
   process.env.NEXT_PUBLIC_PROFILE_API_URL ||
   "https://edicao-perfil-microservice.onrender.com";
 
@@ -26,7 +27,15 @@ export async function POST(request: Request) {
       body: formData,
     });
 
-    const data = await response.json();
+    let data;
+    try {
+      data = await response.json();
+    } catch {
+      return NextResponse.json(
+        { success: false, message: "Resposta inválida do servidor" },
+        { status: 502 }
+      );
+    }
 
     if (!response.ok) {
       return NextResponse.json(data, { status: response.status });
