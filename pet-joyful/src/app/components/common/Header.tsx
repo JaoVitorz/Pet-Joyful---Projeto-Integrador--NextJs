@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import Image from 'next/image';
+import Link from "next/link";
+import Image from "next/image";
 import {
   BiHome,
   BiUser,
@@ -9,8 +9,9 @@ import {
   BiBell,
   BiListUl,
   BiLogOut,
-} from 'react-icons/bi';
-import { useState, useEffect, useRef } from 'react';
+  BiImageAlt,
+} from "react-icons/bi";
+import { useState, useEffect, useRef } from "react";
 
 interface HeaderProps {
   activeLink?: string;
@@ -27,21 +28,21 @@ export default function Header({ activeLink }: HeaderProps) {
   const notifications = [
     {
       id: 1,
-      user: 'Elisabeth',
-      type: 'curtiu sua publicação.',
-      avatar: '/assets/imgPerfilM.png',
+      user: "Elisabeth",
+      type: "curtiu sua publicação.",
+      avatar: "/assets/imgPerfilM.png",
     },
     {
       id: 2,
-      user: 'Roberto',
+      user: "Roberto",
       type: 'comentou: "Lindo pet!"',
-      avatar: '/assets/imgPerfilH.png',
+      avatar: "/assets/imgPerfilH.png",
     },
     {
       id: 3,
-      user: 'Clínica Vet+',
-      type: 'respondeu sua pergunta.',
-      avatar: '/assets/imgPerfilM.png',
+      user: "Clínica Vet+",
+      type: "respondeu sua pergunta.",
+      avatar: "/assets/imgPerfilM.png",
     },
   ];
 
@@ -66,30 +67,30 @@ export default function Header({ activeLink }: HeaderProps) {
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   // Fechar menus com ESC
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
+      if (event.key === "Escape") {
         setShowSettings(false);
         setShowNotifications(false);
       }
     };
 
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
   }, []);
 
   return (
-    <header 
+    <header
       className="bg-success text-white py-3 px-4 d-flex justify-content-between align-items-center position-relative"
       role="banner"
     >
-      <Link 
-        href="/Home" 
+      <Link
+        href="/Home"
         className="fw-bold fs-4"
         aria-label="PetJoyful - Ir para página inicial"
       >
@@ -105,32 +106,35 @@ export default function Header({ activeLink }: HeaderProps) {
       <label htmlFor="header-search" className="visually-hidden">
         Buscar na plataforma
       </label>
-      <input 
-        type="search" 
+      <input
+        type="search"
         id="header-search"
-        className="form-control w-50" 
+        className="form-control w-50"
         placeholder="Buscar posts, usuários, eventos..."
         aria-label="Campo de busca"
       />
 
-      <nav className="d-flex align-items-center gap-3" aria-label="Navegação principal">
+      <nav
+        className="d-flex align-items-center gap-3"
+        aria-label="Navegação principal"
+      >
         <NavLink
           href="/Home"
           icon={<BiHome size={24} />}
           label="Início"
-          active={activeLink === 'home'}
+          active={activeLink === "home"}
         />
         <NavLink
           href="/Perfil"
           icon={<BiUser size={24} />}
           label="Perfil"
-          active={activeLink === 'perfil'}
+          active={activeLink === "perfil"}
         />
         <NavLink
           href="/Chat"
           icon={<BiMessageDetail size={24} />}
           label="Chat"
-          active={activeLink === 'chat'}
+          active={activeLink === "chat"}
         />
 
         {/* Notificações */}
@@ -146,7 +150,8 @@ export default function Header({ activeLink }: HeaderProps) {
             <BiBell size={24} aria-hidden="true" />
             {notifications.length > 0 && (
               <span className="visually-hidden">
-                {notifications.length} notificação{notifications.length > 1 ? 'ões' : ''}
+                {notifications.length} notificação
+                {notifications.length > 1 ? "ões" : ""}
               </span>
             )}
           </button>
@@ -154,13 +159,15 @@ export default function Header({ activeLink }: HeaderProps) {
           {showNotifications && (
             <div
               className="position-absolute end-0 mt-2 bg-white rounded shadow-sm p-2 z-3"
-              style={{ width: '300px' }}
+              style={{ width: "300px" }}
               role="menu"
               aria-label="Lista de notificações"
             >
               <h6 className="px-2 mb-2 text-dark">Notificações</h6>
               {notifications.length === 0 ? (
-                <p className="px-3 py-2 text-muted small">Nenhuma notificação</p>
+                <p className="px-3 py-2 text-muted small">
+                  Nenhuma notificação
+                </p>
               ) : (
                 notifications.map((notif) => (
                   <div
@@ -210,18 +217,25 @@ export default function Header({ activeLink }: HeaderProps) {
           {showSettings && (
             <div
               className="position-absolute end-0 mt-2 bg-white rounded shadow-sm py-2 z-3"
-              style={{ width: '200px' }}
+              style={{ width: "200px" }}
               role="menu"
               aria-label="Menu de configurações"
             >
+              <Link
+                href="/albums"
+                className="d-flex align-items-center gap-2 px-3 py-2 text-dark text-decoration-none"
+                onClick={() => setShowSettings(false)}
+                role="menuitem"
+              >
+                <BiImageAlt size={18} aria-hidden="true" />
+                <span>Meus Álbuns</span>
+              </Link>
               <Link
                 href="/configuracoes"
                 className="d-flex align-items-center gap-2 px-3 py-2 text-dark text-decoration-none"
                 onClick={() => setShowSettings(false)}
                 role="menuitem"
-              >
-             
-              </Link>
+              ></Link>
               <Link
                 href="/login"
                 className="d-flex align-items-center gap-2 px-3 py-2 text-dark text-decoration-none"
@@ -253,10 +267,11 @@ function NavLink({
   return (
     <Link
       href={href}
-      className={`text-white text-decoration-none d-flex flex-column align-items-center p-2 rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2 ${active ? 'active' : ''
-        }`}
+      className={`text-white text-decoration-none d-flex flex-column align-items-center p-2 rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2 ${
+        active ? "active" : ""
+      }`}
       aria-label={`Ir para ${label}`}
-      aria-current={active ? 'page' : undefined}
+      aria-current={active ? "page" : undefined}
     >
       <span aria-hidden="true">{icon}</span>
       <span className="fs-6">{label}</span>

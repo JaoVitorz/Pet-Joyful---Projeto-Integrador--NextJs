@@ -5,7 +5,6 @@ import Header from "../components/common/Header";
 import { Container, Row, Col, Button, Form } from "react-bootstrap";
 import {
   BiMessageDetail,
-  BiPlusCircle,
   BiHeart,
   BiShare,
   BiEdit,
@@ -54,12 +53,6 @@ interface NewPost {
   };
 }
 
-interface Album {
-  id: string | number;
-  title: string;
-  coverImage?: string;
-}
-
 // --- Interface de Perfil ---
 interface ProfileData {
   nome: string;
@@ -73,7 +66,7 @@ interface ProfileData {
 // --- Componente ---
 export default function Perfil() {
   const [activeTab, setActiveTab] = useState<
-    "posts" | "albums" | "about" | "contact" | "favoritos" | "configuracoes"
+    "posts" | "about" | "contact" | "favoritos" | "configuracoes"
   >("posts");
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -291,8 +284,6 @@ export default function Perfil() {
     },
   ]);
 
-  const [albums] = useState<Album[]>([]);
-
   // --- Handlers ---
   const handleCreatePost = (newPost: NewPost) => {
     const post: Post = {
@@ -351,7 +342,7 @@ export default function Perfil() {
 
             {/* Navegação */}
             <div className="mb-3 d-flex gap-2">
-              {["posts", "albums", "about", "contact"].map((tab) => (
+              {["posts", "about", "contact"].map((tab) => (
                 <Button
                   key={tab}
                   variant={activeTab === tab ? "success" : "outline-success"}
@@ -360,8 +351,6 @@ export default function Perfil() {
                 >
                   {tab === "posts"
                     ? "Publicações"
-                    : tab === "albums"
-                    ? "Álbuns"
                     : tab === "about"
                     ? "Sobre"
                     : "Contato"}
@@ -466,35 +455,6 @@ export default function Perfil() {
                   </div>
                 ))}
               </>
-            )}
-
-            {activeTab === "albums" && (
-              <div className="bg-white p-3 rounded shadow">
-                <div className="d-flex justify-content-between align-items-center mb-4">
-                  <h4 className="mb-0">Álbuns</h4>
-                  <Button variant="success" size="sm">
-                    <BiPlusCircle size={16} className="me-1" /> Novo Álbum
-                  </Button>
-                </div>
-                <div className="row">
-                  {albums.map((album) => (
-                    <div key={album.id} className="col-md-6 mb-4">
-                      <div className="bg-light rounded p-3">
-                        <h5>{album.title}</h5>
-                        {album.coverImage && (
-                          <Image
-                            src={album.coverImage}
-                            width={250}
-                            height={150}
-                            alt={album.title}
-                            className="rounded"
-                          />
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
             )}
 
             {activeTab === "about" && (

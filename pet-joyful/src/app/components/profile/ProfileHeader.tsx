@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { BiCheckCircle, BiEdit } from "react-icons/bi";
+import { BiEdit } from "react-icons/bi";
 import { profileService } from "@/services/profileApi";
 
 interface ProfileHeaderProps {
@@ -137,14 +137,7 @@ export default function ProfileHeader({
         </div>
 
         <div className="ms-4 flex-grow-1">
-          <div className="d-flex align-items-center">
-            <h2 className="mb-0">{nome}</h2>
-            <BiCheckCircle
-              className="ms-2 text-success"
-              size={20}
-              aria-label="Conta verificada"
-            />
-          </div>
+          <h2 className="mb-0">{nome}</h2>
 
           <p className="text-muted mt-2">{bio}</p>
         </div>

@@ -244,13 +244,6 @@ export default function Login() {
               Continue com Outlook
             </button>
           </Link>
-          <Link
-            href="#"
-            className="forgot-password"
-            aria-label="Recuperar senha esquecida"
-          >
-            Esqueceu sua senha?
-          </Link>
           <div className="signup">
             <p>
               Não tem uma conta?{" "}
@@ -263,15 +256,10 @@ export default function Login() {
       </div>
 
       <footer>
-        <Link href="#">Sobre</Link>
-        <Link href="#">Ajuda</Link>
-        <Link
-          href="https://www.gov.br/esporte/pt-br/acesso-a-informacao/lgpd"
-          target="_blank"
-        >
-          Privacidade
-        </Link>
-        <Link href="#">Termos</Link>
+        <Link href="/sobre">Sobre</Link>
+        <Link href="/Faq">Ajuda</Link>
+        <Link href="/privacidade">Privacidade</Link>
+        <Link href="/termos">Termos</Link>
       </footer>
     </>
   );

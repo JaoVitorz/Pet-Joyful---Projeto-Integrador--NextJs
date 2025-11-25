@@ -268,7 +268,7 @@ export default function Registro() {
               aria-pressed={tipoUsuario === "adotante"}
               aria-label="Cadastro como adotante"
             >
-              Adotante
+              Tutor
             </button>
             <button
               type="button"

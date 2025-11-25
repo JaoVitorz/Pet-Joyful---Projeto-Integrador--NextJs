@@ -230,9 +230,27 @@ const eventService = {
     try {
       // Endpoint do backend PET-JOYFUL-EVENTS-SERVICE (usa /api/events)
       const endpoint = `${API_PREFIX}/${API_ENDPOINT}/${id}`;
+
+      if (typeof window !== "undefined") {
+        console.log(`[eventService] PUT ${endpoint}`);
+        console.log("[eventService] Dados do evento:", eventData);
+      }
+
       const response = await api.put(endpoint, eventData);
+
+      if (typeof window !== "undefined") {
+        console.log("✅ Evento atualizado com sucesso:", response.data);
+      }
+
       return response.data;
     } catch (error) {
+      if (typeof window !== "undefined") {
+        console.error("[eventService] Erro ao atualizar evento:", error);
+        if (error.response) {
+          console.error("Status:", error.response.status);
+          console.error("Dados:", error.response.data);
+        }
+      }
       throw error;
     }
   },
@@ -241,8 +259,26 @@ const eventService = {
     try {
       // Endpoint do backend PET-JOYFUL-EVENTS-SERVICE (usa /api/events)
       const endpoint = `${API_PREFIX}/${API_ENDPOINT}/${id}`;
-      await api.delete(endpoint);
+
+      if (typeof window !== "undefined") {
+        console.log(`[eventService] DELETE ${endpoint}`);
+      }
+
+      const response = await api.delete(endpoint);
+
+      if (typeof window !== "undefined") {
+        console.log("✅ Evento excluído com sucesso");
+      }
+
+      return response.data;
     } catch (error) {
+      if (typeof window !== "undefined") {
+        console.error("[eventService] Erro ao excluir evento:", error);
+        if (error.response) {
+          console.error("Status:", error.response.status);
+          console.error("Dados:", error.response.data);
+        }
+      }
       throw error;
     }
   },
