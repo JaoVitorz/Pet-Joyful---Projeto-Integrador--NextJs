@@ -14,12 +14,10 @@ import {
   Users,
   FileText,
   Camera,
-  UserPlus,
   LogIn,
   Settings,
   Share2,
   ThumbsUp,
-  MapPin,
   Info,
   Shield,
   BookOpen,
@@ -181,66 +179,6 @@ const ArquiteturaInformacao = () => {
         path: "/termos",
       },
     ],
-  };
-
-  const wireframe = {
-    header: {
-      title: "Cabeçalho (Header)",
-      elements: [
-        "Logo Pet Joyful (esquerda)",
-        "Barra de busca (centro)",
-        "Menu principal: Início, Perfil, Chat (direita)",
-        "Ícones: Notificações, Configurações",
-      ],
-    },
-    hero: {
-      title: "Seção Hero/Feed Principal",
-      elements: [
-        "Formulário de criação de post",
-        "Upload de imagens",
-        "Cards de publicações",
-        "Botões de interação (curtir, comentar, compartilhar)",
-      ],
-    },
-    sections: [
-      {
-        name: "Página de Perfil",
-        layout: "3 colunas",
-        content: [
-          "Coluna 1: Foto de perfil, informações pessoais",
-          "Coluna 2: Feed de posts do usuário",
-          "Coluna 3: Álbuns, pets cadastrados",
-        ],
-      },
-      {
-        name: "Página de Eventos",
-        layout: "Grid 2 colunas",
-        content: [
-          "Cards de eventos com imagem",
-          "Título, data e local",
-          "Botão de participação",
-          "Filtros por tipo de evento",
-        ],
-      },
-      {
-        name: "Chat",
-        layout: "2 colunas",
-        content: [
-          "Lista de conversas (esquerda)",
-          "Janela de mensagens (direita)",
-          "Input de mensagem (parte inferior)",
-        ],
-      },
-    ],
-    footer: {
-      title: "Rodapé (Footer)",
-      elements: [
-        "Links institucionais",
-        "Sobre, FAQ, Privacidade, Termos",
-        "Redes sociais",
-        "Copyright",
-      ],
-    },
   };
 
   const symbols = [
@@ -903,7 +841,7 @@ const ArquiteturaInformacao = () => {
                 <p className="text-sm text-gray-700">
                   <strong>Biblioteca de ícones:</strong> Lucide React - ícones
                   modernos, acessíveis e consistentes. Todos os ícones possuem
-                  atributo aria-hidden="true" para leitores de tela.
+                  atributo aria-hidden=&quot;true&quot; para leitores de tela.
                 </p>
               </div>
             </div>
