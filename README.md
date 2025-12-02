@@ -6,18 +6,69 @@ A plataforma facilita o acesso a informações, promove campanhas e eventos como
 
 ---
 
+## 🏗️ Arquitetura do Sistema
+
+O projeto utiliza uma **arquitetura de microsserviços** com múltiplos backends independentes:
+
+### Frontend
+
+- **Repositório:** [Pet-Joyful---Projeto-Integrador--NextJs](https://github.com/JaoVitorz/Pet-Joyful---Projeto-Integrador--NextJs)
+- **Tecnologia:** Next.js 15, React 19, TypeScript
+- **Deploy:** Vercel (produção)
+
+### Microsserviços Backend
+
+#### 1. Backend Principal (Autenticação e Mensagens)
+
+- **Repositório:** [Pet-Joyful-Backend](https://github.com/JaoVitorz/Pet-Joyful-Backend)
+- **URL Produção:** `https://pet-joyful-backend-1.onrender.com`
+- **Funcionalidades:** Autenticação (login/registro), mensagens, denúncias
+- **Porta Local:** `3001`
+
+#### 2. Microserviço de Eventos
+
+- **Repositório:** [PET-JOYFUL-EVENTS-SERVICE](https://github.com/JaoVitorz/PET-JOYFUL-EVENTS-SERVICE)
+- **URL Produção:** `https://pet-joyful-events-service.onrender.com`
+- **Funcionalidades:** CRUD de eventos, campanhas de adoção
+- **Porta Local:** `3002`
+
+#### 3. Microserviço de Perfil e Álbuns
+
+- **Repositório:** [EDICAO-PERFIL-MICROSERVICE](https://github.com/JaoVitorz/EDICAO-PERFIL-MICROSERVICE)
+- **URL Produção:** `https://edicao-perfil-microservice.onrender.com`
+- **Funcionalidades:** Edição de perfil, upload de fotos, gerenciamento de álbuns
+- **Porta Local:** `3001`
+
+---
+
 ## 🚀 Tecnologias Utilizadas
 
-- [Next.js](https://nextjs.org/)
-- [React](https://reactjs.org/)
-- [Bootstrap](https://getbootstrap.com/)
-- [React-Bootstrap](https://react-bootstrap.github.io/)
-- [React Icons](https://react-icons.github.io/react-icons/)
-- [Express](https://expressjs.com/)
-- [Node.js](https://nodejs.org/)
-- [npm](https://www.npmjs.com/)
-- [Formik](https://formik.org/)
-- [Yup](https://www.npmjs.com/package/yup)
+### Frontend
+
+- [Next.js 15](https://nextjs.org/) - Framework React
+- [React 19](https://reactjs.org/) - Biblioteca UI
+- [TypeScript](https://www.typescriptlang.org/) - Tipagem estática
+- [Tailwind CSS 4](https://tailwindcss.com/) - Framework CSS
+- [Bootstrap 5](https://getbootstrap.com/) - Componentes UI
+- [Formik](https://formik.org/) - Gerenciamento de formulários
+- [Yup](https://www.npmjs.com/package/yup) - Validação de schemas
+- [Axios](https://axios-http.com/) - Cliente HTTP
+- [Lucide React](https://lucide.dev/) - Ícones
+
+### Backend
+
+- [Node.js](https://nodejs.org/) - Runtime JavaScript
+- [Express](https://expressjs.com/) - Framework web
+- [JWT](https://jwt.io/) - Autenticação
+- [Bcrypt](https://www.npmjs.com/package/bcrypt) - Hash de senhas
+- [CORS](https://www.npmjs.com/package/cors) - Políticas de origem cruzada
+
+### DevOps
+
+- [Vercel](https://vercel.com/) - Deploy frontend
+- [Render](https://render.com/) - Deploy backends
+- [Git](https://git-scm.com/) - Controle de versão
+- [npm](https://www.npmjs.com/) - Gerenciador de pacotes
 
 ---
 
