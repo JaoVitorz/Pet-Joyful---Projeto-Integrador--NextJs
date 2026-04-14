@@ -1,133 +1,44 @@
-name: Release Frontend
+name: Next.js Docker CI
 
 on:
   push:
-    branches:
-      - main
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
 
 jobs:
-  version:
+  build-docker:
     runs-on: ubuntu-latest
-    outputs:
-      new_version: ${{ steps.versioning.outputs.new_version }}
 
     steps:
       - name: Checkout do código
         uses: actions/checkout@v4
+
+      # O Docker Buildx permite builds mais rápidos e suporte a cache avançado
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Cache das camadas do Docker para acelerar os próximos builds
+      - name: Cache Docker layers
+        uses: actions/cache@v4
         with:
-          fetch-depth: 0
-          token: ${{ secrets.GH_TOKEN }}
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
 
-      - name: Configurar Node.js
-        uses: actions/setup-node@v4
+      - name: Build da Imagem Pet Joyful
+        uses: docker/build-push-action@v5
         with:
-          node-version: '20'
-          cache: 'npm'
+          context: .
+          file: ./Dockerfile
+          push: false # Apenas testa o build, não envia para um registro ainda
+          tags: pet-joyful-frontend:latest
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
 
-      - name: Instalar dependências
-        run: npm ci
-
-      - name: Rodar build (Validação)
-        run: npm run build
-
-      - name: Testes unitários
-        run: npm test || echo "Sem testes configurados"
-
-      # VERSIONAMENTO SEMVER
-      - name: Instalar SemVer
-        run: npm install -g semver
-
-      - name: Configurar Git
+      # Estratégia para manter o cache do Docker atualizado
+      - name: Move cache
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-      - name: Criar nova TAG inicial (se não existir)
-        run: |
-          if [ -z "$(git tag)" ]; then
-            git tag v0.0.1
-            git push origin v0.0.1
-          fi
-
-      - name: Calcular nova versão
-        id: versioning
-        run: |
-          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
-          COMMITS=$(git log ${LAST_TAG}..HEAD --pretty=format:"%s")
-          
-          BUMP="patch"
-          if echo "$COMMITS" | grep -qiE "^(feat|feature)(\(.+\))?!:|^BREAKING CHANGE"; then
-            BUMP="major"
-          elif echo "$COMMITS" | grep -qiE "^feat(\(.+\))?:"; then
-            BUMP="minor"
-          fi
-
-          CURRENT=${LAST_TAG#v}
-          NEW_VERSION=$(semver -i $BUMP $CURRENT)
-          echo "new_version=v${NEW_VERSION}" >> $GITHUB_OUTPUT
-          echo "Nova versão: v${NEW_VERSION}"
-
-      - name: Atualizar package.json
-        run: |
-          NEW_VERSION=${{ steps.versioning.outputs.new_version }}
-          VERSION_NUMBER=${NEW_VERSION#v}
-          npm version $VERSION_NUMBER --no-git-tag-version
-          git add package.json package-lock.json
-          git commit -m "chore: bump version to ${NEW_VERSION} [skip ci]" || echo "Sem mudanças"
-
-      - name: Criar e publicar nova TAG
-        run: |
-          NEW_VERSION=${{ steps.versioning.outputs.new_version }}
-          git tag $NEW_VERSION
-          git push origin HEAD:main
-          git push origin $NEW_VERSION
-
-      # NOTIFICAÇÕES (E-MAIL)
-      - name: Enviar e-mail status
-        if: always()
-        uses: dawidd6/action-send-mail@v3
-        with:
-          server_address: smtp.gmail.com
-          server_port: 587
-          username: ${{ secrets.EMAIL_USERNAME }}
-          password: ${{ secrets.EMAIL_PASSWORD }}
-          subject: "${{ job.status == 'success' && '✅' || '❌' }} Pipeline Frontend - ${{ github.repository }}"
-          body: |
-            O pipeline do Frontend finalizou com status: ${{ job.status }}.
-            Versão: ${{ steps.versioning.outputs.new_version }}
-            Repositório: ${{ github.repository }}
-          to: ${{ secrets.EMAIL_USERNAME }}
-          from: ${{ secrets.EMAIL_USERNAME }}
-
-      # NOTIFICAÇÕES (DISCORD)
-      - name: Notificar Discord
-        if: always()
-        run: |
-          STATUS_COLOR=${{ job.status == 'success' && '3066993' || '15158332' }}
-          curl -s -X POST "${{ secrets.DISCORD_WEBHOOK_URL }}" \
-            -H "Content-Type: application/json" \
-            -d '{
-              "embeds": [{
-                "title": "Pipeline Frontend: ${{ job.status }}",
-                "color": '$STATUS_COLOR',
-                "fields": [
-                  { "name": "Versão", "value": "`${{ steps.versioning.outputs.new_version }}`", "inline": true },
-                  { "name": "Repo", "value": "${{ github.repository }}", "inline": true }
-                ]
-              }]
-            }'
-
-  docker-build:
-    name: Build da imagem Docker Frontend
-    runs-on: ubuntu-latest
-    needs: [version]
-    steps:
-      - name: Checkout do código
-        uses: actions/checkout@v4
-
-      - name: Build da imagem Docker (Standalone)
-        run: |
-          docker build \
-            --tag pet-joyful-frontend:${{ needs.version.outputs.new_version }} \
-            --tag pet-joyful-frontend:latest \
-            .
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
