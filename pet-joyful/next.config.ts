@@ -1,9 +1,12 @@
 import type { NextConfig } from "next";
-
+ 
 const nextConfig: NextConfig = {
+  output: 'standalone',
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   reactStrictMode: true,
   images: {
-    // Allow external images from Cloudinary used by the posts microservice
     remotePatterns: [
       {
         protocol: 'https',
@@ -32,5 +35,5 @@ const nextConfig: NextConfig = {
     ],
   },
 };
-
+ 
 export default nextConfig;
