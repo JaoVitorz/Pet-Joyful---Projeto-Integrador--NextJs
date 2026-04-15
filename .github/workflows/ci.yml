@@ -30,9 +30,9 @@ jobs:
       - name: Build da Imagem Pet Joyful
         uses: docker/build-push-action@v5
         with:
-          context: ./pet-joyful  # Muda o contexto para a pasta do projeto
-          file: ./pet-joyful/Dockerfile
-          push: false
+          context: .
+          file: ./Dockerfile
+          push: false # Apenas testa o build, não envia para um registro ainda
           tags: pet-joyful-frontend:latest
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
