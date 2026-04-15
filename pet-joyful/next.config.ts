@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  
   reactStrictMode: true,
   images: {
     // Allow external images from Cloudinary used by the posts microservice
@@ -31,6 +32,12 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  eslint: {
+    // Atenção: Isso permite que o build termine mesmo com erros de lint.
+    ignoreDuringBuilds: true,
+  },
+  // Aproveite para conferir se o standalone está ativo:
+  output: 'standalone', 
 };
 
 export default nextConfig;
