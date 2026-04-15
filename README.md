@@ -70,3 +70,52 @@ Abra [http://localhost:3000](http://localhost:3000) para visualizar o site.
 ```
 
 ```
+
+🐳 Docker (Frontend)
+Este projeto utiliza Docker para garantir que o ambiente de execução seja idêntico em qualquer máquina, evitando problemas de "na minha máquina funciona". Utilizamos o modo Multi-stage Build com o Node.js 20 para gerar uma imagem otimizada.
+
+🛠️ Pré-requisitos
+Docker instalado.
+
+Docker Compose (opcional, para facilitar o processo).
+
+🚀 Comandos Úteis
+1. Construir a Imagem (Build)
+Para gerar a imagem localmente a partir da raiz do repositório:
+
+Bash
+docker build -t pet-joyful-frontend:latest .
+2. Executar o Container
+Para rodar o frontend na porta 3000:
+
+Bash
+docker run -p 3000:3000 --name pet-joyful-app pet-joyful-frontend:latest
+Após rodar, o app estará disponível em: http://localhost:3000
+
+3. Parar e Remover o Container
+Bash
+# Parar a execução
+docker stop pet-joyful-app
+
+# Remover o container (para poder rodar um novo)
+docker rm pet-joyful-app
+4. Verificar Imagens Criadas
+Bash
+docker images
+⚙️ Estrutura no Docker (Standalone)
+A imagem foi configurada no modo standalone do Next.js. Isso significa que:
+
+A imagem final é extremamente leve (apenas o necessário para rodar).
+
+Não depende de um servidor completo com todas as node_modules.
+
+Os arquivos estáticos são servidos diretamente pelo servidor Node otimizado do Next.js.
+
+🤖 CI/CD com GitHub Actions
+O arquivo .github/workflows/ci.yml automatiza esse processo:
+
+Linting: Verifica erros de código e acessibilidade.
+
+Build Test: Valida se o Next.js consegue compilar.
+
+Docker Build: Gera a imagem final automaticamente a cada push na branch main.
