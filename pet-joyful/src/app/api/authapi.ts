@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 // Backend Principal Pet-Joyful (autenticação, mensagens, denúncias)
-// URL de produção: https://pet-joyful-backend-1.onrender.com
+// URL de produção: https://pet-joyful-backend.onrender.com
 const AUTH_API_URL = process.env.NEXT_PUBLIC_AUTH_API_URL || 'https://pet-joyful-backend.onrender.com';
 
 const api = axios.create({
