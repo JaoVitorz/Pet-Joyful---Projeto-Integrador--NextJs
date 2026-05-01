@@ -1,10 +1,16 @@
 import type { NextConfig } from "next";
-
+ 
 const nextConfig: NextConfig = {
+<<<<<<< HEAD
   
+=======
+  output: 'standalone',
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+>>>>>>> 6baa73b723c0dc6c02415e9c2d39a8554290a779
   reactStrictMode: true,
   images: {
-    // Allow external images from Cloudinary used by the posts microservice
     remotePatterns: [
       {
         protocol: 'https',
@@ -39,5 +45,5 @@ const nextConfig: NextConfig = {
   // Aproveite para conferir se o standalone está ativo:
   output: 'standalone', 
 };
-
+ 
 export default nextConfig;
