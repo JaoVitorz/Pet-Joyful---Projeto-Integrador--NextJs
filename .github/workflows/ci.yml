@@ -29,6 +29,7 @@ jobs:
 
       - name: Build do Next.js
         run: npm run build
+        working-directory: ./pet-joyful
 
       - name: Testes (se tiver)
         run: npm test || echo "Sem testes configurados"
