@@ -25,6 +25,7 @@ jobs:
 
       - name: Instalar dependências
         run: npm install
+        working-directory: ./pet-joyful
 
       - name: Build do Next.js
         run: npm run build
