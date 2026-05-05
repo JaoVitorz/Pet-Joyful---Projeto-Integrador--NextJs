@@ -62,9 +62,17 @@ jobs:
 
       - name: Criar TAG
         run: |
-          git tag ${{ steps.versioning.outputs.new_version }}
-          git push origin ${{ steps.versioning.outputs.new_version }}
+          TAG=${{ steps.versioning.outputs.new_version }}
+        
+           if git ls-remote --tags origin | grep -q "refs/tags/$TAG"; then
+             echo "Tag $TAG já existe no remoto. Pulando..."
+           else
+             git tag $TAG
+             git push origin $TAG
+           fi
 
+
+          
       # 🔍 SonarCloud
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v2
