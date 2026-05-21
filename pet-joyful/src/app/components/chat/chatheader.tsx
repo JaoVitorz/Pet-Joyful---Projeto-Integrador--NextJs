@@ -45,3 +45,4 @@ export default function ChatHeader({ user, onBack }: Props) {
     </div>
   );
 }
+

@@ -50,3 +50,4 @@ export default function ChatList({ users, activeUserId, onSelectUser }: Props) {
     </aside>
   );
 }
+

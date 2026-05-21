@@ -2,7 +2,8 @@ import axios from "axios";
 
 // URL base do microserviço de perfil
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_PROFILE_API_URL || "https://edicao-perfil-microservice.onrender.com";
+  process.env.NEXT_PUBLIC_PROFILE_API_URL ||
+  "https://edicao-perfil-microservice.onrender.com";
 
 // Criar instância do axios com configurações padrão
 const profileApi = axios.create({
@@ -18,20 +19,26 @@ profileApi.interceptors.request.use(
     if (typeof window !== "undefined") {
       const token = localStorage.getItem("token");
       if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
+        if (!config.headers) {
+          config.headers = {};
+        }
+        (config.headers as Record<string, string>).Authorization =
+          `Bearer ${token}`;
       }
     }
 
     // Se for FormData, remove o Content-Type para o axios definir automaticamente com boundary
     if (config.data instanceof FormData) {
-      delete config.headers["Content-Type"];
+      if (config.headers) {
+        delete (config.headers as Record<string, string>)["Content-Type"];
+      }
     }
 
     return config;
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 // Interceptor para tratar erros de resposta
@@ -83,7 +90,7 @@ profileApi.interceptors.response.use(
       status: 0,
       data: null,
     });
-  }
+  },
 );
 
 // Tipos TypeScript para o perfil
@@ -132,12 +139,12 @@ export const profileService = {
   // Verificar saúde do serviço
   async healthCheck(): Promise<ApiResponse<unknown>> {
     try {
-      const response = await profileApi.get("/health");
+      const response = await profileApi.get<ApiResponse<unknown>>("/health");
       return response.data;
     } catch (error: unknown) {
       const err = error as { response?: { data?: { message?: string } } };
       throw new Error(
-        err.response?.data?.message || "Erro ao verificar saúde do serviço"
+        err.response?.data?.message || "Erro ao verificar saúde do serviço",
       );
     }
   },
@@ -145,7 +152,7 @@ export const profileService = {
   // Buscar perfil do usuário autenticado
   async getMyProfile(): Promise<ApiResponse<Profile>> {
     try {
-      const response = await profileApi.get("/me");
+      const response = await profileApi.get<ApiResponse<Profile>>("/me");
       return response.data;
     } catch (error: unknown) {
       console.error("Erro ao buscar perfil:", error);
@@ -162,7 +169,7 @@ export const profileService = {
   // Buscar perfil por ID
   async getProfileById(userId: string): Promise<ApiResponse<Profile>> {
     try {
-      const response = await profileApi.get(`/${userId}`);
+      const response = await profileApi.get<ApiResponse<Profile>>(`/${userId}`);
       return response.data;
     } catch (error: unknown) {
       console.error("Erro ao buscar perfil:", error);
@@ -177,10 +184,10 @@ export const profileService = {
 
   // Atualizar perfil do usuário autenticado
   async updateMyProfile(
-    data: ProfileUpdateData
+    data: ProfileUpdateData,
   ): Promise<ApiResponse<Profile>> {
     try {
-      const response = await profileApi.put("/me", data);
+      const response = await profileApi.put<ApiResponse<Profile>>("/me", data);
       return response.data;
     } catch (error: unknown) {
       console.error("Erro ao atualizar perfil:", error);
@@ -197,10 +204,13 @@ export const profileService = {
   // Atualizar perfil por ID (apenas o próprio usuário)
   async updateProfileById(
     userId: string,
-    data: ProfileUpdateData
+    data: ProfileUpdateData,
   ): Promise<ApiResponse<Profile>> {
     try {
-      const response = await profileApi.put(`/${userId}`, data);
+      const response = await profileApi.put<ApiResponse<Profile>>(
+        `/${userId}`,
+        data,
+      );
       return response.data;
     } catch (error: unknown) {
       console.error("Erro ao atualizar perfil:", error);
@@ -215,7 +225,7 @@ export const profileService = {
 
   // Upload de foto de perfil
   async uploadProfilePhoto(
-    file: File
+    file: File,
   ): Promise<ApiResponse<{ foto_perfil: string }>> {
     try {
       // Validar tipo de arquivo
@@ -235,7 +245,7 @@ export const profileService = {
 
       if (!validTypes.includes(file.type)) {
         throw new Error(
-          "Tipo de arquivo inválido. Use apenas imagens (JPEG, PNG, GIF ou WebP)."
+          "Tipo de arquivo inválido. Use apenas imagens (JPEG, PNG, GIF ou WebP).",
         );
       }
 
@@ -251,7 +261,7 @@ export const profileService = {
       // Log para debug
       console.log(
         "[profileApi] Enviando para:",
-        `${API_BASE_URL}/api/profile/me/photo`
+        `${API_BASE_URL}/api/profile/me/photo`,
       );
       console.log(
         "[profileApi] Arquivo:",
@@ -259,14 +269,16 @@ export const profileService = {
         "Tipo:",
         file.type,
         "Tamanho:",
-        file.size
+        file.size,
       );
       console.log("[profileApi] FormData tem arquivo:", formData.has("foto"));
       console.log("[profileApi] Arquivo no FormData:", formData.get("foto"));
 
       // Não setar manualmente 'Content-Type' aqui. O browser/axios
       // definem o boundary correto para multipart/form-data.
-      const response = await profileApi.post("/me/photo", formData);
+      const response = await profileApi.post<
+        ApiResponse<{ foto_perfil: string }>
+      >("/me/photo", formData);
 
       console.log("[profileApi] Resposta do servidor:", response.data);
 
