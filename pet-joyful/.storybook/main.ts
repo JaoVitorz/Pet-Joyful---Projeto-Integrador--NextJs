@@ -1,33 +1,21 @@
-import type { StorybookConfig } from '@storybook/react-vite';
-import path from 'path';
+import type { StorybookConfig } from '@storybook/nextjs-vite';
+
 
 const config: StorybookConfig = {
-  stories: [
-    '../src/**/*.mdx',
-    '../src/**/*.stories.@(js|jsx|mjs|ts|tsx)',
+  "stories": [
+    "../src/**/*.mdx",
+    "../src/**/*.stories.@(js|jsx|mjs|ts|tsx)"
   ],
-
-  addons: [
-    '@storybook/addon-essentials',
-    '@storybook/addon-interactions',
-    '@storybook/addon-a11y',
+  "addons": [
+    "@chromatic-com/storybook",
+    "@storybook/addon-vitest",
+    "@storybook/addon-a11y",
+    "@storybook/addon-docs",
+    "@storybook/addon-mcp"
   ],
-
-  framework: {
-    name: '@storybook/react-vite',
-    options: {},
-  },
-
-  viteFinal: async (config) => {
-    config.resolve = config.resolve || {};
-
-    config.resolve.alias = {
-      ...(config.resolve.alias || {}),
-      '@': path.resolve(__dirname, '../src'),
-    };
-
-    return config;
-  },
+  "framework": "@storybook/nextjs-vite",
+  "staticDirs": [
+    "..\\public"
+  ]
 };
-
 export default config;

@@ -1,17 +1,6 @@
 import type { Preview } from '@storybook/nextjs-vite'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import '../src/app/globals.css';
-import * as NextImage from 'next/image';
-
-const OriginalNextImage = NextImage.default;
-
-Object.defineProperty(NextImage, 'default', {
-  configurable: true,
-  value: (props: any) => {
-    return <OriginalNextImage {...props} unoptimized />;
-  },
-});
-
 
 
 const preview: Preview = {
