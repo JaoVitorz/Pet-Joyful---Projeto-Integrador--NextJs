@@ -13,7 +13,7 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 # Copia todo o conteúdo da pasta pet-joyful
-COPY pet-joyful/ .
+COPY . .
 
 # Desativa a coleta de dados do Next.js durante o build
 ENV NEXT_TELEMETRY_DISABLED=1
