@@ -176,7 +176,7 @@ jobs:
 
     environment:
       name: hml
-      url: https://web-hml-pet-joyful.onrender.com
+      url: https://pet-joyful-projeto-integrador-nextjs-1.onrender.com
 
     steps:
       - name: Instalar jq
@@ -217,7 +217,7 @@ jobs:
 
     environment:
       name: prod
-      url: https://web-prod-pet-joyful.onrender.com
+      url: https://pet-joyful-projeto-integrador-nextjs.onrender.com
 
     steps:
       - name: Instalar jq
@@ -248,29 +248,4 @@ jobs:
             -H "Authorization: Bearer $RENDER_API_KEY" \
             -d "$PAYLOAD"
 
-      - name: Notificação Discord
-        if: success()
-        run: |
-          curl -s -X POST "${{ secrets.DISCORD_WEBHOOK_URL }}" \
-            -H "Content-Type: application/json" \
-            -d '{
-              "embeds": [{
-                "title": "🚀 Deploy PROD concluído - Frontend",
-                "color": 3066993,
-                "fields": [
-                  {
-                    "name": "Versão",
-                    "value": "`${{ needs.version.outputs.new_version }}`",
-                    "inline": true
-                  },
-                  {
-                    "name": "Autor",
-                    "value": "${{ github.actor }}",
-                    "inline": true
-                  }
-                ],
-                "footer": {
-                  "text": "GitHub Actions • Pet Joyful Frontend"
-                }
-              }]
-            }'
+     
