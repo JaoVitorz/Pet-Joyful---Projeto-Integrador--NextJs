@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 // URL de produção: https://pet-joyful-backend.onrender.com
 const AUTH_API_URL =
   process.env.NEXT_PUBLIC_AUTH_API_URL ||
-  "https://pet-joyful-backend.onrender.com";
+  "https://pet-joyful-backend-hml.onrender.com";
 
 export async function POST(request: Request) {
   try {

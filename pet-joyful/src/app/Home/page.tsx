@@ -3,7 +3,6 @@
 import "../globals.css";
 import Footer from "../components/common/Footer";
 import Header from "../components/common/Header";
-import "bootstrap/dist/css/bootstrap.min.css";
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { createPost } from "@/app/services/postService";
@@ -151,8 +150,8 @@ export default function App() {
   const handleLike = (postId: number) => {
     setPosts((prevPosts) =>
       prevPosts.map((post) =>
-        post.id === postId ? { ...post, likes: post.likes + 1 } : post
-      )
+        post.id === postId ? { ...post, likes: post.likes + 1 } : post,
+      ),
     );
   };
 
@@ -261,7 +260,7 @@ export default function App() {
                             size="sm"
                             onClick={() =>
                               setReportingPostId(
-                                reportingPostId === post.id ? null : post.id
+                                reportingPostId === post.id ? null : post.id,
                               )
                             }
                             aria-label={`Opções da publicação de ${post.user.name}`}
@@ -316,7 +315,7 @@ export default function App() {
                                       className="mt-2 w-100"
                                       onClick={() => {
                                         alert(
-                                          `Post ${post.id} denunciado: ${reportText}`
+                                          `Post ${post.id} denunciado: ${reportText}`,
                                         );
                                         setReportingPostId(null);
                                         setReportText("");
@@ -397,8 +396,8 @@ export default function App() {
                                     ...p,
                                     comments: [...p.comments, newComment],
                                   }
-                                : p
-                            )
+                                : p,
+                            ),
                           );
                         }}
                       />
@@ -433,7 +432,6 @@ export default function App() {
                   <span>Roberto</span>
                 </li>
               </ul>
-             
             </aside>
           </Row>
         </Container>

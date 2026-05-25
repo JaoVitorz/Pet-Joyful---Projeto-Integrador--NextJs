@@ -41,7 +41,7 @@ export default function Footer() {
                 href="https://instagram.com" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="text-white p-2 rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2"
+                className="text-white p-2 rounded focus:outline focus:outline-2 focus:outline-white focus:outline-offset-2"
                 aria-label="Seguir PetJoyful no Instagram"
               >
                 <FaInstagram size={20} aria-hidden="true" />
@@ -50,7 +50,7 @@ export default function Footer() {
                 href="https://facebook.com" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="text-white p-2 rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2"
+                className="text-white p-2 rounded focus:outline focus:outline-2 focus:outline-white focus:outline-offset-2"
                 aria-label="Seguir PetJoyful no Facebook"
               >
                 <FaFacebook size={20} aria-hidden="true" />
@@ -59,7 +59,7 @@ export default function Footer() {
                 href="https://twitter.com" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="text-white p-2 rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2"
+                className="text-white p-2 rounded focus:outline focus:outline-2 focus:outline-white focus:outline-offset-2"
                 aria-label="Seguir PetJoyful no Twitter"
               >
                 <FaTwitter size={20} aria-hidden="true" />
@@ -74,7 +74,7 @@ export default function Footer() {
               <li className="mb-2">
                 <Link 
                   href="/Faq" 
-                  className="text-white text-decoration-none hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2 rounded px-1"
+                  className="text-white text-decoration-none hover:text-white focus:outline focus:outline-2 focus:outline-white focus:outline-offset-2 rounded px-1"
                 >
                   FAQ
                 </Link>
@@ -83,7 +83,7 @@ export default function Footer() {
               <li className="mb-2">
                 <Link 
                   href="/termos" 
-                  className="text-white text-decoration-none hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2 rounded px-1"
+                  className="text-white text-decoration-none hover:text-white focus:outline focus:outline-2 focus:outline-white focus:outline-offset-2 rounded px-1"
                 >
                   Termos
                 </Link>
@@ -91,7 +91,7 @@ export default function Footer() {
               <li className="mb-2">
                 <Link 
                   href="/privacidade" 
-                  className="text-white text-decoration-none hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2 rounded px-1"
+                  className="text-white text-decoration-none hover:text-white focus:outline focus:outline-2 focus:outline-white focus:outline-offset-2 rounded px-1"
                 >
                   Privacidade
                 </Link>
