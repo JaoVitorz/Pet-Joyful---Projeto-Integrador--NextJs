@@ -20,7 +20,12 @@ export default function Login() {
     setError("");
 
     try {
-      const response = await axios.post("/api/login", {
+      const response = await axios.post<{
+        success: boolean;
+        token?: string;
+        user?: any;
+        message?: string;
+      }>("/api/login", {
         email: values.email,
         senha: values.senha,
       });

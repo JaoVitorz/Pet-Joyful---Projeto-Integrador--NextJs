@@ -23,7 +23,7 @@ export default function AlbumsList() {
     try {
       setLoading(true);
       const response = await getMyAlbums();
-      setAlbums(response.data || []);
+      setAlbums(response || []);
     } catch (error) {
       console.error("Erro ao carregar álbuns:", error);
     } finally {
@@ -77,7 +77,7 @@ export default function AlbumsList() {
   const handleDeleteAlbum = async (albumId: string) => {
     if (
       !confirm(
-        "Tem certeza que deseja deletar este álbum? Todas as fotos serão removidas."
+        "Tem certeza que deseja deletar este álbum? Todas as fotos serão removidas.",
       )
     ) {
       return;
