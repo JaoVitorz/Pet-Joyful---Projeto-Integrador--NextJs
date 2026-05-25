@@ -1,6 +1,6 @@
 // app/components/chatbot/chatService.ts
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://pet-joyful-backend.onrender.com" || "https://pet-joyful-backend-hml.onrender.com";
 
 export interface ChatMessage {
   id: string;
