@@ -1,12 +1,9 @@
 import axios from "axios";
 
-// URL base do microserviço de perfil
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_PROFILE_API_URL || "https://edicao-perfil-microservice.onrender.com";
-
 // Criar instância do axios com configurações padrão
+// Usa rotas locais da API Next.js que atuam como proxy para o microserviço
 const profileApi = axios.create({
-  baseURL: `${API_BASE_URL}/api/profile`,
+  baseURL: "/api/profile",
   headers: {
     "Content-Type": "application/json",
   },
@@ -251,7 +248,7 @@ export const profileService = {
       // Log para debug
       console.log(
         "[profileApi] Enviando para:",
-        `${API_BASE_URL}/api/profile/me/photo`
+        "/api/profile/me/photo"
       );
       console.log(
         "[profileApi] Arquivo:",
