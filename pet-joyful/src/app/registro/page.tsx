@@ -41,7 +41,7 @@ const fieldCopy = {
     nome: "Nome",
     sobrenome: "Sobrenome",
     documento: "CPF",
-    documentoPlaceholder: "000.000.000-00",
+    documentoPlaceholder: "001.000.000-00",
     emailPlaceholder: "profissional@email.com",
   },
 };
