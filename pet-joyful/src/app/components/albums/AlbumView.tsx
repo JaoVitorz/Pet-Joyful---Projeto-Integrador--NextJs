@@ -25,7 +25,7 @@ export default function AlbumView({ albumId }: AlbumViewProps) {
     try {
       setLoading(true);
       const response = await getAlbum(albumId);
-      setAlbum(response.data);
+      setAlbum(response);
     } catch (error) {
       console.error("Erro ao carregar álbum:", error);
     } finally {

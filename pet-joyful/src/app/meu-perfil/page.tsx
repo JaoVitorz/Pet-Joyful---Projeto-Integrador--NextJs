@@ -36,7 +36,7 @@ export default function MyProfilePage() {
             {/* Tabs de navegação */}
             <Tabs
               activeKey={activeTab}
-              onSelect={(k) => setActiveTab(k || 'perfil')}
+              onSelect={(k: string | null) => setActiveTab(k || 'perfil')}
               className="mb-4"
             >
               <Tab eventKey="perfil" title="Informações Pessoais">
@@ -106,3 +106,4 @@ export default function MyProfilePage() {
     </div>
   );
 }
+

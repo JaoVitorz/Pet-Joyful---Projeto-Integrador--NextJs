@@ -119,3 +119,4 @@ export default function CreatePost({ user, onSubmit }: CreatePostProps) {
     </div>
   );
 }
+  

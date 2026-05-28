@@ -141,7 +141,7 @@ export default function Header({ activeLink }: HeaderProps) {
         <div className="position-relative" ref={notificationsRef}>
           <button
             ref={notificationsButtonRef}
-            className="bg-transparent border-0 text-white p-2 rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2"
+            className="bg-transparent border-0 text-white p-2 rounded focus:outline focus:outline-2 focus:outline-white focus:outline-offset-2"
             onClick={() => setShowNotifications(!showNotifications)}
             aria-label="Notificações"
             aria-expanded={showNotifications}
@@ -206,7 +206,7 @@ export default function Header({ activeLink }: HeaderProps) {
           <button
             ref={settingsButtonRef}
             onClick={() => setShowSettings(!showSettings)}
-            className="bg-transparent border-0 text-white p-2 rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2"
+            className="bg-transparent border-0 text-white p-2 rounded focus:outline focus:outline-2 focus:outline-white focus:outline-offset-2"
             aria-label="Menu de configurações"
             aria-expanded={showSettings}
             aria-haspopup="true"
@@ -267,7 +267,7 @@ function NavLink({
   return (
     <Link
       href={href}
-      className={`text-white text-decoration-none d-flex flex-column align-items-center p-2 rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2 ${
+      className={`text-white text-decoration-none d-flex flex-column align-items-center p-2 rounded focus:outline focus:outline-2 focus:outline-white focus:outline-offset-2 ${
         active ? "active" : ""
       }`}
       aria-label={`Ir para ${label}`}
@@ -278,3 +278,4 @@ function NavLink({
     </Link>
   );
 }
+

@@ -1381,3 +1381,4 @@ const ArquiteturaInformacao = () => {
 };
 
 export default ArquiteturaInformacao;
+

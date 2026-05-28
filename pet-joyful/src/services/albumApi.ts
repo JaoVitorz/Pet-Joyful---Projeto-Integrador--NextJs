@@ -1,4 +1,5 @@
 import axios from "axios";
+import { Album } from "@/types/album.types";
 
 // MODO: 'mock' ou 'api'
 // Altere para 'api' quando o backend estiver pronto
@@ -18,7 +19,7 @@ console.log("[albumApi] Configuração:", {
 if (MODE === "mock") {
   console.warn(
     "[albumApi] ⚠️ MODO MOCK ATIVO - Os álbuns são salvos apenas no localStorage.\n" +
-      "Para usar o backend real, altere MODE para 'api' em albumApi.ts"
+      "Para usar o backend real, altere MODE para 'api' em albumApi.ts",
   );
 }
 
@@ -44,7 +45,8 @@ export const createAlbum = async (data: {
 }) => {
   if (useMock) {
     const { createAlbum: mockCreate } = await import("./albumApi.mock");
-    return mockCreate(data);
+    const result = await mockCreate(data);
+    return result.data ?? result;
   }
 
   try {
@@ -63,7 +65,7 @@ export const createAlbum = async (data: {
   } catch (error: any) {
     console.error(
       "[albumApi] Erro ao criar álbum:",
-      error.response?.data || error.message || error
+      error.response?.data || error.message || error,
     );
     console.error("[albumApi] Status:", error.response?.status);
     console.error("[albumApi] Headers enviados:", error.config?.headers);
@@ -72,42 +74,44 @@ export const createAlbum = async (data: {
 };
 
 // Listar meus álbuns
-export const getMyAlbums = async () => {
+export const getMyAlbums = async (): Promise<Album[]> => {
   if (useMock) {
     const { getMyAlbums: mockGet } = await import("./albumApi.mock");
-    return mockGet();
+    const result = await mockGet();
+    return result.data ?? result;
   }
 
   try {
-    const response = await axios.get(`${API_URL}/albums`, {
+    const response = await axios.get<Album[]>(`${API_URL}/albums`, {
       headers: getAuthHeaders(),
     });
     return response.data;
   } catch (error: any) {
     console.error(
       "[albumApi] Erro ao buscar álbuns:",
-      error.response?.data || error
+      error.response?.data || error,
     );
     throw error;
   }
 };
 
 // Buscar álbum específico
-export const getAlbum = async (albumId: string) => {
+export const getAlbum = async (albumId: string): Promise<Album> => {
   if (useMock) {
     const { getAlbum: mockGet } = await import("./albumApi.mock");
-    return mockGet(albumId);
+    const result = await mockGet(albumId);
+    return result.data ?? result;
   }
 
   try {
-    const response = await axios.get(`${API_URL}/albums/${albumId}`, {
+    const response = await axios.get<Album>(`${API_URL}/albums/${albumId}`, {
       headers: getAuthHeaders(),
     });
     return response.data;
   } catch (error: any) {
     console.error(
       "[albumApi] Erro ao buscar álbum:",
-      error.response?.data || error
+      error.response?.data || error,
     );
     throw error;
   }
@@ -121,11 +125,12 @@ export const updateAlbum = async (
     descricao?: string;
     privacidade?: "publico" | "privado" | "amigos";
     capa?: string;
-  }
+  },
 ) => {
   if (useMock) {
     const { updateAlbum: mockUpdate } = await import("./albumApi.mock");
-    return mockUpdate(albumId, data);
+    const result = await mockUpdate(albumId, data);
+    return result.data ?? result;
   }
 
   try {
@@ -136,7 +141,7 @@ export const updateAlbum = async (
   } catch (error: any) {
     console.error(
       "[albumApi] Erro ao atualizar álbum:",
-      error.response?.data || error
+      error.response?.data || error,
     );
     throw error;
   }
@@ -146,11 +151,12 @@ export const updateAlbum = async (
 export const addPhotoToAlbum = async (
   albumId: string,
   file: File,
-  legenda?: string
+  legenda?: string,
 ) => {
   if (useMock) {
     const { addPhotoToAlbum: mockAdd } = await import("./albumApi.mock");
-    return mockAdd(albumId, file, legenda);
+    const result = await mockAdd(albumId, file, legenda);
+    return result.data ?? result;
   }
 
   try {
@@ -166,13 +172,13 @@ export const addPhotoToAlbum = async (
           ...getAuthHeaders(),
           "Content-Type": "multipart/form-data",
         },
-      }
+      },
     );
     return response.data;
   } catch (error: any) {
     console.error(
       "[albumApi] Erro ao adicionar foto:",
-      error.response?.data || error
+      error.response?.data || error,
     );
     throw error;
   }
@@ -181,10 +187,10 @@ export const addPhotoToAlbum = async (
 // Remover foto do álbum
 export const removePhotoFromAlbum = async (albumId: string, fotoId: string) => {
   if (useMock) {
-    const { removePhotoFromAlbum: mockRemove } = await import(
-      "./albumApi.mock"
-    );
-    return mockRemove(albumId, fotoId);
+    const { removePhotoFromAlbum: mockRemove } =
+      await import("./albumApi.mock");
+    const result = await mockRemove(albumId, fotoId);
+    return (result as any).data ?? result;
   }
 
   try {
@@ -192,13 +198,13 @@ export const removePhotoFromAlbum = async (albumId: string, fotoId: string) => {
       `${API_URL}/albums/${albumId}/photos/${fotoId}`,
       {
         headers: getAuthHeaders(),
-      }
+      },
     );
     return response.data;
   } catch (error: any) {
     console.error(
       "[albumApi] Erro ao remover foto:",
-      error.response?.data || error
+      error.response?.data || error,
     );
     throw error;
   }
@@ -208,7 +214,8 @@ export const removePhotoFromAlbum = async (albumId: string, fotoId: string) => {
 export const deleteAlbum = async (albumId: string) => {
   if (useMock) {
     const { deleteAlbum: mockDelete } = await import("./albumApi.mock");
-    return mockDelete(albumId);
+    const result = await mockDelete(albumId);
+    return (result as any).data ?? result;
   }
 
   try {
@@ -219,7 +226,7 @@ export const deleteAlbum = async (albumId: string) => {
   } catch (error: any) {
     console.error(
       "[albumApi] Erro ao deletar álbum:",
-      error.response?.data || error
+      error.response?.data || error,
     );
     throw error;
   }

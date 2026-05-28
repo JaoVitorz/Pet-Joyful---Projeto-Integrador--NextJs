@@ -204,3 +204,4 @@ export default function PostCard({ post, onDelete, onRefresh }: PostCardProps) {
     </div>
   );
 }
+
