@@ -6,18 +6,58 @@ A plataforma facilita o acesso a informações, promove campanhas e eventos como
 
 ---
 
+## 🌐 Ambientes
+
+| Ambiente | Frontend | Backend |
+|---|---|---|
+| 🟢 **Produção** | [pet-joyful-projeto-integrador-nextjs.onrender.com](https://pet-joyful-projeto-integrador-nextjs.onrender.com) | [pet-joyful-backend.onrender.com](https://pet-joyful-backend.onrender.com) |
+| 🟡 **Homologação** | [pet-joyful-projeto-integrador-nextjs-1.onrender.com](https://pet-joyful-projeto-integrador-nextjs-1.onrender.com) | [pet-joyful-backend-hml.onrender.com](https://pet-joyful-backend-hml.onrender.com) |
+
+---
+
+## 📦 Repositórios & Docker Hub
+
+| Recurso | Link |
+|---|---|
+| 🖥️ Repositório Frontend | [github.com/JaoVitorz/Pet-Joyful---Projeto-Integrador--NextJs](https://github.com/JaoVitorz/Pet-Joyful---Projeto-Integrador--NextJs) |
+| ⚙️ Repositório Backend | [github.com/JaoVitorz/Pet-Joyful-Backend](https://github.com/JaoVitorz/Pet-Joyful-Backend) |
+| 🐳 Docker Hub Frontend | [hub.docker.com — joaovitorjesus/pet-joyful-frontend](https://hub.docker.com/r/joaovitorjesus/pet-joyful-frontend) |
+| 🐳 Docker Hub Backend | [hub.docker.com — joaovitorjesus/pet-joyful-backend](https://hub.docker.com/r/joaovitorjesus/pet-joyful-backend) |
+
+---
+
 ## 🚀 Tecnologias Utilizadas
 
-- [Next.js](https://nextjs.org/)
-- [React](https://reactjs.org/)
-- [Bootstrap](https://getbootstrap.com/)
-- [React-Bootstrap](https://react-bootstrap.github.io/)
-- [React Icons](https://react-icons.github.io/react-icons/)
-- [Express](https://expressjs.com/)
-- [Node.js](https://nodejs.org/)
-- [npm](https://www.npmjs.com/)
-- [Formik](https://formik.org/)
-- [Yup](https://www.npmjs.com/package/yup)
+### Frontend
+| Tecnologia | Versão | Descrição |
+|---|---|---|
+| [Next.js](https://nextjs.org/) | 14+ | Framework React com SSR e SSG |
+| [React](https://reactjs.org/) | 18+ | Biblioteca para interfaces de usuário |
+| [Bootstrap](https://getbootstrap.com/) | 5+ | Framework de estilos responsivos |
+| [React-Bootstrap](https://react-bootstrap.github.io/) | — | Componentes Bootstrap para React |
+| [React Icons](https://react-icons.github.io/react-icons/) | — | Ícones para React |
+| [Formik](https://formik.org/) | — | Gerenciamento de formulários |
+| [Yup](https://www.npmjs.com/package/yup) | — | Validação de schemas |
+| [Axios](https://axios-http.com/) | — | Cliente HTTP |
+
+### Backend
+| Tecnologia | Versão | Descrição |
+|---|---|---|
+| [Node.js](https://nodejs.org/) | 20 | Runtime JavaScript |
+| [Express](https://expressjs.com/) | — | Framework web minimalista |
+| [TypeScript](https://www.typescriptlang.org/) | — | Superset tipado do JavaScript |
+
+### Infraestrutura & DevOps
+| Tecnologia | Descrição |
+|---|---|
+| [Docker](https://www.docker.com/) | Containerização da aplicação (Multi-stage Build) |
+| [Docker Hub](https://hub.docker.com/) | Registro de imagens Docker |
+| [GitHub Actions](https://github.com/features/actions) | CI/CD automatizado |
+| [Render](https://render.com/) | Plataforma de deploy em nuvem (HML e PROD) |
+| [SonarCloud](https://sonarcloud.io/) | Análise de qualidade e segurança de código |
+| [BetterStack](https://betterstack.com/) | Logs, métricas e monitoramento |
+| [npm](https://www.npmjs.com/) | Gerenciador de pacotes |
+| [semver](https://semver.org/) | Versionamento semântico automático via Actions |
 
 ---
 
@@ -27,104 +67,160 @@ A plataforma facilita o acesso a informações, promove campanhas e eventos como
 
 - Node.js (versão 18 ou superior)
 - npm (vem junto com o Node.js)
-- Git (opcional, mas recomendado)
+- Git
 
 ### 2. Clone o repositório
 
 ```bash
-git clone https://github.com/davidagj/Pet-Joyful---Projeto-Integrador--NextJs
-
-cd Pet-Joyful---Projeto-Integrador--NextJs
-cd pet-joyful
+git clone https://github.com/JaoVitorz/Pet-Joyful---Projeto-Integrador--NextJs
+cd Pet-Joyful---Projeto-Integrador--NextJs/pet-joyful
 ```
 
-### 3. **Instale as dependências principais**:
+### 3. Instale as dependências
 
 ```bash
 npm install
 npm install next react react-dom axios formik yup bootstrap react-icons express typescript
 npm install concurrently --save-dev
-
 ```
 
-### 4. **Execute o projeto em modo de desenvolvimento** :
+### 4. Execute o projeto em modo de desenvolvimento
 
 ```bash
 npm run dev
-npm run dev:all #para executar o projeto em modo de desenvolvimento e com servidor express com as APIs e retorno estatico
+# ou para rodar com o servidor Express (APIs estáticas):
+npm run dev:all
 ```
 
 O projeto estará disponível em [http://localhost:3000](http://localhost:3000)
 
-### 5. **Acesse no navegador**
-
-Abra [http://localhost:3000](http://localhost:3000) para visualizar o site.
+> **Dicas:**
+> - Se aparecer algum erro de dependência, rode novamente `npm install`.
+> - Para parar o servidor, pressione `Ctrl + C` no terminal.
 
 ---
 
-**Dicas:**
+## 🐳 Docker
 
-- Se aparecer algum erro de dependência, rode novamente `npm install`.
-- Para parar o servidor, pressione `Ctrl + C` no terminal.
+Este projeto utiliza Docker com **Multi-stage Build** (Node.js 20 Alpine), gerando uma imagem otimizada e leve via modo `standalone` do Next.js.
 
-```
+### Build da imagem
 
-```
-
-🐳 Docker (Frontend)
-Este projeto utiliza Docker para garantir que o ambiente de execução seja idêntico em qualquer máquina, evitando problemas como “na minha máquina funciona”.
-Foi adotado o padrão Multi-stage Build com Node.js 20, resultando em uma imagem otimizada e leve.
----
-🛠️ Pré-requisitos
-Antes de começar, você precisa ter instalado:
-Docker
-Docker Compose (opcional, mas recomendado)
----
-🚀 Comandos Úteis
-🔨 1. Construir a imagem (Build)
-Para gerar a imagem localmente a partir da raiz do projeto:
 ```bash
-docker build -t pet-joyful-frontend:latest .
+docker build -t pet-joyful-frontend:latest ./pet-joyful
 ```
----
-▶️ 2. Executar o container
-Para rodar o frontend na porta 3000:
+
+### Executar o container
+
 ```bash
 docker run -p 3000:3000 --name pet-joyful-app pet-joyful-frontend:latest
 ```
-Após executar, acesse:
-👉 http://localhost:3000
----
-⏹️ 3. Parar e remover o container
-```bash
-# Parar o container
-docker stop pet-joyful-app
 
-# Remover o container (necessário para recriar)
+Acesse em: [http://localhost:3000](http://localhost:3000)
+
+### Parar e remover o container
+
+```bash
+docker stop pet-joyful-app
 docker rm pet-joyful-app
 ```
----
-📦 4. Verificar imagens criadas
+
+### Verificar imagens
+
 ```bash
 docker images
 ```
+
+### Vantagens do modo Standalone (Next.js)
+
+- Imagem final extremamente leve (apenas o essencial)
+- Não depende de todas as `node_modules`
+- Arquivos estáticos servidos por um servidor Node otimizado
+
 ---
-⚙️ Estrutura no Docker (Standalone)
-A aplicação foi configurada utilizando o modo standalone do Next.js, o que traz as seguintes vantagens:
-📉 Imagem final extremamente leve (apenas o essencial)
-🚫 Não depende de todas as `node_modules`
-⚡ Arquivos estáticos servidos por um servidor Node otimizado
+
+## 🤖 CI/CD — GitHub Actions
+
+O pipeline está definido em `.github/workflows/ci.yml` e é acionado a cada push nas branches `main` e `develop`.
+
+### Etapas automatizadas
+
+```
+Push → Build → Testes → Versionamento Semântico (semver)
+     → Criação de Tag → SonarCloud → Build Docker → Push Docker Hub
+     → Deploy HML (develop/main) → Deploy PROD (main)
+     → Notificação por e-mail (sucesso ou falha)
+```
+
+### Estratégia de versionamento
+
+O pipeline calcula automaticamente a versão com base nos commits seguindo [Conventional Commits](https://www.conventionalcommits.org/):
+
+| Prefixo do commit | Bump |
+|---|---|
+| `feat!:` / `BREAKING CHANGE` | `major` |
+| `feat:` | `minor` |
+| qualquer outro | `patch` |
+
+### Secrets necessários
+
+| Secret | Descrição |
+|---|---|
+| `DOCKERHUB_USERNAME` | Usuário do Docker Hub |
+| `DOCKER_PASSWORD` | Senha do Docker Hub |
+| `RENDER_API_KEY` | Chave da API do Render |
+| `SONAR_TOKEN` | Token do SonarCloud |
+| `EMAIL_USERNAME` | E-mail para notificações |
+| `EMAIL_PASSWORD` | Senha do e-mail |
+
 ---
-🤖 CI/CD com GitHub Actions
-O arquivo:
+
+## 📊 Monitoramento — BetterStack
+
+O projeto utiliza **BetterStack** para:
+
+- Coleta centralizada de **logs** da aplicação
+- **Métricas** de performance e disponibilidade
+- **Notificações** e alertas em tempo real
+
+Os tokens de integração são gerenciados via GitHub Secrets (`Secrets API HML/PROD - BetterStack`).
+
+---
+
+## 🔍 Qualidade de Código — SonarCloud
+
+Configuração em `sonar-project.properties`:
+
+```properties
+sonar.projectKey=pet-joyful---projeto-integrador-nextjs
+sonar.organization=jaovitorz
+sonar.sources=pet-joyful
+sonar.exclusions=**/*.test.ts,**/__tests__/**,**/node_modules/**,**/dist/**
 ```
-.github/workflows/ci.yml
+
+Análise executada automaticamente em cada pipeline via `SonarSource/sonarcloud-github-action@v2`.
+
+---
+
+## 🌿 Estratégia de Branches
+
 ```
-automatiza todo o processo de integração contínua.
-🔁 Etapas automatizadas:
-Linting  
-Verificação de qualidade de código e acessibilidade
-Build Test  
-Validação da compilação do Next.js
-Docker Build  
-Geração automática da imagem a cada push na branch `main`
+main      → deploy automático em PRODUÇÃO
+develop   → deploy automático em HOMOLOGAÇÃO
+feature/* → branches de desenvolvimento de funcionalidades
+```
+
+---
+
+## 👥 Equipe — Pet-Joyful
+
+| Nome | GitHub |
+|---|---|
+| João Vitor | [@JaoVitorz](https://github.com/JaoVitorz) |
+  Caio Fernando Scudeler
+  Nicolas mencacci Pereira
+  Mateus alves
+  Elton Costa
+
+---
+
