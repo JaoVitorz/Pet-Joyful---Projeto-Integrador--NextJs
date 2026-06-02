@@ -669,7 +669,9 @@ Responda em JSON com este formato:
                         </header>
 
                         <div className="mt-3">
-                          <p>{post.text}</p>
+                          <p style={{ whiteSpace: "pre-line" }}>
+                                         {post.text}
+                                       </p>
                         </div>
 
                         {post.image && (
