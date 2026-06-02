@@ -7,11 +7,14 @@ on:
       - develop
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   version:
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
 
     outputs:
       new_version: ${{ steps.versioning.outputs.new_version }}
