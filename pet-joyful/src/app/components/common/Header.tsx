@@ -10,6 +10,9 @@ import {
   BiListUl,
   BiLogOut,
   BiImageAlt,
+  BiBot,
+  BiHeartCircle,
+  BiPen,
 } from "react-icons/bi";
 import { useState, useEffect, useRef } from "react";
 
@@ -135,6 +138,24 @@ export default function Header({ activeLink }: HeaderProps) {
           icon={<BiMessageDetail size={24} />}
           label="Chat"
           active={activeLink === "chat"}
+        />
+        <NavLink
+          href="/ia-chat"
+          icon={<BiBot size={24} />}
+          label="IA"
+          active={activeLink === "ia-chat"}
+        />
+        <NavLink
+          href="/compatibilidade"
+          icon={<BiHeartCircle size={24} />}
+          label="Compatibilidade"
+          active={activeLink === "compatibilidade"}
+        />
+        <NavLink
+          href="/gerador-conteudo"
+          icon={<BiPen size={24} />}
+          label="Conteúdo"
+          active={activeLink === "gerador-conteudo"}
         />
 
         {/* Notificações */}
@@ -278,4 +299,3 @@ function NavLink({
     </Link>
   );
 }
-
