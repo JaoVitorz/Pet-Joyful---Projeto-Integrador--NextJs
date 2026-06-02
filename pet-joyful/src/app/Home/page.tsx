@@ -1,5 +1,4 @@
 "use client";
-
 import "../globals.css";
 import Footer from "../components/common/Footer";
 import Header from "../components/common/Header";
@@ -10,7 +9,6 @@ import { Container, Row, Col, Button, Form } from "react-bootstrap";
 import {
   BiMessageDetail,
   BiImage,
-  BiPlusCircle,
   BiHeart,
   BiShare,
   BiX,
@@ -20,8 +18,169 @@ import {
 import Comments from "../components/posts/Comments";
 import { useRouter } from "next/navigation";
 
+// ─── Static data (defined once, reused in modal UI and handler) ───────────────
+
+const TEMAS = [
+  { id: "vacinacao", label: "💉 Vacinação" },
+  { id: "comportamento", label: "🐕 Comportamento" },
+  { id: "adocao", label: "❤️ Adoção Responsável" },
+  { id: "nutricao", label: "🥕 Nutrição e Saúde" },
+  { id: "treinamento", label: "🎓 Treinamento" },
+  { id: "higiene", label: "🛁 Higiene e Cuidados" },
+  { id: "emergencia", label: "🚨 Primeiros Socorros" },
+  { id: "bem-estar", label: "😊 Bem-estar Mental" },
+];
+
+const TIPOS = [
+  { id: "dica-rapida", label: "⚡ Dica Rápida" },
+  { id: "guia", label: "📖 Guia Completo" },
+  { id: "historia", label: "📚 História de Sucesso" },
+  { id: "infografico", label: "📊 Infográfico" },
+];
+
+const AUDIENCIAS = [
+  { id: "iniciantes", label: "👶 Donos Iniciantes" },
+  { id: "experientes", label: "👴 Donos Experientes" },
+  { id: "protetores", label: "🛡️ Protetores" },
+  { id: "veterinarios", label: "⚕️ Veterinários" },
+];
+
+// ─── Helper: derive word count range from tipo ────────────────────────────────
+
+const getWordRange = (tipo: string) => {
+  if (tipo === "dica-rapida") return "50-100";
+  if (tipo === "historia") return "150-250";
+  return "100-200";
+};
+
+// ─── Reusable sub-components ──────────────────────────────────────────────────
+
+type FeatureCardProps = {
+  emoji: string;
+  title: string;
+  description: string;
+  buttonLabel: string;
+  borderColor: string;
+  shadowColor: string;
+  buttonStyle?: React.CSSProperties;
+  buttonClassName: string;
+  route: string;
+};
+
+const FeatureCard = ({
+  emoji,
+  title,
+  description,
+  buttonLabel,
+  borderColor,
+  shadowColor,
+  buttonStyle,
+  buttonClassName,
+  route,
+}: FeatureCardProps) => {
+  const router = useRouter();
+
+  return (
+    <div
+      className="bg-white p-4 rounded-3 shadow-sm h-100 text-center"
+      style={{
+        border: `2px solid ${borderColor}`,
+        transition: "all 0.3s ease",
+        cursor: "pointer",
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.boxShadow = `0 10px 30px ${shadowColor}`;
+        e.currentTarget.style.transform = "translateY(-5px)";
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.boxShadow = "0 1px 3px rgba(0,0,0,0.1)";
+        e.currentTarget.style.transform = "translateY(0)";
+      }}
+      onClick={() => router.push(route)}
+    >
+      <div style={{ fontSize: "48px", marginBottom: "1rem" }}>{emoji}</div>
+      <h3 className="fw-bold mb-3">{title}</h3>
+      <p className="text-muted mb-3">{description}</p>
+      <button
+        className={`btn rounded-pill ${buttonClassName}`}
+        style={buttonStyle}
+        onClick={(e) => {
+          e.stopPropagation();
+          router.push(route);
+        }}
+      >
+        {buttonLabel}
+      </button>
+    </div>
+  );
+};
+
+type SelectionGroupProps = {
+  label: string;
+  options: { id: string; label: string }[];
+  selected: string;
+  onSelect: (id: string) => void;
+  variant: string;
+};
+
+const SelectionGroup = ({
+  label,
+  options,
+  selected,
+  onSelect,
+  variant,
+}: SelectionGroupProps) => (
+  <div className="mb-3">
+    <label className="form-label fw-bold">{label}</label>
+    <div className="d-grid gap-2">
+      {options.map((opt) => (
+        <button
+          key={opt.id}
+          onClick={() => onSelect(opt.id)}
+          className={`btn ${
+            selected === opt.id ? `btn-${variant}` : `btn-outline-${variant}`
+          }`}
+        >
+          {opt.label}
+        </button>
+      ))}
+    </div>
+  </div>
+);
+
+type SidebarCardProps = {
+  title: string;
+  ariaLabel: string;
+  children: React.ReactNode;
+};
+
+const SidebarCard = ({ title, ariaLabel, children }: SidebarCardProps) => (
+  <aside
+    className="bg-white p-3 rounded shadow mb-4 mb-md-0"
+    aria-label={ariaLabel}
+  >
+    <h3 className="fw-bold mb-3">{title}</h3>
+    {children}
+  </aside>
+);
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+type PostType = {
+  id: number;
+  text: string;
+  image: File | string | null;
+  likes: number;
+  comments: { id: number; user: string; text: string }[];
+  user: { name: string; avatar: string };
+  timestamp: string;
+};
+
+// ─── Main component ───────────────────────────────────────────────────────────
+
 export default function App() {
   const router = useRouter();
+
   const [postText, setPostText] = useState("");
   const [reportingPostId, setReportingPostId] = useState<number | null>(null);
   const [reportText, setReportText] = useState("");
@@ -30,23 +189,6 @@ export default function App() {
     foto_perfil?: string;
   } | null>(null);
 
-  type PostType = {
-    id: number;
-    text: string;
-    image: File | string | null;
-    likes: number;
-    comments: {
-      id: number;
-      user: string;
-      text: string;
-    }[];
-    user: {
-      name: string;
-      avatar: string;
-    };
-    timestamp: string;
-  };
-
   const [posts, setPosts] = useState<PostType[]>([
     {
       id: 1,
@@ -54,10 +196,7 @@ export default function App() {
       image: "/assets/post-aatan.jpg",
       likes: 42,
       comments: [],
-      user: {
-        name: "AATAN - Sorocaba",
-        avatar: "/assets/aatan-logo.jpg",
-      },
+      user: { name: "AATAN - Sorocaba", avatar: "/assets/aatan-logo.jpg" },
       timestamp: "10/05/2024, 15:30",
     },
   ]);
@@ -74,40 +213,31 @@ export default function App() {
   const [generadorLoading, setGeneradorLoading] = useState(false);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const userStr = localStorage.getItem("user");
-      if (userStr) {
-        try {
-          const user = JSON.parse(userStr);
-          setUserProfile(user);
-        } catch (error) {
-          console.error("Erro ao carregar dados do usuário:", error);
-        }
-      }
+    if (typeof window === "undefined") return;
+    const userStr = localStorage.getItem("user");
+    if (!userStr) return;
+    try {
+      setUserProfile(JSON.parse(userStr));
+    } catch (error) {
+      console.error("Erro ao carregar dados do usuário:", error);
     }
   }, []);
+
+  // ── Handlers ────────────────────────────────────────────────────────────────
 
   const handlePostSubmit = () => {
     if (!postText.trim() && !selectedImage) return;
 
     const formData = new FormData();
-
-    // Extrai primeira linha como título (máx 200 chars)
     const linhas = postText.trim().split("\n").filter(Boolean);
     const titulo = linhas[0]?.substring(0, 200) || "Publicação";
-    const descricao = postText.trim();
-
-    // Extrai hashtags do texto gerado pela IA
     const hashtags = postText.match(/#\w+/g) || [];
 
     formData.append("titulo", titulo);
-    formData.append("descricao", descricao);
+    formData.append("descricao", postText.trim());
     formData.append("categoria", "outros");
     hashtags.forEach((tag) => formData.append("tags", tag.replace("#", "")));
-
-    if (selectedImage && selectedImage instanceof File) {
-      formData.append("imagem", selectedImage);
-    }
+    if (selectedImage instanceof File) formData.append("imagem", selectedImage);
 
     (async () => {
       try {
@@ -142,31 +272,39 @@ export default function App() {
         setSelectedImage(null);
         setShowPostModal(false);
       } catch (err: any) {
-        console.error("Erro ao criar postagem via Posts service:", err);
+        console.error("Erro ao criar postagem:", err);
         alert("Erro ao publicar. Verifique o console.");
       }
     })();
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files && e.target.files[0];
-    if (file) {
-      setSelectedImage(file);
-    }
-  };
-
-  const triggerFileInput = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
+    const file = e.target.files?.[0];
+    if (file) setSelectedImage(file);
   };
 
   const handleLike = (postId: number) => {
-    setPosts((prevPosts) =>
-      prevPosts.map((post) =>
+    setPosts((prev) =>
+      prev.map((post) =>
         post.id === postId ? { ...post, likes: post.likes + 1 } : post,
       ),
     );
+  };
+
+  const handleAddComment = (postId: number, content: string) => {
+    const newComment = { id: Date.now(), user: "Usuário Atual", text: content };
+    setPosts((prev) =>
+      prev.map((p) =>
+        p.id === postId ? { ...p, comments: [...p.comments, newComment] } : p,
+      ),
+    );
+  };
+
+  const resetGenerador = () => {
+    setGeneradorStep("selection");
+    setGeneradorTema("");
+    setGeneradorTipo("");
+    setGeneradorAudiencia("");
   };
 
   const handleGenerarContenido = async () => {
@@ -175,41 +313,21 @@ export default function App() {
     setGeneradorLoading(true);
     setGeneradorStep("generating");
 
-    try {
-      const temas: { [key: string]: string } = {
-        vacinacao: "💉 Vacinação",
-        comportamento: "🐕 Comportamento",
-        adocao: "❤️ Adoção Responsável",
-        nutricao: "🥕 Nutrição e Saúde",
-        treinamento: "🎓 Treinamento",
-        higiene: "🛁 Higiene e Cuidados",
-        emergencia: "🚨 Primeiros Socorros",
-        "bem-estar": "😊 Bem-estar Mental",
-      };
+    // Build label maps from the shared constants (no duplication)
+    const temaLabel = TEMAS.find((t) => t.id === generadorTema)?.label ?? generadorTema;
+    const tipoLabel = TIPOS.find((t) => t.id === generadorTipo)?.label ?? generadorTipo;
+    const audienciaLabel =
+      AUDIENCIAS.find((a) => a.id === generadorAudiencia)?.label ?? generadorAudiencia;
 
-      const tipos: { [key: string]: string } = {
-        "dica-rapida": "⚡ Dica Rápida",
-        guia: "📖 Guia Completo",
-        historia: "📚 História de Sucesso",
-        infografico: "📊 Infográfico",
-      };
+    const prompt = `Gere um post educativo para rede social Pet Joyful com as seguintes especificações:
 
-      const audiencias: { [key: string]: string } = {
-        iniciantes: "👶 Donos Iniciantes",
-        experientes: "👴 Donos Experientes",
-        protetores: "🛡️ Protetores",
-        veterinarios: "⚕️ Veterinários",
-      };
-
-      const prompt = `Gere um post educativo para rede social Pet Joyful com as seguintes especificações:
-
-TEMA: ${temas[generadorTema]}
-TIPO DE CONTEÚDO: ${tipos[generadorTipo]}
-PÚBLICO-ALVO: ${audiencias[generadorAudiencia]}
+TEMA: ${temaLabel}
+TIPO DE CONTEÚDO: ${tipoLabel}
+PÚBLICO-ALVO: ${audienciaLabel}
 
 Por favor, crie:
 1. Um título atrativo e relevante (máximo 150 caracteres)
-2. Um conteúdo engajante (${generadorTipo === "dica-rapida" ? "50-100" : generadorTipo === "historia" ? "150-250" : "100-200"} palavras)
+2. Um conteúdo engajante (${getWordRange(generadorTipo)} palavras)
 3. 3-5 hashtags relevantes (#petjoyful, etc)
 
 Responda em JSON com este formato:
@@ -219,6 +337,7 @@ Responda em JSON com este formato:
   "hashtags": ["hashtag1", "hashtag2", "hashtag3"]
 }`;
 
+    try {
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -228,22 +347,20 @@ Responda em JSON com este formato:
       const data = await response.json();
 
       if (data.reply) {
-        try {
-         const start = data.reply.indexOf("{");
-const end = data.reply.lastIndexOf("}");
-if (start !== -1 && end !== -1 && end > start) {
-  const parsed = JSON.parse(data.reply.slice(start, end + 1));
-            const textoFinal = `${parsed.title}\n\n${parsed.content}\n\n${parsed.hashtags.join(" ")}`;
-            setPostText(textoFinal);
+        const start = data.reply.indexOf("{");
+        const end = data.reply.lastIndexOf("}");
+        if (start !== -1 && end !== -1 && end > start) {
+          try {
+            const parsed = JSON.parse(data.reply.slice(start, end + 1));
+            setPostText(
+              `${parsed.title}\n\n${parsed.content}\n\n${parsed.hashtags.join(" ")}`,
+            );
             setShowGeneradorModal(false);
-            setGeneradorStep("selection");
-            setGeneradorTema("");
-            setGeneradorTipo("");
-            setGeneradorAudiencia("");
+            resetGenerador();
+          } catch (e) {
+            console.error("Erro ao parsear resposta:", e);
+            alert("Erro ao processar resposta da LLM");
           }
-        } catch (e) {
-          console.error("Erro ao parsear resposta:", e);
-          alert("Erro ao processar resposta da LLM");
         }
       }
     } catch (error) {
@@ -254,13 +371,15 @@ if (start !== -1 && end !== -1 && end > start) {
     }
   };
 
+  // ── Render ───────────────────────────────────────────────────────────────────
+
   return (
     <div className="bg-light min-vh-100">
       <Header />
       <main id="main-content" tabIndex={-1}>
+
         {/* Hero Section */}
         <section
-          className="bg-linear-to-r"
           style={{
             background:
               "linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%)",
@@ -299,12 +418,7 @@ if (start !== -1 && end !== -1 && end > start) {
                 </div>
               </Col>
               <Col md={5} className="text-center">
-                <div
-                  style={{
-                    fontSize: "120px",
-                    animation: "bounce 2s infinite",
-                  }}
-                >
+                <div style={{ fontSize: "120px", animation: "bounce 2s infinite" }}>
                   🐕
                 </div>
               </Col>
@@ -320,124 +434,41 @@ if (start !== -1 && end !== -1 && end > start) {
             </h2>
             <Row className="g-4 mb-5">
               <Col md={4}>
-                <div
-                  className="bg-white p-4 rounded-3 shadow-sm h-100 text-center"
-                  style={{
-                    border: "2px solid rgba(34, 197, 94, 0.2)",
-                    transition: "all 0.3s ease",
-                    cursor: "pointer",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.boxShadow =
-                      "0 10px 30px rgba(34, 197, 94, 0.2)";
-                    e.currentTarget.style.transform = "translateY(-5px)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.boxShadow =
-                      "0 1px 3px rgba(0, 0, 0, 0.1)";
-                    e.currentTarget.style.transform = "translateY(0)";
-                  }}
-                  onClick={() => router.push("/ia-chat")}
-                >
-                  <div style={{ fontSize: "48px", marginBottom: "1rem" }}>
-                    🤖
-                  </div>
-                  <h3 className="fw-bold mb-3">Chat com IA</h3>
-                  <p className="text-muted mb-3">
-                    Faça perguntas sobre saúde, comportamento e cuidados com
-                    pets. Nossa IA responde 24/7 com informações confiáveis.
-                  </p>
-                  <button
-                    className="btn btn-outline-success rounded-pill"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      router.push("/ia-chat");
-                    }}
-                  >
-                    Explorar →
-                  </button>
-                </div>
+                <FeatureCard
+                  emoji="🤖"
+                  title="Chat com IA"
+                  description="Faça perguntas sobre saúde, comportamento e cuidados com pets. Nossa IA responde 24/7 com informações confiáveis."
+                  buttonLabel="Explorar →"
+                  buttonClassName="btn-outline-success"
+                  borderColor="rgba(34, 197, 94, 0.2)"
+                  shadowColor="rgba(34, 197, 94, 0.2)"
+                  route="/ia-chat"
+                />
               </Col>
-
               <Col md={4}>
-                <div
-                  className="bg-white p-4 rounded-3 shadow-sm h-100 text-center"
-                  style={{
-                    border: "2px solid rgba(59, 130, 246, 0.2)",
-                    transition: "all 0.3s ease",
-                    cursor: "pointer",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.boxShadow =
-                      "0 10px 30px rgba(59, 130, 246, 0.2)";
-                    e.currentTarget.style.transform = "translateY(-5px)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.boxShadow =
-                      "0 1px 3px rgba(0, 0, 0, 0.1)";
-                    e.currentTarget.style.transform = "translateY(0)";
-                  }}
-                  onClick={() => router.push("/compatibilidade")}
-                >
-                  <div style={{ fontSize: "48px", marginBottom: "1rem" }}>
-                    💕
-                  </div>
-                  <h3 className="fw-bold mb-3">Compatibilidade</h3>
-                  <p className="text-muted mb-3">
-                    Descubra se você e o pet são compatíveis! Análise
-                    inteligente de perfil para garantir uma adoção bem-sucedida.
-                  </p>
-                  <button
-                    className="btn btn-outline-primary rounded-pill"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      router.push("/compatibilidade");
-                    }}
-                  >
-                    Testar →
-                  </button>
-                </div>
+                <FeatureCard
+                  emoji="💕"
+                  title="Compatibilidade"
+                  description="Descubra se você e o pet são compatíveis! Análise inteligente de perfil para garantir uma adoção bem-sucedida."
+                  buttonLabel="Testar →"
+                  buttonClassName="btn-outline-primary"
+                  borderColor="rgba(59, 130, 246, 0.2)"
+                  shadowColor="rgba(59, 130, 246, 0.2)"
+                  route="/compatibilidade"
+                />
               </Col>
-
               <Col md={4}>
-                <div
-                  className="bg-white p-4 rounded-3 shadow-sm h-100 text-center"
-                  style={{
-                    border: "2px solid rgba(168, 85, 247, 0.2)",
-                    transition: "all 0.3s ease",
-                    cursor: "pointer",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.boxShadow =
-                      "0 10px 30px rgba(168, 85, 247, 0.2)";
-                    e.currentTarget.style.transform = "translateY(-5px)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.boxShadow =
-                      "0 1px 3px rgba(0, 0, 0, 0.1)";
-                    e.currentTarget.style.transform = "translateY(0)";
-                  }}
-                  onClick={() => router.push("/eventos")}
-                >
-                  <div style={{ fontSize: "48px", marginBottom: "1rem" }}>
-                    🎉
-                  </div>
-                  <h3 className="fw-bold mb-3">Eventos</h3>
-                  <p className="text-muted mb-3">
-                    Participe de mutirões, campanhas de adoção e eventos da
-                    comunidade. Conecte com outros amantes de pets.
-                  </p>
-                  <button
-                    className="btn btn-outline-purple rounded-pill"
-                    style={{ color: "#a855f7", borderColor: "#a855f7" }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      router.push("/eventos");
-                    }}
-                  >
-                    Descobrir →
-                  </button>
-                </div>
+                <FeatureCard
+                  emoji="🎉"
+                  title="Eventos"
+                  description="Participe de mutirões, campanhas de adoção e eventos da comunidade. Conecte com outros amantes de pets."
+                  buttonLabel="Descobrir →"
+                  buttonClassName=""
+                  buttonStyle={{ color: "#a855f7", borderColor: "#a855f7", border: "1px solid" }}
+                  borderColor="rgba(168, 85, 247, 0.2)"
+                  shadowColor="rgba(168, 85, 247, 0.2)"
+                  route="/eventos"
+                />
               </Col>
             </Row>
 
@@ -447,9 +478,7 @@ if (start !== -1 && end !== -1 && end > start) {
                   className="bg-white p-4 rounded-3 shadow-sm h-100"
                   style={{ border: "2px solid rgba(249, 115, 22, 0.2)" }}
                 >
-                  <div style={{ fontSize: "36px", marginBottom: "1rem" }}>
-                    📸
-                  </div>
+                  <div style={{ fontSize: "36px", marginBottom: "1rem" }}>📸</div>
                   <h3 className="fw-bold mb-3">Compartilhe Momentos</h3>
                   <p className="text-muted">
                     Poste fotos e vídeos dos seus pets, histórias de adoção e
@@ -457,15 +486,12 @@ if (start !== -1 && end !== -1 && end > start) {
                   </p>
                 </div>
               </Col>
-
               <Col md={6}>
                 <div
                   className="bg-white p-4 rounded-3 shadow-sm h-100"
                   style={{ border: "2px solid rgba(14, 165, 233, 0.2)" }}
                 >
-                  <div style={{ fontSize: "36px", marginBottom: "1rem" }}>
-                    👥
-                  </div>
+                  <div style={{ fontSize: "36px", marginBottom: "1rem" }}>👥</div>
                   <h3 className="fw-bold mb-3">Comunidade</h3>
                   <p className="text-muted">
                     Conecte com protetores, veterinários e amantes de pets.
@@ -489,12 +515,9 @@ if (start !== -1 && end !== -1 && end > start) {
           <Container>
             <h2 className="fw-bold mb-4">Feed da Comunidade</h2>
             <Row>
+              {/* Sidebar: Events */}
               <Col md={3}>
-                <aside
-                  className="bg-white p-3 rounded shadow mb-4 mb-md-0"
-                  aria-label="Eventos e atividades"
-                >
-                  <h3 className="fw-bold mb-3">📅 Próximos Eventos</h3>
+                <SidebarCard title="📅 Próximos Eventos" ariaLabel="Eventos e atividades">
                   <ul className="list-unstyled">
                     <li className="small mb-2">
                       <strong>27/10</strong> - Mutirão no Shopping Iguatemi
@@ -519,11 +542,12 @@ if (start !== -1 && end !== -1 && end > start) {
                       Criar Evento
                     </button>
                   </div>
-                </aside>
+                </SidebarCard>
               </Col>
 
+              {/* Main feed */}
               <Col md={6}>
-                {/* Criar Postagem */}
+                {/* Create post trigger */}
                 <section
                   className="bg-white p-3 rounded shadow mb-4"
                   aria-label="Criar nova postagem"
@@ -540,26 +564,19 @@ if (start !== -1 && end !== -1 && end > start) {
                       className="rounded-circle me-2"
                       alt="Seu perfil"
                     />
-                    <span className="text-muted">
-                      No que você está pensando?
-                    </span>
+                    <span className="text-muted">No que você está pensando?</span>
                     <div className="ms-auto">
-                      <BiImage
-                        size={24}
-                        className="text-success me-2"
-                        aria-hidden="true"
-                      />
+                      <BiImage size={24} className="text-success me-2" aria-hidden="true" />
                     </div>
                   </button>
                 </section>
 
-                {/* Publicações */}
+                {/* Posts */}
                 <section aria-label="Feed de publicações">
                   {posts.length === 0 ? (
                     <div className="bg-white p-4 rounded shadow text-center">
                       <p className="text-muted">
-                        Nenhuma publicação ainda. Seja o primeiro a
-                        compartilhar!
+                        Nenhuma publicação ainda. Seja o primeiro a compartilhar!
                       </p>
                     </div>
                   ) : (
@@ -601,10 +618,7 @@ if (start !== -1 && end !== -1 && end > start) {
                               aria-expanded={reportingPostId === post.id}
                               aria-haspopup="true"
                             >
-                              <BiDotsVerticalRounded
-                                size={20}
-                                aria-hidden="true"
-                              />
+                              <BiDotsVerticalRounded size={20} aria-hidden="true" />
                             </Button>
 
                             {reportingPostId === post.id && (
@@ -618,48 +632,38 @@ if (start !== -1 && end !== -1 && end > start) {
                                   className="btn btn-sm text-danger w-100"
                                   onClick={() => setReportText("")}
                                   role="menuitem"
-                                  aria-label="Denunciar esta publicação"
                                 >
                                   Denunciar post
                                 </button>
-
-                                {reportingPostId === post.id && (
-                                  <div className="mt-2">
-                                    <label
-                                      htmlFor={`report-text-${post.id}`}
-                                      className="visually-hidden"
-                                    >
-                                      Descreva o motivo da denúncia
-                                    </label>
-                                    <Form.Control
-                                      as="textarea"
-                                      id={`report-text-${post.id}`}
-                                      rows={2}
-                                      placeholder="Descreva o motivo"
-                                      value={reportText}
-                                      onChange={(e) =>
-                                        setReportText(e.target.value)
-                                      }
-                                      aria-label="Campo para descrever o motivo da denúncia"
-                                    />
-                                    <Button
-                                      variant="danger"
-                                      size="sm"
-                                      className="mt-2 w-100"
-                                      onClick={() => {
-                                        alert(
-                                          `Post ${post.id} denunciado: ${reportText}`,
-                                        );
-                                        setReportingPostId(null);
-                                        setReportText("");
-                                      }}
-                                      disabled={!reportText.trim()}
-                                      aria-label="Enviar denúncia"
-                                    >
-                                      Enviar
-                                    </Button>
-                                  </div>
-                                )}
+                                <div className="mt-2">
+                                  <label
+                                    htmlFor={`report-text-${post.id}`}
+                                    className="visually-hidden"
+                                  >
+                                    Descreva o motivo da denúncia
+                                  </label>
+                                  <Form.Control
+                                    as="textarea"
+                                    id={`report-text-${post.id}`}
+                                    rows={2}
+                                    placeholder="Descreva o motivo"
+                                    value={reportText}
+                                    onChange={(e) => setReportText(e.target.value)}
+                                  />
+                                  <Button
+                                    variant="danger"
+                                    size="sm"
+                                    className="mt-2 w-100"
+                                    onClick={() => {
+                                      alert(`Post ${post.id} denunciado: ${reportText}`);
+                                      setReportingPostId(null);
+                                      setReportText("");
+                                    }}
+                                    disabled={!reportText.trim()}
+                                  >
+                                    Enviar
+                                  </Button>
+                                </div>
                               </div>
                             )}
                           </div>
@@ -692,45 +696,23 @@ if (start !== -1 && end !== -1 && end > start) {
                             variant="light"
                             className="rounded-pill"
                             onClick={() => handleLike(post.id)}
-                            aria-label={`Curtir publicação. Atualmente tem ${post.likes} curtida${post.likes !== 1 ? "s" : ""}`}
+                            aria-label={`Curtir publicação. ${post.likes} curtida${post.likes !== 1 ? "s" : ""}`}
                           >
                             <BiHeart aria-hidden="true" /> {post.likes} Curtir
                           </Button>
-                          <Button
-                            variant="light"
-                            className="rounded-pill"
-                            aria-label="Comentar nesta publicação"
-                          >
+                          <Button variant="light" className="rounded-pill">
                             <BiMessageDetail aria-hidden="true" /> Comentar
                           </Button>
-                          <Button
-                            variant="light"
-                            className="rounded-pill"
-                            aria-label="Compartilhar esta publicação"
-                          >
+                          <Button variant="light" className="rounded-pill">
                             <BiShare aria-hidden="true" /> Compartilhar
                           </Button>
                         </div>
 
                         <Comments
                           comments={post.comments}
-                          onAddComment={(content: string) => {
-                            const newComment = {
-                              id: Date.now(),
-                              user: "Usuário Atual",
-                              text: content,
-                            };
-                            setPosts((posts) =>
-                              posts.map((p) =>
-                                p.id === post.id
-                                  ? {
-                                      ...p,
-                                      comments: [...p.comments, newComment],
-                                    }
-                                  : p,
-                              ),
-                            );
-                          }}
+                          onAddComment={(content: string) =>
+                            handleAddComment(post.id, content)
+                          }
                         />
                       </article>
                     ))
@@ -738,49 +720,34 @@ if (start !== -1 && end !== -1 && end > start) {
                 </section>
               </Col>
 
+              {/* Sidebar: Following */}
               <Col md={3}>
-                <aside
-                  className="bg-white p-3 rounded shadow"
-                  aria-label="Pessoas que você segue"
-                >
-                  <h3 className="fw-bold mb-3">👥 Seguindo</h3>
+                <SidebarCard title="👥 Seguindo" ariaLabel="Pessoas que você segue">
                   <ul className="list-unstyled d-flex flex-column gap-3">
-                    <li className="d-flex align-items-center gap-2">
-                      <Image
-                        src="/assets/imgPerfilM.png"
-                        width={40}
-                        height={40}
-                        alt="Avatar de Elisabeth"
-                      />
-                      <span>Elisabeth</span>
-                    </li>
-                    <li className="d-flex align-items-center gap-2">
-                      <Image
-                        src="/assets/imgPerfilH.png"
-                        width={40}
-                        height={40}
-                        alt="Avatar de Roberto"
-                      />
-                      <span>Roberto</span>
-                    </li>
+                    {[
+                      { src: "/assets/imgPerfilM.png", name: "Elisabeth" },
+                      { src: "/assets/imgPerfilH.png", name: "Roberto" },
+                    ].map(({ src, name }) => (
+                      <li key={name} className="d-flex align-items-center gap-2">
+                        <Image src={src} width={40} height={40} alt={`Avatar de ${name}`} />
+                        <span>{name}</span>
+                      </li>
+                    ))}
                   </ul>
-                </aside>
+                </SidebarCard>
               </Col>
             </Row>
           </Container>
         </section>
       </main>
 
-      {/* Modal de Publicação */}
+      {/* ── Modal: Create post ───────────────────────────────────────────────── */}
       {showPostModal && (
         <div
           className="modal-backdrop"
           style={{
             position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
+            inset: 0,
             backgroundColor: "rgba(0,0,0,0.5)",
             zIndex: 1050,
             display: "flex",
@@ -804,8 +771,8 @@ if (start !== -1 && end !== -1 && end > start) {
               <button
                 onClick={() => setShowPostModal(false)}
                 className="btn btn-close"
-                aria-label="Fechar modal de criação de publicação"
-              ></button>
+                aria-label="Fechar modal"
+              />
             </div>
 
             <div className="d-flex align-items-center gap-3 mb-3">
@@ -831,7 +798,6 @@ if (start !== -1 && end !== -1 && end > start) {
               style={{ resize: "none" }}
               value={postText}
               onChange={(e) => setPostText(e.target.value)}
-              aria-label="Campo de texto para criar publicação"
             />
 
             {selectedImage && (
@@ -857,15 +823,10 @@ if (start !== -1 && end !== -1 && end > start) {
               <div className="d-flex justify-content-between">
                 <button
                   className="btn btn-light"
-                  onClick={triggerFileInput}
-                  aria-label="Adicionar foto à publicação"
+                  onClick={() => fileInputRef.current?.click()}
+                  aria-label="Adicionar foto"
                 >
-                  <BiImage
-                    size={24}
-                    className="text-success"
-                    aria-hidden="true"
-                  />{" "}
-                  Foto
+                  <BiImage size={24} className="text-success" aria-hidden="true" /> Foto
                 </button>
                 <input
                   ref={fileInputRef}
@@ -873,7 +834,6 @@ if (start !== -1 && end !== -1 && end > start) {
                   accept="image/*"
                   style={{ display: "none" }}
                   onChange={handleImageUpload}
-                  aria-label="Selecionar imagem para publicação"
                 />
                 <button
                   className="btn btn-light"
@@ -891,7 +851,6 @@ if (start !== -1 && end !== -1 && end > start) {
               className="w-100 rounded-pill"
               onClick={handlePostSubmit}
               disabled={!postText.trim() && !selectedImage}
-              aria-label="Publicar postagem"
             >
               Publicar
             </Button>
@@ -899,16 +858,13 @@ if (start !== -1 && end !== -1 && end > start) {
         </div>
       )}
 
-      {/* Modal Gerador de Conteúdo */}
+      {/* ── Modal: Content generator ─────────────────────────────────────────── */}
       {showGeneradorModal && (
         <div
           className="modal-backdrop"
           style={{
             position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
+            inset: 0,
             backgroundColor: "rgba(0,0,0,0.5)",
             zIndex: 1051,
             display: "flex",
@@ -919,17 +875,15 @@ if (start !== -1 && end !== -1 && end > start) {
           role="dialog"
           aria-modal="true"
           onClick={(e) => {
-            if (e.target === e.currentTarget) setShowGeneradorModal(false);
+            if (e.target === e.currentTarget) {
+              setShowGeneradorModal(false);
+              resetGenerador();
+            }
           }}
         >
           <div
             className="bg-white p-4 rounded"
-            style={{
-              width: "500px",
-              maxWidth: "90%",
-              maxHeight: "90vh",
-              overflowY: "auto",
-            }}
+            style={{ width: "500px", maxWidth: "90%", maxHeight: "90vh", overflowY: "auto" }}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="d-flex justify-content-between align-items-center mb-4">
@@ -937,91 +891,37 @@ if (start !== -1 && end !== -1 && end > start) {
               <button
                 onClick={() => {
                   setShowGeneradorModal(false);
-                  setGeneradorStep("selection");
+                  resetGenerador();
                 }}
                 className="btn btn-close"
-              ></button>
+              />
             </div>
 
             {generadorStep === "selection" && !generadorLoading && (
               <>
-                <div className="mb-3">
-                  <label className="form-label fw-bold">
-                    🎯 Escolha um Tema
-                  </label>
-                  <div className="d-grid gap-2">
-                    {[
-                      { id: "vacinacao", label: "💉 Vacinação" },
-                      { id: "comportamento", label: "🐕 Comportamento" },
-                      { id: "adocao", label: "❤️ Adoção Responsável" },
-                      { id: "nutricao", label: "🥕 Nutrição e Saúde" },
-                      { id: "treinamento", label: "🎓 Treinamento" },
-                      { id: "higiene", label: "🛁 Higiene e Cuidados" },
-                    ].map((t) => (
-                      <button
-                        key={t.id}
-                        onClick={() => setGeneradorTema(t.id)}
-                        className={`btn ${
-                          generadorTema === t.id
-                            ? "btn-primary"
-                            : "btn-outline-primary"
-                        }`}
-                      >
-                        {t.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
+                <SelectionGroup
+                  label="🎯 Escolha um Tema"
+                  options={TEMAS}
+                  selected={generadorTema}
+                  onSelect={setGeneradorTema}
+                  variant="primary"
+                />
+                <SelectionGroup
+                  label="📋 Tipo de Conteúdo"
+                  options={TIPOS}
+                  selected={generadorTipo}
+                  onSelect={setGeneradorTipo}
+                  variant="success"
+                />
+                <SelectionGroup
+                  label="👥 Público-Alvo"
+                  options={AUDIENCIAS}
+                  selected={generadorAudiencia}
+                  onSelect={setGeneradorAudiencia}
+                  variant="info"
+                />
 
-                <div className="mb-3">
-                  <label className="form-label fw-bold">
-                    📋 Tipo de Conteúdo
-                  </label>
-                  <div className="d-grid gap-2">
-                    {[
-                      { id: "dica-rapida", label: "⚡ Dica Rápida" },
-                      { id: "guia", label: "📖 Guia Completo" },
-                      { id: "historia", label: "📚 História de Sucesso" },
-                    ].map((t) => (
-                      <button
-                        key={t.id}
-                        onClick={() => setGeneradorTipo(t.id)}
-                        className={`btn ${
-                          generadorTipo === t.id
-                            ? "btn-success"
-                            : "btn-outline-success"
-                        }`}
-                      >
-                        {t.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="mb-4">
-                  <label className="form-label fw-bold">👥 Público-Alvo</label>
-                  <div className="d-grid gap-2">
-                    {[
-                      { id: "iniciantes", label: "👶 Donos Iniciantes" },
-                      { id: "experientes", label: "👴 Donos Experientes" },
-                      { id: "protetores", label: "🛡️ Protetores" },
-                    ].map((a) => (
-                      <button
-                        key={a.id}
-                        onClick={() => setGeneradorAudiencia(a.id)}
-                        className={`btn ${
-                          generadorAudiencia === a.id
-                            ? "btn-info"
-                            : "btn-outline-info"
-                        }`}
-                      >
-                        {a.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="d-flex gap-2">
+                <div className="d-flex gap-2 mt-2">
                   <button
                     onClick={() => setShowGeneradorModal(false)}
                     className="btn btn-secondary flex-grow-1"
@@ -1030,9 +930,7 @@ if (start !== -1 && end !== -1 && end > start) {
                   </button>
                   <button
                     onClick={handleGenerarContenido}
-                    disabled={
-                      !generadorTema || !generadorTipo || !generadorAudiencia
-                    }
+                    disabled={!generadorTema || !generadorTipo || !generadorAudiencia}
                     className="btn btn-primary flex-grow-1"
                   >
                     <BiStar size={16} /> Gerar
@@ -1043,12 +941,7 @@ if (start !== -1 && end !== -1 && end > start) {
 
             {generadorStep === "generating" && (
               <div className="text-center py-5">
-                <div
-                  className="mb-3"
-                  style={{ fontSize: "48px", animation: "bounce 2s infinite" }}
-                >
-                  ✨
-                </div>
+                <div style={{ fontSize: "48px", animation: "bounce 2s infinite" }}>✨</div>
                 <p className="text-muted">Gerando conteúdo incrível...</p>
               </div>
             )}
