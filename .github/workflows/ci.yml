@@ -6,9 +6,6 @@ on:
       - main
       - develop
 
-permissions:
-  contents: read
-
 jobs:
   version:
     runs-on: ubuntu-latest
@@ -130,6 +127,9 @@ jobs:
     name: Build da imagem Docker
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: read
+
     needs: [version]
 
     steps:
@@ -173,6 +173,9 @@ jobs:
     name: CD - Deploy HML
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: read
+
     needs: [version, docker-build]
 
     if: github.ref_name == 'develop' || github.ref_name == 'main'
@@ -214,6 +217,9 @@ jobs:
     name: CD - Deploy PROD
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: read
+
     needs: [version, deploy-hml]
 
     if: github.ref_name == 'main'
@@ -250,5 +256,3 @@ jobs:
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer $RENDER_API_KEY" \
             -d "$PAYLOAD"
-
-     
