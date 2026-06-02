@@ -4,76 +4,57 @@ const bodyParser = require("body-parser");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
+
 dotenv.config();
 
-
-
 const app = express();
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
-// Middleware
-app.use(cors());
+app.use(cors({
+  origin: process.env.ALLOWED_ORIGIN, // só o domínio do seu frontend Next.js
+  methods: ["GET", "POST"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+}));
 app.use(bodyParser.json());
 
-// Mock database
-let users = [
-  {
-    id: "1",
-    name: "Admin",
-    email: "admin@example.com",
-    password: "$2a$10$N9qo8uLOickgx2ZMRZoMy.MH/rW1sLqBzUQUZ5C5/5GpF8v5XJQ1W", // "senha123"
-    role: "admin",
-  },
-];
-
-// Chave secreta para JWT via variável de ambiente
 const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) {
   console.error("ERRO: JWT_SECRET não definido nas variáveis de ambiente.");
   process.exit(1);
 }
 
-// Rotas de Autenticação
+let users = [
+  {
+    id: "1",
+    name: "Admin",
+    email: "admin@example.com",
+    password: process.env.ADMIN_PASSWORD_HASH, // hash definido no .env
+    role: "admin",
+  },
+];
+
 app.post("/api/register", async (req, res) => {
   const { name, email, password } = req.body;
 
-  if (!name || !email || !password) {
+  if (!name || !email || !password)
     return res.status(400).json({ error: "Todos os campos são obrigatórios" });
-  }
 
-  if (users.some((user) => user.email === email)) {
+  if (users.some((u) => u.email === email))
     return res.status(400).json({ error: "Email já cadastrado" });
-  }
 
   try {
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const newUser = {
-      id: Date.now().toString(),
-      name,
-      email,
-      password: hashedPassword,
-      role: "user",
-    };
-
+    const hashedPassword = await bcrypt.hash(password, 12);
+    const newUser = { id: Date.now().toString(), name, email, password: hashedPassword, role: "user" };
     users.push(newUser);
 
     const token = jwt.sign(
       { userId: newUser.id, email: newUser.email, role: newUser.role },
       JWT_SECRET,
-      { expiresIn: "1h" }
+      { expiresIn: "1h", algorithm: "HS256" }
     );
 
-    res.status(201).json({
-      message: "Usuário registrado com sucesso",
-      token,
-      user: {
-        id: newUser.id,
-        name: newUser.name,
-        email: newUser.email,
-        role: newUser.role,
-      },
-    });
+    res.status(201).json({ message: "Usuário registrado com sucesso", token,
+      user: { id: newUser.id, name: newUser.name, email: newUser.email, role: newUser.role } });
   } catch (error) {
     console.error("Erro no registro:", error);
     res.status(500).json({ error: "Erro ao registrar usuário" });
@@ -83,77 +64,53 @@ app.post("/api/register", async (req, res) => {
 app.post("/api/login", async (req, res) => {
   const { email, password } = req.body;
 
-  if (!email || !password) {
+  if (!email || !password)
     return res.status(400).json({ error: "Email e senha são obrigatórios" });
-  }
 
-  const user = users.find((user) => user.email === email);
-
-  if (!user) {
+  const user = users.find((u) => u.email === email);
+  if (!user)
     return res.status(401).json({ error: "Credenciais inválidas" });
-  }
 
   try {
     const isMatch = await bcrypt.compare(password, user.password);
-
-    if (!isMatch) {
+    if (!isMatch)
       return res.status(401).json({ error: "Credenciais inválidas" });
-    }
 
     const token = jwt.sign(
       { userId: user.id, email: user.email, role: user.role },
       JWT_SECRET,
-      { expiresIn: "1h" }
+      { expiresIn: "1h", algorithm: "HS256" }
     );
 
-    res.json({
-      message: "Login bem-sucedido",
-      token,
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-      },
-    });
+    res.json({ message: "Login bem-sucedido", token,
+      user: { id: user.id, name: user.name, email: user.email, role: user.role } });
   } catch (error) {
     console.error("Erro no login:", error);
     res.status(500).json({ error: "Erro ao fazer login" });
   }
 });
 
-// Rota protegida de exemplo
 app.get("/api/profile", authenticateToken, (req, res) => {
   const user = users.find((u) => u.id === req.user.userId);
   if (!user) return res.status(404).json({ error: "Usuário não encontrado" });
-
-  res.json({
-    id: user.id,
-    name: user.name,
-    email: user.email,
-    role: user.role,
-  });
+  res.json({ id: user.id, name: user.name, email: user.email, role: user.role });
 });
 
-// Middleware de autenticação
 function authenticateToken(req, res, next) {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
 
-  if (!token) {
+  if (!token)
     return res.status(401).json({ error: "Token não fornecido" });
-  }
 
-  jwt.verify(token, JWT_SECRET, (err, user) => {
-    if (err) {
+  jwt.verify(token, JWT_SECRET, { algorithms: ["HS256"] }, (err, user) => {
+    if (err)
       return res.status(403).json({ error: "Token inválido ou expirado" });
-    }
     req.user = user;
     next();
   });
 }
 
-// Iniciar servidor
 app.listen(PORT, () => {
   console.log(`Servidor de autenticação rodando na porta ${PORT}`);
 });
