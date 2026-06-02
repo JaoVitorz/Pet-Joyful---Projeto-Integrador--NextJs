@@ -229,9 +229,10 @@ Responda em JSON com este formato:
 
       if (data.reply) {
         try {
-          const jsonMatch = data.reply.match(/\{[\s\S]*\}/);
-          if (jsonMatch) {
-            const parsed = JSON.parse(jsonMatch[0]);
+         const start = data.reply.indexOf("{");
+const end = data.reply.lastIndexOf("}");
+if (start !== -1 && end !== -1 && end > start) {
+  const parsed = JSON.parse(data.reply.slice(start, end + 1));
             const textoFinal = `${parsed.title}\n\n${parsed.content}\n\n${parsed.hashtags.join(" ")}`;
             setPostText(textoFinal);
             setShowGeneradorModal(false);
