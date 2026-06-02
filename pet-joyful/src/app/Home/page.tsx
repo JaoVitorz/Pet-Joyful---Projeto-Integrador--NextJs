@@ -81,12 +81,14 @@ const FeatureCard = ({
   const router = useRouter();
 
   return (
-    <div
-      className="bg-white p-4 rounded-3 shadow-sm h-100 text-center"
+  <button
+      type="button"
+      className="bg-white p-4 rounded-3 shadow-sm h-100 text-center w-100"
       style={{
         border: `2px solid ${borderColor}`,
         transition: "all 0.3s ease",
         cursor: "pointer",
+        background: "white",
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.boxShadow = `0 10px 30px ${shadowColor}`;
@@ -101,17 +103,14 @@ const FeatureCard = ({
       <div style={{ fontSize: "48px", marginBottom: "1rem" }}>{emoji}</div>
       <h3 className="fw-bold mb-3">{title}</h3>
       <p className="text-muted mb-3">{description}</p>
-      <button
+      <span
         className={`btn rounded-pill ${buttonClassName}`}
         style={buttonStyle}
-        onClick={(e) => {
-          e.stopPropagation();
-          router.push(route);
-        }}
       >
         {buttonLabel}
-      </button>
-    </div>
+      </span>
+    </button>
+   
   );
 };
 
@@ -760,6 +759,9 @@ Responda em JSON com este formato:
           onClick={(e) => {
             if (e.target === e.currentTarget) setShowPostModal(false);
           }}
+           onKeyDown={(e) => {
+      if (e.key === "Escape") setShowPostModal(false);
+    }}
         >
           <div
             className="bg-white p-4 rounded"
@@ -880,6 +882,12 @@ Responda em JSON com este formato:
               resetGenerador();
             }
           }}
+           onKeyDown={(e) => {
+      if (e.key === "Escape") {
+        setShowGeneradorModal(false);
+        resetGenerador();
+      }
+    }}
         >
           <div
             className="bg-white p-4 rounded"

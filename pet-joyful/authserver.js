@@ -3,6 +3,10 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const dotenv = require("dotenv");
+dotenv.config();
+
+
 
 const app = express();
 const PORT = 3001;
@@ -22,28 +26,28 @@ let users = [
   },
 ];
 
-// Chave secreta para JWT (em produção, use uma variável de ambiente)
-const JWT_SECRET = "sua_chave_secreta_super_segura";
+// Chave secreta para JWT via variável de ambiente
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  console.error("ERRO: JWT_SECRET não definido nas variáveis de ambiente.");
+  process.exit(1);
+}
 
 // Rotas de Autenticação
 app.post("/api/register", async (req, res) => {
   const { name, email, password } = req.body;
 
-  // Validação simples
   if (!name || !email || !password) {
     return res.status(400).json({ error: "Todos os campos são obrigatórios" });
   }
 
-  // Verifica se usuário já existe
   if (users.some((user) => user.email === email)) {
     return res.status(400).json({ error: "Email já cadastrado" });
   }
 
   try {
-    // Criptografa a senha
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Cria novo usuário
     const newUser = {
       id: Date.now().toString(),
       name,
@@ -54,7 +58,6 @@ app.post("/api/register", async (req, res) => {
 
     users.push(newUser);
 
-    // Cria token JWT
     const token = jwt.sign(
       { userId: newUser.id, email: newUser.email, role: newUser.role },
       JWT_SECRET,
@@ -80,12 +83,10 @@ app.post("/api/register", async (req, res) => {
 app.post("/api/login", async (req, res) => {
   const { email, password } = req.body;
 
-  // Validação simples
   if (!email || !password) {
     return res.status(400).json({ error: "Email e senha são obrigatórios" });
   }
 
-  // Encontra usuário
   const user = users.find((user) => user.email === email);
 
   if (!user) {
@@ -93,14 +94,12 @@ app.post("/api/login", async (req, res) => {
   }
 
   try {
-    // Verifica senha
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
       return res.status(401).json({ error: "Credenciais inválidas" });
     }
 
-    // Cria token JWT
     const token = jwt.sign(
       { userId: user.id, email: user.email, role: user.role },
       JWT_SECRET,
@@ -157,5 +156,4 @@ function authenticateToken(req, res, next) {
 // Iniciar servidor
 app.listen(PORT, () => {
   console.log(`Servidor de autenticação rodando na porta ${PORT}`);
-  console.log(`Usuário de teste: admin@example.com / senha123`);
 });
