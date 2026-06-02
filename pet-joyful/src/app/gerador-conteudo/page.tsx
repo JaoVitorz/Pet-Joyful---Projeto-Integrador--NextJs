@@ -113,12 +113,13 @@ Responda em JSON com este formato:
 
       if (data.reply) {
         try {
-          const jsonMatch = data.reply.match(/\{[\s\S]*\}/);
-          if (jsonMatch) {
-            const parsed = JSON.parse(jsonMatch[0]);
-            setResult(parsed);
-            setStep("result");
-          }
+          const start = data.reply.indexOf("{");
+const end = data.reply.lastIndexOf("}");
+if (start !== -1 && end !== -1 && end > start) {
+  const parsed = JSON.parse(data.reply.slice(start, end + 1));
+  setResult(parsed);
+  setStep("result");
+}
         } catch (e) {
           console.error("Erro ao parsear resposta:", e);
           alert("Erro ao processar resposta da LLM");

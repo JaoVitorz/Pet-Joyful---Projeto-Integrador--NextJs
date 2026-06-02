@@ -1,5 +1,6 @@
 "use client";
 
+import { parseJsonFromText } from "@/app/utils/parseJsonFromText";
 import { useState, useRef, useEffect } from "react";
 import { FiArrowLeft, FiSend } from "react-icons/fi";
 import Link from "next/link";
@@ -97,9 +98,8 @@ Responda em JSON com este formato:
 
       if (data.reply) {
         try {
-          const jsonMatch = data.reply.match(/\{[\s\S]*\}/);
-          if (jsonMatch) {
-            const parsed = JSON.parse(jsonMatch[0]);
+          const parsed = parseJsonFromText<CompatibilityResult>(data.reply);
+          if (parsed) {
             setResult(parsed);
             setStep("result");
           }
