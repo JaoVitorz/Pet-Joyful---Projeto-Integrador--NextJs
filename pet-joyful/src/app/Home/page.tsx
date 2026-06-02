@@ -767,6 +767,7 @@ Responda em JSON com este formato:
             className="bg-white p-4 rounded"
             style={{ width: "500px", maxWidth: "90%" }}
             onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => e.stopPropagation()}
           >
             <div className="d-flex justify-content-between align-items-center mb-3">
               <h4 id="modal-title">Criar publicação</h4>
@@ -893,6 +894,7 @@ Responda em JSON com este formato:
             className="bg-white p-4 rounded"
             style={{ width: "500px", maxWidth: "90%", maxHeight: "90vh", overflowY: "auto" }}
             onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => e.stopPropagation()}
           >
             <div className="d-flex justify-content-between align-items-center mb-4">
               <h4>✨ Gerar Conteúdo com IA</h4>
