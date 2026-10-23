@@ -73,6 +73,12 @@ jobs:
             git push origin $TAG
           fi
 
+      - name: Configurar Java 21 para o SonarCloud
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v2
         with:
