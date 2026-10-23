@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BiEdit } from "react-icons/bi";
 import { profileService } from "@/services/profileApi";
 
@@ -21,17 +21,35 @@ export default function ProfileHeader({
   const [photoPreview, setPhotoPreview] = useState<string>(avatar);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [photoError, setPhotoError] = useState<string>("");
+  const [photoMessage, setPhotoMessage] = useState<string>("");
+
+  useEffect(() => {
+    if (!photoFile) {
+      setPhotoPreview(avatar || "/assets/aatan-logo.jpg");
+    }
+  }, [avatar, photoFile]);
 
   const handlePhotoSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) {
-      setPhotoFile(file);
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setPhotoPreview(e.target?.result as string);
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+
+    setPhotoError("");
+    setPhotoMessage("");
+    if (!file.type.startsWith("image/")) {
+      setPhotoError("Escolha um arquivo de imagem válido.");
+      event.target.value = "";
+      return;
     }
+    if (file.size > 5 * 1024 * 1024) {
+      setPhotoError("A foto deve ter no máximo 5 MB.");
+      event.target.value = "";
+      return;
+    }
+
+    setPhotoFile(file);
+    const reader = new FileReader();
+    reader.onload = (e) => setPhotoPreview(e.target?.result as string);
+    reader.readAsDataURL(file);
   };
 
   const handlePhotoUpload = async () => {
@@ -50,7 +68,7 @@ export default function ProfileHeader({
         setPhotoFile(null);
         setPhotoPreview(response.data.foto_perfil);
         onAvatarUpdate?.(response.data.foto_perfil);
-        alert("Foto atualizada com sucesso!");
+        setPhotoMessage("Foto atualizada com sucesso.");
       }
     } catch (error: unknown) {
       console.error("[ProfileHeader] Erro ao enviar foto:", error);
@@ -60,26 +78,26 @@ export default function ProfileHeader({
       };
       const msg = err?.response?.data?.message || err.message || String(error);
       setPhotoError(msg);
-      alert("Erro ao enviar foto: " + msg);
     } finally {
       setUploadingPhoto(false);
     }
   };
 
   return (
-    <div className="bg-white p-4 rounded shadow mb-4">
-      <div className="d-flex align-items-start">
-        <div className="position-relative">
+    <div className="bg-white p-3 p-md-4 rounded shadow mb-4">
+      <div className="d-flex flex-column flex-sm-row align-items-center align-items-sm-start gap-3 gap-sm-4">
+        <div className="position-relative flex-shrink-0 text-center">
           <input
             id="profile-header-photo-input"
             type="file"
             accept="image/*"
             onChange={handlePhotoSelect}
-            className="d-none"
+            className="visually-hidden"
+            aria-label="Escolher foto do perfil"
           />
           <label
             htmlFor="profile-header-photo-input"
-            className="position-relative d-inline-block"
+            className="profile-photo-label position-relative d-inline-block"
             style={{ cursor: "pointer" }}
           >
             <img
@@ -89,13 +107,7 @@ export default function ProfileHeader({
                   : avatar || "/assets/aatan-logo.jpg"
               }
               alt={`Foto do perfil de ${nome}`}
-              className="rounded-circle border-3 border-success"
-              style={{
-                width: "120px",
-                height: "120px",
-                objectFit: "cover",
-                display: "block",
-              }}
+              className="profile-header-avatar rounded-circle border border-3 border-success"
               onError={(e) => {
                 e.currentTarget.src = "/assets/aatan-logo.jpg";
               }}
@@ -109,8 +121,6 @@ export default function ProfileHeader({
                 opacity: 0,
                 transition: "opacity 0.2s",
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
-              onMouseLeave={(e) => (e.currentTarget.style.opacity = "0")}
             >
               <div className="text-white text-center">
                 <BiEdit size={24} className="mb-1" />
@@ -123,7 +133,8 @@ export default function ProfileHeader({
           {photoFile && (
             <div className="mt-2">
               <button
-                onClick={handlePhotoUpload}
+                type="button"
+                onClick={() => { void handlePhotoUpload(); }}
                 disabled={uploadingPhoto}
                 className="btn btn-success btn-sm"
               >
@@ -132,16 +143,37 @@ export default function ProfileHeader({
             </div>
           )}
           {photoError && (
-            <div className="mt-2 text-danger small">{photoError}</div>
+            <div className="mt-2 text-danger small" role="alert">{photoError}</div>
+          )}
+          {photoMessage && (
+            <output className="mt-2 d-block text-success small">{photoMessage}</output>
           )}
         </div>
 
-        <div className="ms-4 flex-grow-1">
-          <h2 className="mb-0">{nome}</h2>
+        <div className="flex-grow-1 text-center text-sm-start min-w-0">
+          <h2 className="mb-0 text-break">{nome}</h2>
 
-          <p className="text-muted mt-2">{bio}</p>
+          <p className="text-muted mt-2 mb-0" style={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}>{bio}</p>
         </div>
       </div>
+      <style jsx>{`
+        .profile-header-avatar {
+          width: 104px;
+          height: 104px;
+          object-fit: cover;
+          display: block;
+        }
+        @media (min-width: 576px) {
+          .profile-header-avatar {
+            width: 120px;
+            height: 120px;
+          }
+        }
+        .profile-photo-label:hover > div:last-child,
+        .profile-photo-label:focus-visible > div:last-child {
+          opacity: 1 !important;
+        }
+      `}</style>
     </div>
   );
 }

@@ -81,7 +81,7 @@ export default function PostCard({ post, currentUserId, onUpdate }: PostCardProp
         
         {isAuthor && (
           <button
-            onClick={handleDelete}
+          onClick={() => { void handleDelete(); }}
             className="text-red-500 hover:text-red-700 text-xl"
             title="Deletar postagem"
           >
@@ -133,7 +133,7 @@ export default function PostCard({ post, currentUserId, onUpdate }: PostCardProp
       <div className="p-4 border-t">
         <div className="flex items-center space-x-6 mb-4">
           <button
-            onClick={handleLike}
+            onClick={() => { void handleLike(); }}
             className={`flex items-center space-x-2 ${
               isLiked ? 'text-red-500' : 'text-gray-500'
             } hover:text-red-500 transition`}
@@ -183,13 +183,13 @@ export default function PostCard({ post, currentUserId, onUpdate }: PostCardProp
                 className="flex-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 onKeyPress={(e) => {
                   if (e.key === 'Enter' && !commenting) {
-                    handleComment();
+                    void handleComment();
                   }
                 }}
                 disabled={commenting}
               />
               <button
-                onClick={handleComment}
+                onClick={() => { void handleComment(); }}
                 disabled={commenting || !commentText.trim()}
                 className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-400 transition"
               >

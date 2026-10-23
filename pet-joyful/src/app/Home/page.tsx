@@ -5,17 +5,13 @@ import Header from "../components/common/Header";
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { createPost } from "@/app/services/postService";
+import PostsFeed from "../components/PostsFeed";
 import { Container, Row, Col, Button, Form } from "react-bootstrap";
 import {
-  BiMessageDetail,
   BiImage,
-  BiHeart,
-  BiShare,
   BiX,
-  BiDotsVerticalRounded,
   BiStar,
 } from "react-icons/bi";
-import Comments from "../components/posts/Comments";
 import { useRouter } from "next/navigation";
 
 // ─── Static data (defined once, reused in modal UI and handler) ───────────────
@@ -165,40 +161,18 @@ const SidebarCard = ({ title, ariaLabel, children }: SidebarCardProps) => (
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type PostType = {
-  id: number;
-  text: string;
-  image: File | string | null;
-  likes: number;
-  comments: { id: number; user: string; text: string }[];
-  user: { name: string; avatar: string };
-  timestamp: string;
-};
-
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export default function App() {
   const router = useRouter();
 
   const [postText, setPostText] = useState("");
-  const [reportingPostId, setReportingPostId] = useState<number | null>(null);
-  const [reportText, setReportText] = useState("");
   const [userProfile, setUserProfile] = useState<{
     nome: string;
     foto_perfil?: string;
   } | null>(null);
 
-  const [posts, setPosts] = useState<PostType[]>([
-    {
-      id: 1,
-      text: "Venha conhecer alguns dos nossos peludinhos.",
-      image: "/assets/post-aatan.jpg",
-      likes: 42,
-      comments: [],
-      user: { name: "AATAN - Sorocaba", avatar: "/assets/aatan-logo.jpg" },
-      timestamp: "10/05/2024, 15:30",
-    },
-  ]);
+  const [feedRefreshKey, setFeedRefreshKey] = useState(0);
 
   const [showPostModal, setShowPostModal] = useState(false);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
@@ -224,7 +198,7 @@ export default function App() {
 
   // ── Handlers ────────────────────────────────────────────────────────────────
 
-  const handlePostSubmit = () => {
+  const handlePostSubmit = async () => {
     if (!postText.trim() && !selectedImage) return;
 
     const formData = new FormData();
@@ -238,65 +212,21 @@ export default function App() {
     hashtags.forEach((tag) => formData.append("tags", tag.replace("#", "")));
     if (selectedImage instanceof File) formData.append("imagem", selectedImage);
 
-    (async () => {
-      try {
-        const resp = await createPost(formData);
-        const created = resp?.data || resp?.post || resp;
-
-        const newPost: PostType = {
-          id: created?._id || created?.id || Date.now(),
-          text: created?.descricao || created?.titulo || postText,
-          image:
-            created?.imagem?.url ||
-            (selectedImage ? URL.createObjectURL(selectedImage) : null),
-          likes: Array.isArray(created?.likes)
-            ? created.likes.length
-            : created?.likes || 0,
-          comments: (created?.comentarios || []).map((c: any) => ({
-            id: c._id || Date.now(),
-            user: c.nome || "Usuário",
-            text: c.texto || c.text,
-          })),
-          user: {
-            name: created?.autor?.nome || userProfile?.nome || "Você",
-            avatar: userProfile?.foto_perfil || "/assets/imgPerfilM.png",
-          },
-          timestamp: created?.createdAt
-            ? new Date(created.createdAt).toLocaleString()
-            : new Date().toLocaleString(),
-        };
-
-        setPosts((prev) => [newPost, ...prev]);
-        setPostText("");
-        setSelectedImage(null);
-        setShowPostModal(false);
-      } catch (err: any) {
-        console.error("Erro ao criar postagem:", err);
-        alert("Erro ao publicar. Verifique o console.");
-      }
-    })();
+    try {
+      await createPost(formData);
+      setFeedRefreshKey((key) => key + 1);
+      setPostText("");
+      setSelectedImage(null);
+      setShowPostModal(false);
+    } catch (err: unknown) {
+      console.error("Erro ao criar postagem:", err);
+      alert("Erro ao publicar. Verifique sua conexão e tente novamente.");
+    }
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) setSelectedImage(file);
-  };
-
-  const handleLike = (postId: number) => {
-    setPosts((prev) =>
-      prev.map((post) =>
-        post.id === postId ? { ...post, likes: post.likes + 1 } : post,
-      ),
-    );
-  };
-
-  const handleAddComment = (postId: number, content: string) => {
-    const newComment = { id: Date.now(), user: "Usuário Atual", text: content };
-    setPosts((prev) =>
-      prev.map((p) =>
-        p.id === postId ? { ...p, comments: [...p.comments, newComment] } : p,
-      ),
-    );
   };
 
   const resetGenerador = () => {
@@ -570,157 +500,10 @@ Responda em JSON com este formato:
                   </button>
                 </section>
 
-                {/* Posts */}
-                <section aria-label="Feed de publicações">
-                  {posts.length === 0 ? (
-                    <div className="bg-white p-4 rounded shadow text-center">
-                      <p className="text-muted">
-                        Nenhuma publicação ainda. Seja o primeiro a compartilhar!
-                      </p>
-                    </div>
-                  ) : (
-                    posts.map((post) => (
-                      <article
-                        key={post.id}
-                        className="bg-white p-3 rounded shadow mb-4 position-relative"
-                        aria-label={`Publicação de ${post.user.name}`}
-                      >
-                        <header className="d-flex align-items-center gap-3">
-                          <Image
-                            src={post.user.avatar}
-                            width={40}
-                            height={40}
-                            className="rounded-circle"
-                            alt={`Avatar de ${post.user.name}`}
-                          />
-                          <div className="flex-grow-1">
-                            <span className="fw-bold">{post.user.name}</span>
-                            <time
-                              className="text-muted ms-2"
-                              style={{ fontSize: "0.9em" }}
-                              dateTime={post.timestamp}
-                            >
-                              {post.timestamp}
-                            </time>
-                          </div>
-
-                          <div className="ms-2 position-relative">
-                            <Button
-                              variant="link"
-                              size="sm"
-                              onClick={() =>
-                                setReportingPostId(
-                                  reportingPostId === post.id ? null : post.id,
-                                )
-                              }
-                              aria-label={`Opções da publicação de ${post.user.name}`}
-                              aria-expanded={reportingPostId === post.id}
-                              aria-haspopup="true"
-                            >
-                              <BiDotsVerticalRounded size={20} aria-hidden="true" />
-                            </Button>
-
-                            {reportingPostId === post.id && (
-                              <div
-                                className="position-absolute end-0 mt-2 bg-white border rounded shadow-sm p-2"
-                                style={{ zIndex: 1000 }}
-                                role="menu"
-                                aria-label="Menu de opções da publicação"
-                              >
-                                <button
-                                  className="btn btn-sm text-danger w-100"
-                                  onClick={() => setReportText("")}
-                                  role="menuitem"
-                                >
-                                  Denunciar post
-                                </button>
-                                <div className="mt-2">
-                                  <label
-                                    htmlFor={`report-text-${post.id}`}
-                                    className="visually-hidden"
-                                  >
-                                    Descreva o motivo da denúncia
-                                  </label>
-                                  <Form.Control
-                                    as="textarea"
-                                    id={`report-text-${post.id}`}
-                                    rows={2}
-                                    placeholder="Descreva o motivo"
-                                    value={reportText}
-                                    onChange={(e) => setReportText(e.target.value)}
-                                  />
-                                  <Button
-                                    variant="danger"
-                                    size="sm"
-                                    className="mt-2 w-100"
-                                    onClick={() => {
-                                      alert(`Post ${post.id} denunciado: ${reportText}`);
-                                      setReportingPostId(null);
-                                      setReportText("");
-                                    }}
-                                    disabled={!reportText.trim()}
-                                  >
-                                    Enviar
-                                  </Button>
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        </header>
-
-                        <div className="mt-3">
-                          <p style={{ whiteSpace: "pre-line" }}>
-                                         {post.text}
-                                       </p>
-                        </div>
-
-                        {post.image && (
-                          <Image
-                            src={
-                              typeof post.image === "string"
-                                ? post.image
-                                : URL.createObjectURL(post.image)
-                            }
-                            width={500}
-                            height={300}
-                            className="rounded my-3"
-                            alt={`Imagem da publicação de ${post.user.name}: ${post.text.substring(0, 50)}...`}
-                          />
-                        )}
-
-                        <div
-                          className="d-flex gap-2"
-                          role="group"
-                          aria-label="Ações da publicação"
-                        >
-                          <Button
-                            variant="light"
-                            className="rounded-pill"
-                            onClick={() => handleLike(post.id)}
-                            aria-label={`Curtir publicação. ${post.likes} curtida${post.likes !== 1 ? "s" : ""}`}
-                          >
-                            <BiHeart aria-hidden="true" /> {post.likes} Curtir
-                          </Button>
-                          <Button variant="light" className="rounded-pill">
-                            <BiMessageDetail aria-hidden="true" /> Comentar
-                          </Button>
-                          <Button variant="light" className="rounded-pill">
-                            <BiShare aria-hidden="true" /> Compartilhar
-                          </Button>
-                        </div>
-
-                        <Comments
-                          comments={post.comments}
-                          onAddComment={(content: string) =>
-                            handleAddComment(post.id, content)
-                          }
-                        />
-                      </article>
-                    ))
-                  )}
-                </section>
+                  <section aria-label="Feed de publicações">
+                    <PostsFeed refreshKey={feedRefreshKey} />
+                  </section>
               </Col>
-
               {/* Sidebar: Following */}
               <Col md={3}>
                 <SidebarCard title="👥 Seguindo" ariaLabel="Pessoas que você segue">
@@ -854,7 +637,7 @@ Responda em JSON com este formato:
             <Button
               variant="success"
               className="w-100 rounded-pill"
-              onClick={handlePostSubmit}
+              onClick={() => { void handlePostSubmit(); }}
               disabled={!postText.trim() && !selectedImage}
             >
               Publicar
@@ -941,7 +724,7 @@ Responda em JSON com este formato:
                     Cancelar
                   </button>
                   <button
-                    onClick={handleGenerarContenido}
+                    onClick={() => { void handleGenerarContenido(); }}
                     disabled={!generadorTema || !generadorTipo || !generadorAudiencia}
                     className="btn btn-primary flex-grow-1"
                   >
