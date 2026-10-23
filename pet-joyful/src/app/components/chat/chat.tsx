@@ -226,7 +226,7 @@ export default function Chat() {
               }) : <div className="flex h-full items-center justify-center text-center text-gray-500">Nenhuma mensagem ainda. Envie a primeira.</div>}
             </div>
             {error && <p role="alert" className="bg-red-50 px-4 py-2 text-sm text-red-700">{error}</p>}
-            <form onSubmit={handleSend} className="flex gap-2 border-t border-gray-200 bg-white p-3 md:p-4">
+            <form onSubmit={(event) => { void handleSend(event); }} className="flex gap-2 border-t border-gray-200 bg-white p-3 md:p-4">
               <input
                 value={draft}
                 onChange={(event) => setDraft(event.target.value)}

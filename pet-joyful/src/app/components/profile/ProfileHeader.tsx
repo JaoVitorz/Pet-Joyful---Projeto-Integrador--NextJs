@@ -134,7 +134,7 @@ export default function ProfileHeader({
             <div className="mt-2">
               <button
                 type="button"
-                onClick={handlePhotoUpload}
+                onClick={() => { void handlePhotoUpload(); }}
                 disabled={uploadingPhoto}
                 className="btn btn-success btn-sm"
               >
@@ -146,7 +146,7 @@ export default function ProfileHeader({
             <div className="mt-2 text-danger small" role="alert">{photoError}</div>
           )}
           {photoMessage && (
-            <div className="mt-2 text-success small" role="status">{photoMessage}</div>
+            <output className="mt-2 d-block text-success small">{photoMessage}</output>
           )}
         </div>
 

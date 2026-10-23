@@ -23,7 +23,7 @@ export default function PostsFeed({ refreshKey }: PostsFeedProps) {
       setCurrentUserId(userData.id || userData._id);
     }
     
-    loadPosts();
+    void loadPosts();
   }, [page, refreshKey]);
 
   const loadPosts = async () => {
