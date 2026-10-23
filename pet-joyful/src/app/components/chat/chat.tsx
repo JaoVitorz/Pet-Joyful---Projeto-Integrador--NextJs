@@ -1,12 +1,14 @@
 "use client";
 
-import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
+import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { BiArrowBack, BiSearch, BiSend } from "react-icons/bi";
 import {
   ChatUser,
   DirectConversation,
   DirectMessage,
+  DirectMessageEvent,
+  connectDirectChat,
   directChatService,
 } from "@/app/services/directChatService";
 
@@ -22,6 +24,8 @@ export default function Chat() {
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
+  const [realtimeConnected, setRealtimeConnected] = useState(false);
+  const activeConversationIdRef = useRef<string | null>(null);
 
   const refreshConversations = useCallback(async () => {
     const nextConversations = await directChatService.listConversations();
@@ -56,12 +60,47 @@ export default function Chat() {
       }
     };
     void load();
-    const timer = window.setInterval(() => {
-      void refreshConversations().catch(() => undefined);
-    }, 5000);
     return () => {
       active = false;
-      window.clearInterval(timer);
+    };
+  }, []);
+
+  useEffect(() => {
+    activeConversationIdRef.current = activeConversation?.id ?? null;
+  }, [activeConversation]);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    const socket = connectDirectChat(token);
+    socket.on("connect", () => setRealtimeConnected(true));
+    socket.on("disconnect", () => setRealtimeConnected(false));
+    socket.on("connect_error", () => setRealtimeConnected(false));
+    socket.on("direct-message:new", (event: DirectMessageEvent) => {
+      setConversations((previous) => {
+        const conversation = previous.find((item) => item.id === event.conversationId);
+        if (!conversation) {
+          void refreshConversations().catch(() => undefined);
+          return previous;
+        }
+        const updated = {
+          ...conversation,
+          lastMessage: event.message.text,
+          lastMessageAt: event.message.createdAt,
+        };
+        return [updated, ...previous.filter((item) => item.id !== event.conversationId)]
+          .sort((a, b) => new Date(b.lastMessageAt || 0).getTime() - new Date(a.lastMessageAt || 0).getTime());
+      });
+      if (activeConversationIdRef.current === event.conversationId) {
+        setMessages((previous) => previous.some((message) => message.id === event.message.id)
+          ? previous
+          : [...previous, event.message]);
+      }
+    });
+    return () => {
+      socket.disconnect();
+      setRealtimeConnected(false);
     };
   }, [refreshConversations]);
 
@@ -97,11 +136,8 @@ export default function Chat() {
       setMessages([]);
       return;
     }
+    setMessages([]);
     void loadMessages(activeConversation.id);
-    const timer = window.setInterval(() => {
-      void loadMessages(activeConversation.id);
-    }, 3000);
-    return () => window.clearInterval(timer);
   }, [activeConversation, loadMessages]);
 
   const visibleUsers = useMemo(() => {
@@ -133,7 +169,9 @@ export default function Chat() {
     setError("");
     try {
       const sent = await directChatService.sendMessage(activeConversation.id, text);
-      setMessages((previous) => [...previous, sent]);
+      setMessages((previous) => previous.some((message) => message.id === sent.id)
+        ? previous
+        : [...previous, sent]);
       setDraft("");
       void refreshConversations();
     } catch (cause) {
@@ -207,7 +245,7 @@ export default function Chat() {
               </span>
               <div className="min-w-0">
                 <h2 className="truncate font-semibold text-gray-900">{activeConversation.user.name || activeConversation.user.nome}</h2>
-                <p className="text-xs text-green-700">Chat individual</p>
+                <p className={`text-xs ${realtimeConnected ? "text-green-700" : "text-amber-700"}`}>{realtimeConnected ? "Conectado em tempo real" : "Reconectando ao chat..."}</p>
               </div>
             </header>
             <div className="flex-1 space-y-3 overflow-y-auto bg-gray-50 p-4" aria-live="polite">

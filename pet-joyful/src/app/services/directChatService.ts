@@ -1,3 +1,5 @@
+import { io, type Socket } from "socket.io-client";
+
 export interface ChatUser {
   id: string;
   name: string;
@@ -17,6 +19,16 @@ export interface DirectMessage {
   senderId: string;
   text: string;
   createdAt: string;
+}
+
+export interface DirectMessageEvent {
+  conversationId: string;
+  message: DirectMessage;
+}
+
+export function connectDirectChat(token: string): Socket {
+  const url = process.env.NEXT_PUBLIC_AUTH_API_URL || "https://pet-joyful-backend.onrender.com";
+  return io(url, { auth: { token }, transports: ["websocket", "polling"] });
 }
 
 async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
