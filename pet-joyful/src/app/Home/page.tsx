@@ -5,6 +5,7 @@ import Header from "../components/common/Header";
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { createPost } from "@/app/services/postService";
+import PostsFeed from "../components/PostsFeed";
 import { Container, Row, Col, Button, Form } from "react-bootstrap";
 import {
   BiMessageDetail,
@@ -199,6 +200,7 @@ export default function App() {
       timestamp: "10/05/2024, 15:30",
     },
   ]);
+  const [feedRefreshKey, setFeedRefreshKey] = useState(0);
 
   const [showPostModal, setShowPostModal] = useState(false);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
@@ -267,6 +269,7 @@ export default function App() {
         };
 
         setPosts((prev) => [newPost, ...prev]);
+        setFeedRefreshKey((key) => key + 1);
         setPostText("");
         setSelectedImage(null);
         setShowPostModal(false);
@@ -570,157 +573,10 @@ Responda em JSON com este formato:
                   </button>
                 </section>
 
-                {/* Posts */}
-                <section aria-label="Feed de publicações">
-                  {posts.length === 0 ? (
-                    <div className="bg-white p-4 rounded shadow text-center">
-                      <p className="text-muted">
-                        Nenhuma publicação ainda. Seja o primeiro a compartilhar!
-                      </p>
-                    </div>
-                  ) : (
-                    posts.map((post) => (
-                      <article
-                        key={post.id}
-                        className="bg-white p-3 rounded shadow mb-4 position-relative"
-                        aria-label={`Publicação de ${post.user.name}`}
-                      >
-                        <header className="d-flex align-items-center gap-3">
-                          <Image
-                            src={post.user.avatar}
-                            width={40}
-                            height={40}
-                            className="rounded-circle"
-                            alt={`Avatar de ${post.user.name}`}
-                          />
-                          <div className="flex-grow-1">
-                            <span className="fw-bold">{post.user.name}</span>
-                            <time
-                              className="text-muted ms-2"
-                              style={{ fontSize: "0.9em" }}
-                              dateTime={post.timestamp}
-                            >
-                              {post.timestamp}
-                            </time>
-                          </div>
-
-                          <div className="ms-2 position-relative">
-                            <Button
-                              variant="link"
-                              size="sm"
-                              onClick={() =>
-                                setReportingPostId(
-                                  reportingPostId === post.id ? null : post.id,
-                                )
-                              }
-                              aria-label={`Opções da publicação de ${post.user.name}`}
-                              aria-expanded={reportingPostId === post.id}
-                              aria-haspopup="true"
-                            >
-                              <BiDotsVerticalRounded size={20} aria-hidden="true" />
-                            </Button>
-
-                            {reportingPostId === post.id && (
-                              <div
-                                className="position-absolute end-0 mt-2 bg-white border rounded shadow-sm p-2"
-                                style={{ zIndex: 1000 }}
-                                role="menu"
-                                aria-label="Menu de opções da publicação"
-                              >
-                                <button
-                                  className="btn btn-sm text-danger w-100"
-                                  onClick={() => setReportText("")}
-                                  role="menuitem"
-                                >
-                                  Denunciar post
-                                </button>
-                                <div className="mt-2">
-                                  <label
-                                    htmlFor={`report-text-${post.id}`}
-                                    className="visually-hidden"
-                                  >
-                                    Descreva o motivo da denúncia
-                                  </label>
-                                  <Form.Control
-                                    as="textarea"
-                                    id={`report-text-${post.id}`}
-                                    rows={2}
-                                    placeholder="Descreva o motivo"
-                                    value={reportText}
-                                    onChange={(e) => setReportText(e.target.value)}
-                                  />
-                                  <Button
-                                    variant="danger"
-                                    size="sm"
-                                    className="mt-2 w-100"
-                                    onClick={() => {
-                                      alert(`Post ${post.id} denunciado: ${reportText}`);
-                                      setReportingPostId(null);
-                                      setReportText("");
-                                    }}
-                                    disabled={!reportText.trim()}
-                                  >
-                                    Enviar
-                                  </Button>
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        </header>
-
-                        <div className="mt-3">
-                          <p style={{ whiteSpace: "pre-line" }}>
-                                         {post.text}
-                                       </p>
-                        </div>
-
-                        {post.image && (
-                          <Image
-                            src={
-                              typeof post.image === "string"
-                                ? post.image
-                                : URL.createObjectURL(post.image)
-                            }
-                            width={500}
-                            height={300}
-                            className="rounded my-3"
-                            alt={`Imagem da publicação de ${post.user.name}: ${post.text.substring(0, 50)}...`}
-                          />
-                        )}
-
-                        <div
-                          className="d-flex gap-2"
-                          role="group"
-                          aria-label="Ações da publicação"
-                        >
-                          <Button
-                            variant="light"
-                            className="rounded-pill"
-                            onClick={() => handleLike(post.id)}
-                            aria-label={`Curtir publicação. ${post.likes} curtida${post.likes !== 1 ? "s" : ""}`}
-                          >
-                            <BiHeart aria-hidden="true" /> {post.likes} Curtir
-                          </Button>
-                          <Button variant="light" className="rounded-pill">
-                            <BiMessageDetail aria-hidden="true" /> Comentar
-                          </Button>
-                          <Button variant="light" className="rounded-pill">
-                            <BiShare aria-hidden="true" /> Compartilhar
-                          </Button>
-                        </div>
-
-                        <Comments
-                          comments={post.comments}
-                          onAddComment={(content: string) =>
-                            handleAddComment(post.id, content)
-                          }
-                        />
-                      </article>
-                    ))
-                  )}
-                </section>
+                  <section aria-label="Feed de publicações">
+                    <PostsFeed refreshKey={feedRefreshKey} />
+                  </section>
               </Col>
-
               {/* Sidebar: Following */}
               <Col md={3}>
                 <SidebarCard title="👥 Seguindo" ariaLabel="Pessoas que você segue">
