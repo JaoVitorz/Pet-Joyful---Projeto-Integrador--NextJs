@@ -39,50 +39,21 @@ export async function POST(request: Request) {
 
     const formData = await request.formData();
 
-    // Converter FormData para JSON
-    const postData: Record<string, any> = {};
-    const files: Record<string, File> = {};
-
+    // Reenvia o arquivo como multipart com o nome esperado pelo serviço de posts.
+    const forwardedFormData = new FormData();
     for (const [key, value] of formData.entries()) {
+      const upstreamKey = key === "imagem" ? "image" : key;
       if (value instanceof File) {
-        files[key] = value;
+        forwardedFormData.append(upstreamKey, value, value.name);
       } else {
-        postData[key] = value;
+        forwardedFormData.append(upstreamKey, value);
       }
     }
 
-    // Se houver imagem, converter para base64
-    let imagemData: string | null = null;
-    if (files.imagem) {
-      const arrayBuffer = await files.imagem.arrayBuffer();
-      const buffer = Buffer.from(arrayBuffer);
-      imagemData = buffer.toString("base64");
-    }
-
-    // Construir payload JSON
-    const payload = {
-      titulo: postData.titulo || "",
-      descricao: postData.descricao || "",
-      categoria: postData.categoria || "outros",
-      tags: postData.tags
-        ? Array.isArray(postData.tags)
-          ? postData.tags
-          : [postData.tags]
-        : [],
-      autorNome: postData.autorNome || "Usuário",
-      ...(imagemData && {
-        imagemBase64: imagemData,
-        imagemNome: files.imagem?.name,
-      }),
-    };
-
-    const response = await fetch(`${POSTS_API_URL}/api/posts`, {
+    const response = await fetch(POSTS_API_URL + "/api/posts", {
       method: "POST",
-      headers: {
-        Authorization: token,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
+      headers: { Authorization: token },
+      body: forwardedFormData,
     });
 
     const data = await response.json();

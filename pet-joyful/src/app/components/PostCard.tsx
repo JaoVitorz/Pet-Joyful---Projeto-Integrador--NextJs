@@ -17,6 +17,7 @@ export default function PostCard({ post, currentUserId, onUpdate }: PostCardProp
 
   const isLiked = currentUserId && post.likes.includes(currentUserId);
   const isAuthor = currentUserId === post.autor.userId;
+  const imageUrl = resolvePostImageUrl(post.imagem?.url);
 
   const handleLike = async () => {
     try {
@@ -118,10 +119,10 @@ export default function PostCard({ post, currentUserId, onUpdate }: PostCardProp
       </div>
 
       {/* Imagem */}
-      {post.imagem && (
+      {imageUrl && (
         <div className="relative w-full" style={{ paddingBottom: '75%' }}>
           <Image
-            src={resolvePostImageUrl(post.imagem.url)}
+            src={imageUrl}
             alt={post.titulo}
             fill
             className="object-cover"

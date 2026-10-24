@@ -14,7 +14,7 @@ export interface Post {
   titulo: string;
   descricao?: string;
   imagem?: {
-    url: string;
+    url?: string | null;
     width: number;
     height: number;
     public_id: string;
@@ -53,12 +53,17 @@ export interface PostsResponse {
 
 const POSTS_API_URL = process.env.NEXT_PUBLIC_POSTS_API_URL || "https://pet-joyful-posts-service.onrender.com";
 
-export function resolvePostImageUrl(imageUrl: string): string {
+export function resolvePostImageUrl(imageUrl: string | null | undefined): string | null {
+  const value = imageUrl?.trim();
+  if (!value || /^(null|undefined)$/i.test(value) || /\/(null|undefined)(?:[?#].*)?$/i.test(value)) {
+    return null;
+  }
+
   try {
     const baseUrl = POSTS_API_URL.endsWith("/") ? POSTS_API_URL.slice(0, -1) : POSTS_API_URL;
-    return new URL(imageUrl, baseUrl + "/").toString();
+    return new URL(value, baseUrl + "/").toString();
   } catch {
-    return imageUrl;
+    return null;
   }
 }
 

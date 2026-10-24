@@ -28,6 +28,7 @@ export default function PostCard({ post, onDelete, onRefresh }: PostCardProps) {
   const [comments] = useState(post.comentarios || []);
   const [newComment, setNewComment] = useState("");
   const [error, setError] = useState("");
+  const imageUrl = resolvePostImageUrl(post.imagem?.url);
 
   const handleLike = async () => {
     try {
@@ -122,13 +123,13 @@ export default function PostCard({ post, onDelete, onRefresh }: PostCardProps) {
       </div>
 
       {/* Image */}
-      {post.imagem?.url && (
+      {imageUrl && (
         <div
           className="position-relative"
           style={{ height: "300px", width: "100%" }}
         >
           <Image
-            src={resolvePostImageUrl(post.imagem.url)}
+            src={imageUrl}
             alt={post.titulo}
             fill
             style={{ objectFit: "cover" }}
