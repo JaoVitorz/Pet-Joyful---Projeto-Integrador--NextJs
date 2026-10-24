@@ -42,11 +42,10 @@ export async function POST(request: Request) {
     // Reenvia o arquivo como multipart com o nome esperado pelo serviço de posts.
     const forwardedFormData = new FormData();
     for (const [key, value] of formData.entries()) {
-      const upstreamKey = key === "imagem" ? "image" : key;
       if (value instanceof File) {
-        forwardedFormData.append(upstreamKey, value, value.name);
+        forwardedFormData.append(key, value, value.name);
       } else {
-        forwardedFormData.append(upstreamKey, value);
+        forwardedFormData.append(key, value);
       }
     }
 
