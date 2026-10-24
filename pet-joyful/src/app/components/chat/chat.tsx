@@ -26,6 +26,8 @@ export default function Chat() {
   const [error, setError] = useState("");
   const [realtimeConnected, setRealtimeConnected] = useState(false);
   const activeConversationIdRef = useRef<string | null>(null);
+  const currentUserIdRef = useRef("");
+  const showListRef = useRef(true);
 
   const refreshConversations = useCallback(async () => {
     const nextConversations = await directChatService.listConversations();
@@ -37,7 +39,9 @@ export default function Chat() {
       const rawUser = localStorage.getItem("user");
       if (rawUser) {
         const user = JSON.parse(rawUser) as { id?: string | number; _id?: string };
-        setCurrentUserId(String(user.id ?? user._id ?? ""));
+        const userId = String(user.id ?? user._id ?? "");
+        currentUserIdRef.current = userId;
+        setCurrentUserId(userId);
       }
     } catch {
       setCurrentUserId("");
@@ -78,6 +82,9 @@ export default function Chat() {
     socket.on("disconnect", () => setRealtimeConnected(false));
     socket.on("connect_error", () => setRealtimeConnected(false));
     socket.on("direct-message:new", (event: DirectMessageEvent) => {
+      const isIncoming = event.message.senderId !== currentUserIdRef.current;
+      const isSelected = activeConversationIdRef.current === event.conversationId;
+      const isOpen = isSelected && !showListRef.current && document.visibilityState === "visible";
       setConversations((previous) => {
         const conversation = previous.find((item) => item.id === event.conversationId);
         if (!conversation) {
@@ -88,14 +95,18 @@ export default function Chat() {
           ...conversation,
           lastMessage: event.message.text,
           lastMessageAt: event.message.createdAt,
+          unreadCount: isIncoming && !isOpen ? (conversation.unreadCount ?? 0) + 1 : 0,
         };
         return [updated, ...previous.filter((item) => item.id !== event.conversationId)]
           .sort((a, b) => new Date(b.lastMessageAt || 0).getTime() - new Date(a.lastMessageAt || 0).getTime());
       });
-      if (activeConversationIdRef.current === event.conversationId) {
+      if (isSelected) {
         setMessages((previous) => previous.some((message) => message.id === event.message.id)
           ? previous
           : [...previous, event.message]);
+      }
+      if (isOpen && isIncoming) {
+        void directChatService.markRead(event.conversationId).catch(() => undefined);
       }
     });
     return () => {
@@ -137,13 +148,25 @@ export default function Chat() {
       return;
     }
     setMessages([]);
+    setConversations((previous) => previous.map((conversation) => conversation.id === activeConversation.id
+      ? { ...conversation, unreadCount: 0 }
+      : conversation));
+    void directChatService.markRead(activeConversation.id).catch(() => undefined);
     void loadMessages(activeConversation.id);
   }, [activeConversation, loadMessages]);
 
   const visibleUsers = useMemo(() => {
     const query = search.trim().toLocaleLowerCase("pt-BR");
-    return users.filter((user) => (user.name || user.nome || "").toLocaleLowerCase("pt-BR").includes(query));
-  }, [users, search]);
+    return users.filter((user) => (user.name || user.nome || "").toLocaleLowerCase("pt-BR").includes(query))
+      .sort((first, second) => {
+        const firstConversation = conversations.find((conversation) => conversation.user.id === first.id);
+        const secondConversation = conversations.find((conversation) => conversation.user.id === second.id);
+        if (!firstConversation && !secondConversation) return (first.name || first.nome || "").localeCompare(second.name || second.nome || "", "pt-BR");
+        if (!firstConversation) return 1;
+        if (!secondConversation) return -1;
+        return new Date(secondConversation.lastMessageAt || 0).getTime() - new Date(firstConversation.lastMessageAt || 0).getTime();
+      });
+  }, [users, search, conversations]);
 
   const openUser = async (user: ChatUser) => {
     setError("");
@@ -154,6 +177,8 @@ export default function Chat() {
         setConversations((previous) => [conversation!, ...previous]);
       }
       setActiveConversation(conversation);
+      activeConversationIdRef.current = conversation.id;
+      showListRef.current = false;
       setShowList(false);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Não foi possível abrir a conversa.");
@@ -227,6 +252,11 @@ export default function Chat() {
                   <span className="block truncate font-semibold text-gray-900">{user.name || user.nome}</span>
                   <span className="block truncate text-sm text-gray-500">{conversation?.lastMessage || user.tipo || "Iniciar conversa"}</span>
                 </span>
+                {(conversation?.unreadCount ?? 0) > 0 && (
+                  <span className="flex h-6 min-w-6 shrink-0 items-center justify-center rounded-full bg-red-600 px-1.5 text-xs font-bold text-white" aria-label={`${conversation?.unreadCount} mensagens não lidas`}>
+                    {(conversation?.unreadCount ?? 0) > 99 ? "99+" : conversation?.unreadCount}
+                  </span>
+                )}
               </button>
             );
           }) : <p className="p-4 text-center text-sm text-gray-500">Nenhum usuário encontrado.</p>}
@@ -237,7 +267,7 @@ export default function Chat() {
         {activeConversation ? (
           <>
             <header className="flex items-center gap-3 border-b border-gray-200 bg-white p-3 md:p-4">
-              <button onClick={() => setShowList(true)} className="rounded-lg p-2 text-gray-600 hover:bg-gray-100 md:hidden" aria-label="Voltar para usuários">
+              <button onClick={() => { showListRef.current = true; setShowList(true); }} className="rounded-lg p-2 text-gray-600 hover:bg-gray-100 md:hidden" aria-label="Voltar para usuários">
                 <BiArrowBack size={22} />
               </button>
               <span className="flex h-10 w-10 items-center justify-center rounded-full bg-green-100 font-bold text-green-800" aria-hidden="true">

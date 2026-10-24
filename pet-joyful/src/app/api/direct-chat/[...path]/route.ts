@@ -5,7 +5,7 @@ const BACKEND_URL =
   process.env.NEXT_PUBLIC_AUTH_API_URL ||
   "https://pet-joyful-backend.onrender.com";
 
-const VALID_PATH = /^(users|conversations(?:\/[a-f\d]{24}(?:\/messages)?)?)$/i;
+const VALID_PATH = /^(users|conversations(?:\/[a-f\d]{24}(?:\/(?:messages|read))?)?)$/i;
 
 async function proxy(request: NextRequest, context: { params: Promise<{ path: string[] }> }) {
   const token = request.headers.get("authorization");

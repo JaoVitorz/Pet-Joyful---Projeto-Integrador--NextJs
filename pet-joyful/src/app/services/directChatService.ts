@@ -12,6 +12,7 @@ export interface DirectConversation {
   user: ChatUser;
   lastMessage: string;
   lastMessageAt: string | null;
+  unreadCount?: number;
 }
 
 export interface DirectMessage {
@@ -23,6 +24,7 @@ export interface DirectMessage {
 
 export interface DirectMessageEvent {
   conversationId: string;
+  senderName?: string;
   message: DirectMessage;
 }
 
@@ -73,6 +75,9 @@ export const directChatService = {
       `conversations/${conversationId}/messages?limit=100`,
     );
     return result.messages;
+  },
+  async markRead(conversationId: string) {
+    await request<{ success: boolean }>(`conversations/${conversationId}/read`, { method: "POST", body: JSON.stringify({}) });
   },
   async sendMessage(conversationId: string, text: string) {
     const result = await request<{ message: DirectMessage }>(
