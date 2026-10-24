@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Post, toggleLike, addComment, deletePost } from '@/app/services/postService';
+import { Post, toggleLike, addComment, deletePost, resolvePostImageUrl } from '@/app/services/postService';
 import Image from 'next/image';
 
 interface PostCardProps {
@@ -121,7 +121,7 @@ export default function PostCard({ post, currentUserId, onUpdate }: PostCardProp
       {post.imagem && (
         <div className="relative w-full" style={{ paddingBottom: '75%' }}>
           <Image
-            src={post.imagem.url}
+            src={resolvePostImageUrl(post.imagem.url)}
             alt={post.titulo}
             fill
             className="object-cover"

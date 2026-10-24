@@ -7,6 +7,7 @@ import {
   toggleLike,
   deletePost,
   addComment,
+  resolvePostImageUrl,
   Post,
 } from "@/app/services/postService";
 
@@ -127,7 +128,7 @@ export default function PostCard({ post, onDelete, onRefresh }: PostCardProps) {
           style={{ height: "300px", width: "100%" }}
         >
           <Image
-            src={post.imagem.url}
+            src={resolvePostImageUrl(post.imagem.url)}
             alt={post.titulo}
             fill
             style={{ objectFit: "cover" }}

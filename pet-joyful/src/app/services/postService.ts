@@ -51,6 +51,17 @@ export interface PostsResponse {
   };
 }
 
+const POSTS_API_URL = process.env.NEXT_PUBLIC_POSTS_API_URL || "https://pet-joyful-posts-service.onrender.com";
+
+export function resolvePostImageUrl(imageUrl: string): string {
+  try {
+    const baseUrl = POSTS_API_URL.endsWith("/") ? POSTS_API_URL.slice(0, -1) : POSTS_API_URL;
+    return new URL(imageUrl, baseUrl + "/").toString();
+  } catch {
+    return imageUrl;
+  }
+}
+
 /**
  * Criar postagem
  */

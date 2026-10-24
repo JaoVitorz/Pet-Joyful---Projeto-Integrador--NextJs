@@ -14,6 +14,18 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'pet-joyful-posts-service.onrender.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '3003',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
         hostname: 'i.pravatar.cc',
         port: '',
         pathname: '/**',
